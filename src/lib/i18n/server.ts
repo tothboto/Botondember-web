@@ -26,6 +26,12 @@ export type I18n = {
   t: (key: string, vars?: TranslateVars) => string;
 };
 
+/** Egy adott nyelv szótára (pl. az Adminhoz, ami mindig magyar). */
+export async function getDictionary(locale: string): Promise<Dictionary> {
+  const rows = await getTranslationRows();
+  return buildDictionary(rows, locale, SOURCE_LOCALE, BUILTIN_HU);
+}
+
 export const getI18n = cache(async (): Promise<I18n> => {
   const [settings, allLocales, rows] = await Promise.all([getAllSettings(), getLocales(), getTranslationRows()]);
   const enabled = allLocales.filter((l) => l.enabled);
