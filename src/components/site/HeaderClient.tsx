@@ -3,16 +3,16 @@
 import { Crown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { useI18n } from "@/lib/i18n/client";
 import type { PublicLocale } from "@/lib/i18n/server";
-import { PageIcon } from "@/lib/icons";
 import { BossArea } from "./BossArea";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileMenu } from "./MobileMenu";
 
-export type NavItem = { href: string; label: string; icon: string; template: string };
+/** Egy menüpont; az ikon a szerveren kirajzolt SVG. */
+export type NavItem = { href: string; label: string; icon: ReactNode; template: string };
 
 const LEGAL_PATHS = ["/adatkezelesi-tajekoztato", "/cookie-tajekoztato"];
 
@@ -101,7 +101,9 @@ export function HeaderClient({
                       current ? "" : "text-header-fg/90 hover:text-header-fg"
                     }`}
                   >
-                    <PageIcon name={item.icon} className="h-[1.15rem] w-[1.15rem] shrink-0" strokeWidth={2.2} />
+                    <span aria-hidden className="h-[1.15rem] w-[1.15rem] shrink-0">
+                      {item.icon}
+                    </span>
                     {item.label}
                     <span
                       aria-hidden

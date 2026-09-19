@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllSettings } from "@/lib/data/settings";
+import { siteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -12,5 +13,8 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   if (general.noindex) {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
-  return { rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] } };
+  return {
+    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] },
+    sitemap: new URL("/sitemap.xml", siteUrl()).toString(),
+  };
 }

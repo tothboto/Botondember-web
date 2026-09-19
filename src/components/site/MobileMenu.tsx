@@ -7,7 +7,6 @@ import { useEffect, useId, useRef, useState } from "react";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { useI18n } from "@/lib/i18n/client";
 import type { PublicLocale } from "@/lib/i18n/server";
-import { PageIcon } from "@/lib/icons";
 import { BossArea } from "./BossArea";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import type { NavItem } from "./HeaderClient";
@@ -100,7 +99,9 @@ export function MobileMenu({
                         current ? "bg-surface-2 shadow-[inset_4px_0_0_var(--gold-strong)] dark:shadow-[inset_4px_0_0_var(--rm-gold)]" : "hover:bg-surface"
                       }`}
                     >
-                      <PageIcon name={item.icon} className="h-6 w-6 shrink-0 text-link" />
+                      <span aria-hidden className="h-6 w-6 shrink-0 text-link">
+                        {item.icon}
+                      </span>
                       {item.label}
                     </Link>
                   </li>

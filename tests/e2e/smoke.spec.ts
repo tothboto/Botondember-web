@@ -89,6 +89,17 @@ test.describe("A nyilvános oldal alapjai", () => {
     await expect(page.getByRole("heading", { name: "Zeneszámok" })).toHaveCount(0);
   });
 
+  test("a keresők elől alapból rejtve van (robots, meta, üres oldaltérkép)", async ({ page, request }) => {
+    const robots = await (await request.get("/robots.txt")).text();
+    expect(robots).toMatch(/Disallow: \/\s*$/m);
+    const sitemap = await request.get("/sitemap.xml");
+    expect(sitemap.status()).toBe(200);
+    expect(await sitemap.text()).not.toContain("<url>");
+    await page.goto("/");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
+  });
+
   test("nem létező címen barátságos 404 oldal", async ({ page }) => {
     const response = await page.goto("/nincs-ilyen-oldal");
     expect(response?.status()).toBe(404);

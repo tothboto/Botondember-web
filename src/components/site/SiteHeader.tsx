@@ -1,6 +1,7 @@
 import { getAllSettings } from "@/lib/data/settings";
 import { getVisiblePages, pageHref, pageMenuKey } from "@/lib/data/pages";
 import { getI18n } from "@/lib/i18n/server";
+import { PageIcon } from "@/lib/icons";
 import { HeaderClient, type NavItem } from "./HeaderClient";
 
 /** A fejléc adatai (szerveroldalon): felirat, menüpontok, nyelvek, belépési állapot. */
@@ -13,10 +14,11 @@ export async function SiteHeader({
 }) {
   const [i18n, settings, pages] = await Promise.all([getI18n(), getAllSettings(), getVisiblePages()]);
 
+  // Az ikonokat itt, a szerveren rajzoljuk ki – így a teljes ikonkészlet nem kerül a böngészőbe letöltendő kódba.
   const navItems: NavItem[] = pages.map((page) => ({
     href: pageHref(page),
     label: i18n.t(pageMenuKey(page)),
-    icon: page.icon,
+    icon: <PageIcon name={page.icon} className="size-full" strokeWidth={2.2} />,
     template: page.template,
   }));
 

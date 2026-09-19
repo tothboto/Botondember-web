@@ -4,6 +4,7 @@ import { ThemeManager } from "@/components/theme/ThemeManager";
 import { brandCss } from "@/lib/brand-css";
 import { getAllSettings } from "@/lib/data/settings";
 import { getI18n } from "@/lib/i18n/server";
+import { siteUrl } from "@/lib/site-url";
 import { themeScript } from "@/lib/theme";
 import { fontVariables } from "./fonts";
 import "./globals.css";
@@ -12,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { general } = await getAllSettings();
   const icons = `/icons/${general.faviconVersion ?? "default"}`;
   return {
-    metadataBase: new URL(process.env.SITE_URL?.trim() || "http://localhost:3000"),
+    metadataBase: siteUrl(),
     title: { default: general.siteName, template: `%s · ${general.siteName}` },
     applicationName: general.siteName,
     // Alapból rejtve a keresők elől (az Adminban kapcsolható).

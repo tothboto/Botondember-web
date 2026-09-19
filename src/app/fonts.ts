@@ -4,8 +4,10 @@
  * Mindegyik `latin-ext` alkészlettel, hogy az ő, ű, Ő, Ű is megjelenjen
  * (ellenőrzés: `npm run fonts:check`).
  *
- * Csak a leggyakrabban használt betűket töltjük elő (preload); a többi csak
- * akkor töltődik le, ha az oldalon ténylegesen használják.
+ * Csak a nagy címek (Inter Tight) és a fejléc felirat (Cinzel) betűjét töltjük
+ * elő (preload), mert ezek látszanak azonnal; a többi akkor töltődik le, amikor
+ * az oldal ténylegesen használja (addig egy hasonló méretű rendszerbetű látszik).
+ * Így mobilon a lassú hálózaton is hamarabb megjelenik az oldal.
  * (A next/font csak kiírt, „szó szerinti” beállításokat fogad el.)
  */
 import {
@@ -19,7 +21,12 @@ import {
   Roboto,
 } from "next/font/google";
 
-export const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter", display: "swap" });
+export const inter = Inter({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: false,
+});
 
 export const interTight = Inter_Tight({
   subsets: ["latin", "latin-ext"],

@@ -41,10 +41,10 @@ async function main() {
         // Végiggörgetünk, hogy a „lusta” (lazy) képek is betöltődjenek.
         await page.evaluate(async () => {
           for (let y = 0; y < document.body.scrollHeight; y += 400) {
-            window.scrollTo(0, y);
+            window.scrollTo({ top: y, behavior: "instant" });
             await new Promise((r) => setTimeout(r, 60));
           }
-          window.scrollTo(0, 0);
+          window.scrollTo({ top: 0, behavior: "instant" });
         });
         await page.waitForLoadState("networkidle");
         await page

@@ -21,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { absolute: general.siteName },
     description,
+    alternates: { canonical: "/" },
     openGraph: {
       type: "website",
       title: general.siteName,

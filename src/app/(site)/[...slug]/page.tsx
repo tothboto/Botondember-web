@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/[...slug]">): Pro
   return {
     title,
     description: page.seoDescription || undefined,
+    alternates: { canonical: `/${page.slug}` },
     openGraph: {
       title,
       description: page.seoDescription || undefined,
