@@ -12,9 +12,15 @@ export type ActionResult<T = null> =
   | { ok: true; data: T; message?: string }
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
-/** Barátságos hibaüzenet a felhasználónak (pl. „Ez a cím már foglalt”). */
+/**
+ * Barátságos hibaüzenet a felhasználónak (pl. „Ez a cím már foglalt”).
+ * Ha megadod a mező nevét, az űrlap a hibát a mező alatt is megmutatja.
+ */
 export class UserError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly field?: string,
+  ) {
     super(message);
     this.name = "UserError";
   }
@@ -31,7 +37,10 @@ export function zodFieldErrors(error: ZodError): Record<string, string> {
 
 export function toActionError(error: unknown): { ok: false; error: string; fieldErrors?: Record<string, string> } {
   if (error instanceof AuthError) return { ok: false, error: error.message };
-  if (error instanceof UserError || error instanceof ImageError) return { ok: false, error: error.message };
+  if (error instanceof UserError) {
+    return { ok: false, error: error.message, ...(error.field ? { fieldErrors: { [error.field]: error.message } } : {}) };
+  }
+  if (error instanceof ImageError) return { ok: false, error: error.message };
   if (error instanceof ZodError) {
     const fieldErrors = zodFieldErrors(error);
     return { ok: false, error: error.issues[0]?.message ?? "Hibás adat.", fieldErrors };

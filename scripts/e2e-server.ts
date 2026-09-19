@@ -23,6 +23,7 @@ const env: NodeJS.ProcessEnv = {
   DATABASE_URL: "file:./data/e2e/site.db",
   DATABASE_AUTH_TOKEN: "",
   UPLOADS_DIR: "./data/e2e/uploads",
+  BACKUPS_DIR: "./data/e2e/backups",
   ADMIN_USERNAME: process.env.E2E_ADMIN_USERNAME ?? "teszt-admin",
   ADMIN_PASSWORD: password,
   SESSION_SECRET: secret,

@@ -40,6 +40,17 @@ export function translate(dict: Dictionary, key: string, vars?: TranslateVars): 
   return interpolate(dict[key] ?? key, vars);
 }
 
+/** A szövegben lévő helyőrzők neve, pl. „{count} videó” → ["count"]. */
+export function placeholdersOf(text: string): string[] {
+  return [...new Set(Array.from(text.matchAll(/\{(\w+)\}/g), (m) => m[1]))];
+}
+
+/** Mely helyőrzők hiányoznak a fordításból a forrásszöveghez képest. */
+export function missingPlaceholders(source: string, translation: string): string[] {
+  const present = new Set(placeholdersOf(translation));
+  return placeholdersOf(source).filter((name) => !present.has(name));
+}
+
 /** A hiányzó (vagy üres) fordítások kulcsai egy nyelvhez – az Admin kiemeléséhez. */
 export function missingKeys(
   keys: readonly string[],

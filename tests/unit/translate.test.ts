@@ -1,5 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { buildDictionary, interpolate, missingKeys, translate, type TranslationRow } from "@/lib/i18n/translate";
+import {
+  buildDictionary,
+  interpolate,
+  missingKeys,
+  missingPlaceholders,
+  placeholdersOf,
+  translate,
+  type TranslationRow,
+} from "@/lib/i18n/translate";
+
+describe("helyőrzők a fordításokban", () => {
+  it("kigyűjti a {név} alakú helyőrzőket (ismétlés nélkül)", () => {
+    expect(placeholdersOf("{count} videó")).toEqual(["count"]);
+    expect(placeholdersOf("{title} – {title} ugrás")).toEqual(["title"]);
+    expect(placeholdersOf("nincs benne")).toEqual([]);
+  });
+
+  it("jelzi, ha a fordításból kimaradt egy helyőrző", () => {
+    expect(missingPlaceholders("{count} videó", "videos")).toEqual(["count"]);
+    expect(missingPlaceholders("{count} videó", "{count} videos")).toEqual([]);
+    expect(missingPlaceholders("{rating} / 5 csillag", "{rating} von 5 Sternen")).toEqual([]);
+  });
+});
 
 const rows: TranslationRow[] = [
   { key: "nav.home", locale: "hu", value: "Kezdőlap" },

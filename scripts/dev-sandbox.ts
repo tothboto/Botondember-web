@@ -38,6 +38,7 @@ async function main() {
     DATABASE_URL: "file:./data/sandbox/site.db",
     DATABASE_AUTH_TOKEN: "",
     UPLOADS_DIR: "./data/sandbox/uploads",
+    BACKUPS_DIR: "./data/sandbox/backups",
     ADMIN_USERNAME: credentials.username,
     ADMIN_PASSWORD: credentials.password,
     SESSION_SECRET: credentials.sessionSecret,
