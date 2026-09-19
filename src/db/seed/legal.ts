@@ -176,7 +176,7 @@ A sütik és a böngésző helyi tárolója bármikor törölhetők, és a böng
 
 - [Google Chrome](https://support.google.com/chrome/answer/95647?hl=hu)
 - [Microsoft Edge](https://support.microsoft.com/hu-hu/microsoft-edge/cookie-k-t%C3%B6rl%C3%A9se-a-microsoft-edge-ben-63947406-40ac-c3b8-57b9-2a946a29ae09)
-- [Mozilla Firefox](https://support.mozilla.org/hu/kb/sutik-torlese-weboldalak-altal-tarolt-adatok)
+- [Mozilla Firefox](https://support.mozilla.org/hu/kb/weboldalak-altal-elhelyezett-sutik-torlese-szamito)
 - [Apple Safari](https://support.apple.com/hu-hu/guide/safari/sfri11471/mac)
 `;
 

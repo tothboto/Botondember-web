@@ -19,7 +19,8 @@
     "db:generate": "drizzle-kit generate",
     "db:seed": "tsx scripts/seed.ts",
     "db:stats": "tsx scripts/db-stats.ts",
-    "fonts:check": "tsx scripts/check-fonts.ts"
+    "fonts:check": "tsx scripts/check-fonts.ts",
+    "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

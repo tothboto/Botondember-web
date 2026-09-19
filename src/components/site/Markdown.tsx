@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeSanitize from "rehype-sanitize";
@@ -5,6 +6,19 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
 type PluggableList = NonNullable<Options["rehypePlugins"]>;
+
+/** A táblázatok keskeny kijelzőn vízszintesen görgethetők (billentyűzettel is). */
+function ScrollTable(props: ComponentProps<"table"> & { node?: unknown }) {
+  const { node, ...rest } = props;
+  void node;
+  return (
+    <div className="overflow-x-auto" tabIndex={0}>
+      <table {...rest} />
+    </div>
+  );
+}
+
+const COMPONENTS: Options["components"] = { table: ScrollTable };
 
 /**
  * Markdown szöveg biztonságos megjelenítése.
@@ -49,7 +63,7 @@ export function Markdown({
   const width = /(^|\s)(\w+:)?max-w-/.test(className) ? "" : "max-w-none";
   return (
     <div lang={lang} className={`prose prose-site ${width} ${className}`}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={rehypePlugins}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={rehypePlugins} components={COMPONENTS}>
         {children}
       </ReactMarkdown>
     </div>

@@ -489,6 +489,17 @@
 .prose-site :where(h2, h3) {
   scroll-margin-top: 6rem;
 }
+/* Kód (pl. sütinevek): a bővítmény által odatett ` jelek helyett halvány háttér */
+.prose-site :where(code):not(:where(pre *))::before,
+.prose-site :where(code):not(:where(pre *))::after {
+  content: none;
+}
+.prose-site :where(code):not(:where(pre *)) {
+  padding: 0.1em 0.35em;
+  border-radius: 0.3em;
+  background: var(--page-surface-2);
+  font-weight: 600;
+}
 
 /* Magazinos átlós csíkok (Hobbijaim) */
 @utility stripes-diagonal {

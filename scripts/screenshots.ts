@@ -53,8 +53,10 @@ async function main() {
         await page.waitForTimeout(300);
         const name = route === "/" ? "kezdolap" : route.replace(/^\//, "").replace(/\//g, "_");
         const file = path.join(outDir, `${name}-${width}-${theme}.png`);
+        // Vízszintes túllógás ellenőrzése (mobilon ne kelljen oldalra görgetni).
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
         await page.screenshot({ path: file, fullPage: true });
-        console.log("✔", path.relative(process.cwd(), file));
+        console.log(overflow > 1 ? `⚠️  ${overflow}px túllógás:` : "✔", path.relative(process.cwd(), file));
       }
       await context.close();
     }
