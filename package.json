@@ -6,11 +6,19 @@
     "node": ">=20.9.0"
   },
   "scripts": {
+    "postinstall": "node scripts/copy-flags.mjs",
+    "setup": "tsx scripts/setup.ts",
+    "predev": "tsx scripts/setup.ts --quiet",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "db:generate": "drizzle-kit generate",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:stats": "tsx scripts/db-stats.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
