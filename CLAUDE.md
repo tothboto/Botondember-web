@@ -75,5 +75,8 @@ frissíteni kell.
 
 - `npm run setup` – `.env.local` létrehozása, adatbázis-migráció, kezdő adatok (seed)
 - `npm run dev` – fejlesztői szerver: http://localhost:3000
+- `npm run dev:sandbox` – ugyanez külön próba-adatbázissal (`data/sandbox`) – Admin-kísérletekhez és
+  képernyőképekhez ezt használd, ne Botond valódi adatait (`scripts/admin-shots.ts` ide lép be)
+- `npm run admin:reset` – elfelejtett admin jelszó visszaállítása a `.env.local` alapján
 - `npm run lint` · `npm run typecheck` · `npm run test` · `npm run test:e2e` · `npm run build`
 - Windows PowerShellben, ha a `npm` parancs le van tiltva: `npm.cmd …`
