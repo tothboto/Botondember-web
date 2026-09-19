@@ -96,7 +96,7 @@ describe("egyéb", () => {
 
   it("jelszóhossz: legalább 8 karakter, legfeljebb 72 bájt", () => {
     expect(isValidPasswordLength("rovid")).toBe(false);
-    expect(isValidPasswordLength("Botondember1324!")).toBe(true);
+    expect(isValidPasswordLength("Pelda-Jelszo-2026")).toBe(true);
     expect(isValidPasswordLength("ő".repeat(37))).toBe(false);
   });
 });

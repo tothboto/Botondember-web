@@ -6,10 +6,12 @@
     "node": ">=20.9.0"
   },
   "scripts": {
-    "postinstall": "node scripts/copy-flags.mjs",
+    "postinstall": "node scripts/copy-flags.mjs && node scripts/setup-git-hooks.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
     "setup": "tsx scripts/setup.ts",
     "predev": "tsx scripts/setup.ts --quiet",
     "dev": "next dev",
+    "dev:sandbox": "tsx scripts/dev-sandbox.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

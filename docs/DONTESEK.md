@@ -36,6 +36,18 @@ Bármelyik döntés később megváltoztatható – szólj, és átírom!
 | 2026-09-19 | Zászlók forrása | A `flag-icons` csomag SVG-it a telepítés (`postinstall`) átmásolja a `public/flags` mappába (nincs a Gitben). Így bármelyik ország zászlója választható egy új nyelvhez, és a zászlók a saját tárhelyről töltődnek. | Nem kell a teljes zászló-CSS-t (kb. 270 zászló) minden oldalon betölteni. |
 | 2026-09-19 | `/favicon.ico` | Egy átirányítás (`rewrite`) mindig az éppen aktív ikonkészletre mutat (`/icons/current/favicon.ico`); a többi ikon URL-jében benne van a verzió, így új favicon feltöltése után a böngészők biztosan frissítenek. | A Next.js a `favicon.ico` nevet különlegesen kezeli, ezért erre nem lehet saját útvonalat írni. |
 | 2026-09-19 | Betűk ellenőrzése | `npm run fonts:check`: a ténylegesen letöltött betűfájlokban ellenőrzi az ő, ű, Ő, Ű (és a többi ékezetes betű) meglétét. Eredmény: mind a 8 betűtípus rendben. | A specifikáció kifejezetten kérte az ellenőrzést. |
+| 2026-09-19 | Az Admin kipróbálása a valódi adatok nélkül | `npm run dev:sandbox`: külön „homokozó” adatbázis (`data/sandbox`) generált teszt-belépési adatokkal. Az Admin képernyőképei és a kézi próbák ezen készülnek, a valódi adatbázishoz és jelszóhoz nem nyúlok. | Így a fejlesztés közben semmi sem íródik felül Botond saját tartalmában. |
+| 2026-09-19 | Kiemelt játék | Egyszerre csak egy játék lehet „kiemelt” (a Játékaim oldal tetején nagyban): ha egy másikat kiemelsz, az előző kiemelése megszűnik. | A „kiemelt” kártya egyetlen nagy helyet foglal el az oldal tetején. |
+| 2026-09-19 | Mentés gomb és visszajelzés az Adminban | Minden űrlapnak saját „Mentés” gombja van; mentés után „Mentve!” üzenet jelenik meg, hibánál magyar hibaüzenet (a hibás mező alatt is). Ha mentetlen változás van, az oldal elhagyása előtt rákérdez. A menüpontok sorrendje, láthatósága és a törlés azonnal érvényes (külön mentés nélkül). | Egyszerű, kiszámítható működés egy kezdőnek. |
+| 2026-09-19 | Új aloldal | Az Adminban létrehozott aloldal az „Általános” sablont kapja (cím, bevezető, kép, szöveg, kártyák). Az URL-cím a címből készül automatikusan (ékezet nélkül, pl. `kedvenc-filmjeim`), de átírható. Csak az így létrehozott oldalak törölhetők; a négy alap aloldal csak elrejthető. | A specifikáció szerint. Az alap aloldalak saját, egyedi sablont kaptak, ezek törlése nem lenne visszafordítható. |
+| 2026-09-19 | Színek megváltoztatása | A Megjelenés oldalon a márkaszínek mellett élő előnézet és kontraszt-ellenőrzés (WCAG AA) látszik; ha egy szín rontaná az olvashatóságot, piros „Gyenge” jelzést kap. Mentést nem tiltok le, csak figyelmeztetek. | Botond szabadon kísérletezhet, de látja, ha valami nehezen olvasható lesz. |
+| 2026-09-19 | Képek törlése a médiatárból | A használatban lévő képnél a törlés előtt megmutatom, hol szerepel; ha mégis törli, ezekről a helyekről a kép eltűnik (a tartalom megmarad). | A specifikáció kérése: figyelmeztetés, ha a kép használatban van. |
+
+## Biztonsági esemény
+
+| Dátum | Mi történt | Mit tettem | Mi a teendő |
+|---|---|---|---|
+| 2026-09-19 | A 6. mérföldkő commitjában (`79f7b54`) egy egységteszt **példaként a valódi kezdő admin-jelszót** használta, és ez felkerült a nyilvános GitHub-repóba. (Az én hibám.) | A jelszót eltávolítottam a tesztből. Beépítettem egy automatikus ellenőrzést (`.githooks/pre-commit` + `scripts/check-secrets.mjs`): ha a `.env.local` bármelyik titkos értéke egy commitba kerülne, a commit leáll. | A kezdő jelszót nyilvánosnak kell tekinteni: **élesítés előtt mindenképp cseréld le** (Admin > Fiók), és ha máshol is használod ezt a jelszót, ott is változtasd meg. A régi commit a Git-előzményekben megmarad; az előzmények átírása csak Botond kifejezett kérésére történhet (lásd a szabályt: nincs force push). |
 
 ## Figyelmeztetések a jövőre
 
@@ -43,3 +55,7 @@ Bármelyik döntés később megváltoztatható – szólj, és átírom!
   nem kell banner. Ha később analitika, beágyazott YouTube-lejátszó (akár `youtube-nocookie.com`),
   külső betűtípus vagy más harmadik féltől származó tartalom kerül az oldalra, **akkor már kell**,
   és a Cookie tájékoztatót is frissíteni kell.
+- ⚠️ **Belépési próbálkozások korlátozása élesítéskor:** a rendszer az IP-cím alapján korlátoz
+  (5 hibás próbálkozás / 15 perc). Az IP-címet az `x-forwarded-for` fejlécből veszi, amit csak egy
+  megbízható proxy (pl. a tárhely saját terheléselosztója) mögött szabad elhinni. Élesítéskor ezt a
+  tárhelyhez kell igazítani.

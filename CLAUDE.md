@@ -26,7 +26,11 @@
 
 - A `.env*` fájlok (kivéve `.env.example`), a `data/` mappa és a `botondember-weboldal-spec.md`
   soha nem kerülhet a repóba. Commit előtt nézd meg a `git status`-t.
-- Jelszót, titkos kulcsot soha ne írj commitolt fájlba (README, docs, tesztek sem).
+- Jelszót, titkos kulcsot soha ne írj commitolt fájlba (README, docs, tesztek sem) – **példának
+  sem**. Tesztekben mindig kitalált, nyilvánvalóan hamis értéket használj (pl. `Pelda-Jelszo-2026`).
+- Commit előtt a `.githooks/pre-commit` horog lefuttatja a `scripts/check-secrets.mjs`-t: ha a
+  `.env.local` bármelyik titkos értéke a commitba kerülne, leállítja. (Bekapcsolás: `npm install`
+  magától megcsinálja, vagy `git config core.hooksPath .githooks`.) A horgot soha ne kerüld meg.
 - Gyerek weboldala: a tartalomban csak a „Botondember” név szerepelhet – teljes név, iskola,
   lakóhely nem. Feltöltött képekről a sharp eltávolítja az EXIF adatokat (pl. GPS).
 
