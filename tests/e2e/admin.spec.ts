@@ -12,6 +12,14 @@ test.describe("Admin szerkesztők", () => {
     await loginAsAdmin(page);
   });
 
+  test("az Irányítópulton az „Első lépések” lista mutatja a teendőket", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Első lépések" })).toBeVisible();
+    const passwordStep = page.getByRole("link", { name: /Hátravan: Változtasd meg a kezdő jelszót/ });
+    await expect(passwordStep).toBeVisible();
+    await passwordStep.click();
+    await expect(page).toHaveURL(/\/admin\/fiok$/);
+  });
+
   test("a kezdőlap fő üzenetének átírása megjelenik a kezdőlapon", async ({ page }) => {
     await page.goto("/admin/kezdolap");
     const field = page.getByLabel("Fő üzenet (nagy, vastag, nagybetűs)");

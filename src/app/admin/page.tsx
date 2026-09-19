@@ -1,31 +1,28 @@
-import { count, eq } from "drizzle-orm";
-import { ArrowRight, History } from "lucide-react";
+import { count } from "drizzle-orm";
+import { ArrowRight, Circle, CircleCheck, History } from "lucide-react";
 import Link from "next/link";
 import { AdminPageHeader, Card } from "@/components/admin/ui";
 import { ADMIN_NAV } from "@/components/admin/nav";
 import { getDb } from "@/db/client";
 import { games, hobbies, media, youtubeItems } from "@/db/schema";
+import { setupChecklist } from "@/lib/admin/checklist";
 import { recentActivity } from "@/lib/audit";
 import { requireAdminPage } from "@/lib/auth/guard";
 import { formatDateTime } from "@/lib/format";
 
-/** Irányítópult: gyors linkek és az utolsó módosítások. */
+/** Irányítópult: első lépések, gyors linkek és az utolsó módosítások. */
 export default async function AdminDashboard() {
   const session = await requireAdminPage();
   const db = getDb();
-  const [activity, hobbyCount, gameCount, ytCount, mediaCount, examples] = await Promise.all([
+  const [activity, hobbyCount, gameCount, ytCount, mediaCount, checklist] = await Promise.all([
     recentActivity(db, 10),
     db.select({ n: count() }).from(hobbies),
     db.select({ n: count() }).from(games),
     db.select({ n: count() }).from(youtubeItems),
     db.select({ n: count() }).from(media),
-    Promise.all([
-      db.select({ n: count() }).from(hobbies).where(eq(hobbies.isExample, true)),
-      db.select({ n: count() }).from(games).where(eq(games.isExample, true)),
-      db.select({ n: count() }).from(youtubeItems).where(eq(youtubeItems.isExample, true)),
-    ]),
+    setupChecklist(db, session.userId),
   ]);
-  const exampleCount = examples.reduce((sum, rows) => sum + rows[0].n, 0);
+  const remaining = checklist.filter((item) => !item.done).length;
 
   const stats = [
     { label: "Hobbi", value: hobbyCount[0].n, href: "/admin/hobbijaim" },
@@ -42,11 +39,44 @@ export default async function AdminDashboard() {
         viewHref="/"
       />
 
-      {exampleCount > 0 && (
-        <p className="mb-6 rounded-2xl bg-amber-50 p-4 text-amber-950 ring-1 ring-amber-200 dark:bg-amber-950 dark:text-amber-50 dark:ring-amber-800">
-          <strong>Tipp:</strong> még {exampleCount} darab „Példa” tartalom van az oldalon. Cseréld le őket a saját
-          hobbijaidra, játékaidra és videóidra – szerkesztés után a „Példa” felirat magától eltűnik.
-        </p>
+      {remaining > 0 && (
+        <Card
+          title="Első lépések"
+          description={`Még ${remaining} teendő van hátra, hogy az oldal igazán a tiéd legyen. A kész lépések maguktól kipipálódnak.`}
+          className="mb-8"
+        >
+          <ul className="space-y-2">
+            {checklist.map((item) => {
+              const content = (
+                <>
+                  {item.done ? (
+                    <CircleCheck aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Circle aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-muted" />
+                  )}
+                  <span className="min-w-0">
+                    <span className={`block font-semibold ${item.done ? "text-muted line-through" : ""}`}>
+                      <span className="sr-only">{item.done ? "Kész: " : "Hátravan: "}</span>
+                      {item.title}
+                    </span>
+                    {!item.done && <span className="block text-sm text-muted">{item.hint}</span>}
+                  </span>
+                </>
+              );
+              return (
+                <li key={item.id}>
+                  {item.href && !item.done ? (
+                    <Link href={item.href} className="flex items-start gap-3 rounded-xl border border-line p-3 hover:border-primary hover:bg-surface">
+                      {content}
+                    </Link>
+                  ) : (
+                    <div className="flex items-start gap-3 rounded-xl border border-line p-3">{content}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
       )}
 
       <ul className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

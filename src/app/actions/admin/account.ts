@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getDb, type Db } from "@/db/client";
 import { adminUsers } from "@/db/schema";
 import { logActivity } from "@/lib/audit";
+import { markPasswordChanged } from "@/lib/admin/checklist";
 import { runAdmin, UserError, type ActionResult } from "@/lib/admin/result";
 import { clientIp } from "@/lib/auth/ip";
 import { hashPassword, isValidPasswordLength, verifyPassword } from "@/lib/auth/password";
@@ -75,6 +76,7 @@ export async function changePassword(input: unknown): Promise<ActionResult> {
       .where(eq(adminUsers.id, user.id));
     // Ez a böngésző belépve marad, a többi eszközön újra be kell lépni.
     await startSession({ id: user.id, updatedAt });
+    await markPasswordChanged(db);
     await logActivity(db, "Fiók", "Jelszó megváltoztatva");
     return null;
   });
