@@ -10,10 +10,18 @@ test.describe("Belépés és az Admin védelme", () => {
   });
 
   test("az admin aloldalai sem érhetők el belépés nélkül", async ({ page }) => {
-    test.fixme(true, "Az /admin/altalanos oldal a 7. mérföldkőben készül el.");
-    await page.goto("/admin/altalanos");
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByTestId("login-dialog")).toBeVisible();
+    for (const path of ["/admin/altalanos", "/admin/kezdolap", "/admin/menu", "/admin/oldal/1", "/admin/mediatar"]) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(/\/\?login=1$|\/$/);
+      await expect(page.getByTestId("login-dialog")).toBeVisible();
+    }
+  });
+
+  test("az Admin műveletei belépés nélkül el vannak utasítva (szerveroldali ellenőrzés)", async ({ request }) => {
+    const upload = await request.post("/api/admin/media", { multipart: { file: { name: "a.png", mimeType: "image/png", buffer: Buffer.from("x") } } });
+    expect(upload.status()).toBe(401);
+    const favicon = await request.post("/api/admin/favicon", { multipart: { file: { name: "a.png", mimeType: "image/png", buffer: Buffer.from("x") } } });
+    expect(favicon.status()).toBe(401);
   });
 
   test("hibás belépés elutasítva, általános hibaüzenettel", async ({ page }) => {

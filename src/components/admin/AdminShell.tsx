@@ -83,35 +83,33 @@ export function AdminShell({
 
         <div className="flex-1 lg:grid lg:grid-cols-[16.5rem_minmax(0,1fr)]">
           <div className={`${menuOpen ? "block" : "hidden"} border-b border-line bg-bg lg:block lg:border-r lg:border-b-0`}>
-          <nav
-            id="admin-nav"
-            aria-label="Admin menü"
-            className="lg:sticky lg:top-16 lg:max-h-[calc(100dvh-4rem)] lg:overflow-y-auto"
-          >
-            <ul className="grid gap-1 p-3 sm:grid-cols-2 lg:grid-cols-1">
-              {ADMIN_NAV.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      aria-current={active ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-[0.95rem] font-semibold ${
-                        active
-                          ? "bg-primary text-primary-fg"
-                          : "text-fg hover:bg-surface-2"
-                      }`}
-                    >
-                      <Icon aria-hidden className="h-5 w-5 shrink-0" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+            <nav
+              id="admin-nav"
+              aria-label="Admin menü"
+              className="lg:sticky lg:top-16 lg:max-h-[calc(100dvh-4rem)] lg:overflow-y-auto"
+            >
+              <ul className="grid gap-1 p-3 sm:grid-cols-2 lg:grid-cols-1">
+                {ADMIN_NAV.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setMenuOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-[0.95rem] font-semibold ${
+                          active ? "bg-primary text-primary-fg" : "text-fg hover:bg-surface-2"
+                        }`}
+                      >
+                        <Icon aria-hidden className="h-5 w-5 shrink-0" />
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
           </div>
 
           <main id="admin-main" tabIndex={-1} className="min-w-0 px-4 py-6 outline-none sm:px-6 lg:px-10 lg:py-10">

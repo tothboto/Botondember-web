@@ -50,8 +50,8 @@ export async function SiteFooter() {
           <div className="border-t border-white/10 pt-6 md:col-span-2">
             <h2 className="sr-only">{t("footer.links")}</h2>
             <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              {footer.links.map((link) => (
-                <li key={`${link.label}-${link.url}`}>
+              {footer.links.map((link, index) => (
+                <li key={`${index}-${link.url}`}>
                   <a href={link.url} target="_blank" rel="noopener noreferrer" className={linkClass} lang="hu">
                     {link.label}
                     <span className="sr-only"> {t("common.opensInNewTab")}</span>
