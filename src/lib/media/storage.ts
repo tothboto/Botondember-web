@@ -47,8 +47,8 @@ export class LocalDiskStorage implements MediaStorage {
 
   private resolve(key: string): string {
     if (!isSafeKey(key)) throw new Error(`Érvénytelen fájlkulcs: ${key}`);
-    const full = path.resolve(this.root, ...key.split("/"));
-    const rootWithSep = path.resolve(this.root) + path.sep;
+    const full = path.resolve(/*turbopackIgnore: true*/ this.root, ...key.split("/"));
+    const rootWithSep = path.resolve(/*turbopackIgnore: true*/ this.root) + path.sep;
     if (!full.startsWith(rootWithSep)) throw new Error(`Érvénytelen fájlkulcs: ${key}`);
     return full;
   }
@@ -99,13 +99,14 @@ export class LocalDiskStorage implements MediaStorage {
         else if (isSafeKey(relPath) && relPath.startsWith(prefix)) out.push(relPath);
       }
     };
-    await walk(path.resolve(this.root), "");
+    await walk(path.resolve(/*turbopackIgnore: true*/ this.root), "");
     return out.sort();
   }
 }
 
 export function uploadsRoot(): string {
-  return path.resolve(process.env.UPLOADS_DIR?.trim() || "./data/uploads");
+  // A mappa futásidőben dől el – a buildnek nem kell „belecsomagolnia” semmit.
+  return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOADS_DIR?.trim() || "./data/uploads");
 }
 
 const globalForStorage = globalThis as unknown as {

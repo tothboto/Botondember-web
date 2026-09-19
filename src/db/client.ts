@@ -18,7 +18,7 @@ function ensureLocalDir(url: string): void {
   if (!url.startsWith("file:")) return;
   const filePath = url.slice("file:".length);
   if (!filePath || filePath.includes(":memory:")) return;
-  fs.mkdirSync(path.dirname(path.resolve(filePath)), { recursive: true });
+  fs.mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ filePath)), { recursive: true });
 }
 
 export function createDb(
