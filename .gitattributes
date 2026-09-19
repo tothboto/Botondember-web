@@ -1,0 +1,14 @@
+# Egységes sorvégek (LF) minden gépen – Windows-on is.
+* text=auto eol=lf
+
+# Bináris fájlok: ezeken a Git ne változtasson semmit.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.db binary
