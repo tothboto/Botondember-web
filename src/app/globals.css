@@ -456,18 +456,22 @@
 .modal::backdrop {
   background: rgb(4 10 22 / 0.65);
 }
+}
 
-/* Markdown szövegek (tipográfia bővítmény) a tokenekhez igazítva */
+/* Markdown szövegek (tipográfia bővítmény) a tokenekhez igazítva.
+   Szándékosan rétegen KÍVÜL: a `.prose` osztály a utilities rétegben van,
+   ezt csak így lehet felülírni (különben sötét módban sötét maradna a szöveg). */
+/* Egy-egy szöveg színe a `--md-fg` változóval módosítható (pl. [--md-fg:var(--page-muted)]). */
 .prose-site {
-  --tw-prose-body: var(--page-fg);
-  --tw-prose-headings: var(--page-fg);
+  --tw-prose-body: var(--md-fg, var(--page-fg));
+  --tw-prose-headings: var(--md-heading, var(--page-fg));
   --tw-prose-lead: var(--page-muted);
   --tw-prose-links: var(--page-accent-text);
-  --tw-prose-bold: var(--page-fg);
+  --tw-prose-bold: var(--md-fg, var(--page-fg));
   --tw-prose-counters: var(--page-muted);
   --tw-prose-bullets: var(--page-accent);
   --tw-prose-hr: var(--page-line);
-  --tw-prose-quotes: var(--page-fg);
+  --tw-prose-quotes: var(--md-fg, var(--page-fg));
   --tw-prose-quote-borders: var(--page-accent);
   --tw-prose-captions: var(--page-muted);
   --tw-prose-code: var(--page-fg);
@@ -484,7 +488,6 @@
 }
 .prose-site :where(h2, h3) {
   scroll-margin-top: 6rem;
-}
 }
 
 /* Magazinos átlós csíkok (Hobbijaim) */

@@ -30,7 +30,7 @@ export function PageHeader({
         <PageIcon name={icon} className="h-[0.9em] w-[0.9em] shrink-0 text-page-accent" strokeWidth={2.2} />
         <span>{title}</span>
       </h1>
-      {intro && <Markdown className="mt-4 max-w-2xl text-lg text-page-muted">{intro}</Markdown>}
+      {intro && <Markdown className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">{intro}</Markdown>}
       {children}
     </header>
   );

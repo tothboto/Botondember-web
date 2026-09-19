@@ -45,8 +45,10 @@ export function Markdown({
     },
   ]);
 
+  // A `prose` alapból ~65 karakterre korlátozza a szélességet; ha a hívó nem ad meg mást, kikapcsoljuk.
+  const width = /(^|\s)(\w+:)?max-w-/.test(className) ? "" : "max-w-none";
   return (
-    <div lang={lang} className={`prose prose-site max-w-none ${className}`}>
+    <div lang={lang} className={`prose prose-site ${width} ${className}`}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={rehypePlugins}>
         {children}
       </ReactMarkdown>
