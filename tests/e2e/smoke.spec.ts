@@ -81,6 +81,16 @@ test.describe("A nyilvános oldal alapjai", () => {
     await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(0);
   });
 
+  test("a „Vissza a tetejére” gomb a rövid kezdőlapon és a jogi oldalon is megjelenik", async ({ page }) => {
+    for (const path of ["/", "/cookie-tajekoztato"]) {
+      await page.goto(path);
+      const button = page.getByRole("button", { name: "Vissza a tetejére" });
+      await expect(button, path).toHaveCount(0);
+      await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }));
+      await expect(button, path).toBeVisible();
+    }
+  });
+
   test("a YouTube fülek szűrnek, és az URL-ben is megjelennek", async ({ page }) => {
     await page.goto("/youtube");
     await page.getByRole("link", { name: "Csatornák" }).click();

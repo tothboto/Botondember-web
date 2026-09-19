@@ -25,7 +25,9 @@ const ADMIN_PAGES = [
 ];
 
 async function scan(page: Page) {
-  const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+    .analyze();
   return result.violations.map((v) => ({
     rule: v.id,
     impact: v.impact,

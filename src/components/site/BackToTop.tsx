@@ -5,6 +5,18 @@ import { useSyncExternalStore } from "react";
 import { useI18n } from "@/lib/i18n/client";
 
 const THRESHOLD = 400;
+const MIN_THRESHOLD = 80;
+
+/**
+ * Hosszú oldalon ~400 px görgetés után jelenik meg. Rövid oldalon (pl. a kezdőlap,
+ * ahol csak a lábléc miatt lehet kicsit görgetni) a görgethető távolság ~60%-ánál,
+ * hogy itt is elérhető legyen – de legalább 80 px görgetés kell hozzá.
+ */
+function isVisible(): boolean {
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const threshold = Math.min(THRESHOLD, Math.max(MIN_THRESHOLD, scrollable * 0.6));
+  return window.scrollY > threshold;
+}
 
 function subscribe(callback: () => void) {
   window.addEventListener("scroll", callback, { passive: true });
@@ -16,17 +28,13 @@ function subscribe(callback: () => void) {
 }
 
 /**
- * „Vissza a tetejére” gomb – kb. 400 px görgetés után jelenik meg a jobb alsó
- * sarokban. Sima görgetés, kivéve ha a látogató gépén be van kapcsolva a
- * „csökkentett mozgás”. Utána a fókusz a fejléc feliratára kerül.
+ * „Vissza a tetejére” gomb – görgetés után jelenik meg a jobb alsó sarokban
+ * (minden oldalon, a kezdőlapon is). Sima görgetés, kivéve ha a látogató gépén
+ * be van kapcsolva a „csökkentett mozgás”. Utána a fókusz a fejléc feliratára kerül.
  */
 export function BackToTop() {
   const { t } = useI18n();
-  const visible = useSyncExternalStore(
-    subscribe,
-    () => window.scrollY > THRESHOLD,
-    () => false,
-  );
+  const visible = useSyncExternalStore(subscribe, isVisible, () => false);
 
   if (!visible) return null;
 
