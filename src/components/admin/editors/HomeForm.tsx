@@ -4,13 +4,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { saveHome } from "@/app/actions/admin/settings";
-import type { FocalPoint, HomeSettings } from "@/lib/settings";
+import type { FigurePosition, FocalPoint, HomeSettings } from "@/lib/settings";
 import { MarkdownEditor } from "../MarkdownEditor";
 import { MediaField } from "../MediaField";
 import { useMediaLibrary } from "../MediaLibrary";
 import { useToast } from "../Toast";
 import { Button, Card, Field, TextArea, TextInput, Toggle } from "../ui";
 import { useUnsavedChanges } from "../useUnsavedChanges";
+
+const FIGURE_PLACES: { value: FigurePosition; label: string; justify: string }[] = [
+  { value: "left", label: "Bal oldalon", justify: "justify-start" },
+  { value: "center", label: "Középen", justify: "justify-center" },
+  { value: "right", label: "Jobb oldalon", justify: "justify-end" },
+];
 
 const FOCAL: { value: FocalPoint; label: string; position: string }[] = [
   { value: "top", label: "Fent", position: "50% 18%" },
@@ -27,13 +33,18 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
   const library = useMediaLibrary();
   const [values, setValues] = useState<HomeSettings>(initial);
   const initialAlt = library.byId(initial.heroMediaId)?.alt ?? "";
+  const initialFigureAlt = library.byId(initial.figureMediaId)?.alt ?? "";
   const [alt, setAlt] = useState(initialAlt);
+  const [figureAlt, setFigureAlt] = useState(initialFigureAlt);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const dirty = JSON.stringify(values) !== JSON.stringify(initial) || alt !== initialAlt;
+  const dirty =
+    JSON.stringify(values) !== JSON.stringify(initial) || alt !== initialAlt || figureAlt !== initialFigureAlt;
   useUnsavedChanges(dirty);
 
   const hero = library.byId(values.heroMediaId);
+  const figure = library.byId(values.figureMediaId);
+  const figurePlace = FIGURE_PLACES.find((place) => place.value === values.figurePosition) ?? FIGURE_PLACES[1];
   const a = values.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
   const focal = FOCAL.find((f) => f.value === values.focal) ?? FOCAL[2];
@@ -41,10 +52,13 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setSaving(true);
-    const result = await saveHome(values, values.heroMediaId ? { [String(values.heroMediaId)]: alt } : undefined);
+    const alts: Record<string, string> = {};
+    if (values.heroMediaId) alts[String(values.heroMediaId)] = alt;
+    if (values.figureMediaId) alts[String(values.figureMediaId)] = figureAlt;
+    const result = await saveHome(values, Object.keys(alts).length > 0 ? alts : undefined);
     setSaving(false);
     if (result.ok) {
-      if (values.heroMediaId) library.updateAlt(values.heroMediaId, alt.trim());
+      for (const [id, value] of Object.entries(alts)) library.updateAlt(Number(id), value.trim());
       setErrors({});
       toast.success("Mentve! A kezdőlap már az új változatot mutatja.");
       router.refresh();
@@ -108,6 +122,68 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
                 className="w-full accent-[var(--primary)]"
               />
             </Field>
+          </div>
+        </Card>
+
+        <Card
+          title="Előtérben álló alak (rajz)"
+          description="Egy kivágott, átlátszó hátterű kép (pl. rajz rólad), ami a kép előtt áll – a nagy szöveg mögötte fut."
+        >
+          <div className="space-y-5">
+            <MediaField
+              id="home-figure"
+              label="A kép"
+              value={values.figureMediaId}
+              alt={figureAlt}
+              onAltChange={setFigureAlt}
+              aspect="2 / 3"
+              fit="contain"
+              hint="A legszebb egy átlátszó hátterű PNG. Fehér hátterű rajzból a „npm run image:cutout” paranccsal készíthető ilyen."
+              onChange={(figureMediaId, media) => {
+                setValues((v) => ({ ...v, figureMediaId }));
+                if (media) setFigureAlt(media.alt);
+              }}
+            />
+            {values.figureMediaId && (
+              <>
+                <fieldset>
+                  <legend className="font-semibold">Hol álljon?</legend>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {FIGURE_PLACES.map((option) => (
+                      <label key={option.value} className="cursor-pointer">
+                        <input
+                          type="radio"
+                          name="home-figure-position"
+                          value={option.value}
+                          checked={values.figurePosition === option.value}
+                          onChange={() => setValues((v) => ({ ...v, figurePosition: option.value }))}
+                          className="peer sr-only"
+                        />
+                        <span className="inline-block rounded-xl border border-line px-4 py-2 font-semibold peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-fg peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus">
+                          {option.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <Field
+                  label={`Mekkora legyen: ${values.figureSize}%`}
+                  htmlFor="home-figure-size"
+                  hint="A képernyő magasságához képest. Mobilon automatikusan kisebb lesz, és a szöveg fölé kerül."
+                >
+                  <input
+                    id="home-figure-size"
+                    type="range"
+                    min={30}
+                    max={100}
+                    step={2}
+                    value={values.figureSize}
+                    onChange={(event) => setValues((v) => ({ ...v, figureSize: Number(event.target.value) }))}
+                    className="w-full accent-[var(--primary)]"
+                  />
+                </Field>
+              </>
+            )}
           </div>
         </Card>
 
@@ -240,7 +316,19 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
               background: `linear-gradient(to top, ${shade(1)} 0%, ${shade(0.62)} 38%, ${shade(0.22)} 72%, ${shade(0.45)} 100%), linear-gradient(to right, ${shade(0.75)} 0%, transparent 68%)`,
             }}
           />
-          <div className="p-5 sm:p-7">
+          {/* Előtérben álló alak az előnézetben */}
+          {figure && (
+            <div className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 flex px-3 ${figurePlace.justify}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={figure.src}
+                alt=""
+                className="w-auto max-w-[45%] object-contain object-bottom"
+                style={{ height: `${values.figureSize}%` }}
+              />
+            </div>
+          )}
+          <div className="relative p-5 sm:p-7">
             <span aria-hidden className="mb-3 block h-1 w-12 bg-[image:var(--gold-gradient)]" />
             <p lang="hu" className="font-display text-2xl leading-[0.95] font-black tracking-tight text-balance uppercase sm:text-4xl">
               {values.message || "…"}

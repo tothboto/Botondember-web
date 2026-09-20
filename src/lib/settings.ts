@@ -13,6 +13,10 @@ export type ThemeMode = (typeof THEME_MODES)[number];
 export const FOCAL_POINTS = ["center", "top", "bottom", "left", "right"] as const;
 export type FocalPoint = (typeof FOCAL_POINTS)[number];
 
+/** Az előtérben álló alak (rajz) helye a kezdőlapon. */
+export const FIGURE_POSITIONS = ["left", "center", "right"] as const;
+export type FigurePosition = (typeof FIGURE_POSITIONS)[number];
+
 /** A Real Madrid színei (spec 7.1) – az Adminban felülírhatók. */
 export const BRAND_COLOR_DEFAULTS = {
   white: "#FFFFFF",
@@ -75,6 +79,11 @@ export const settingSchemas = {
       text: z.string().trim().max(300),
       author: z.string().trim().max(100),
     }),
+    /** Előtérben álló alak (pl. rajz Botondemberről) – a szöveg mögötte fut. */
+    figureMediaId: z.number().int().positive().nullable(),
+    figurePosition: z.enum(FIGURE_POSITIONS),
+    /** Az alak magassága a képernyő magasságának százalékában. */
+    figureSize: z.number().int().min(30).max(100),
     /** Útbaigazító leírás a kezdőlapon, egy gomb mögött („Hol vagy? Mi ez”). */
     guide: z.object({
       enabled: z.boolean(),
@@ -138,6 +147,9 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
     message: "Helló! Botondember vagyok. Üdv az első honlapomon!",
     subtitle: "",
     motto: { enabled: false, text: "", author: "" },
+    figureMediaId: null,
+    figurePosition: "center",
+    figureSize: 78,
     guide: {
       enabled: true,
       button: "Hol vagy? Mi ez?",

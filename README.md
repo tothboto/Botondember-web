@@ -127,7 +127,7 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
 | **Irányítópult** | Gyors linkek, az utolsó módosítások listája. |
 | **Általános** | Az oldal neve, a fejléc felirata, alap téma (világos/sötét/automatikus), ragadós fejléc, elrejtés a keresők elől, lábléc szövege és linkjei, **favicon** (a böngészőfül ikonja) feltöltése. |
 | **Megjelenés** | A márkaszínek (élő előnézettel és olvashatóság-ellenőrzéssel), a betűtípusok, az aloldalak kiemelő színe. |
-| **Kezdőlap** | A nagy kép (fókuszponttal és sötétítéssel), a fő üzenet, az alcím, a mottó – élő előnézettel –, valamint a **„Hol vagy? Mi ez?” gomb** mögötti útbaigazító leírás (be/ki kapcsolható, a gomb felirata és a szöveg is szerkeszthető). |
+| **Kezdőlap** | A nagy kép (fókuszponttal és sötétítéssel), az **előtérben álló alak** (pl. rajz rólad – hely és méret állítható, a szöveg mögötte fut), a fő üzenet, az alcím, a mottó – élő előnézettel –, valamint a **„Hol vagy? Mi ez?” gomb** mögötti útbaigazító leírás. |
 | **Menü és aloldalak** | Menüpontok sorrendje, elrejtése, ikonja, URL-címe, neve nyelvenként; **új aloldal** létrehozása és törlése. |
 | **Hobbijaim / Játékaim / YouTube / Real Madrid** | Az aloldalak tartalma: kártyák hozzáadása, szerkesztése, sorrendje, elrejtése, törlése. YouTube-nál elég beilleszteni a linket – a címet és a képet az oldal magától kitölti. |
 | **Jogi oldalak** | Az Adatkezelési és a Cookie tájékoztató szövege (Markdown-szerkesztő előnézettel) és az adatkezelő adatai. |
@@ -189,6 +189,8 @@ mentésével vidd át (vagy másold át a `data` mappát).
 | `npm run test` | Egységtesztek (pl. YouTube-link felismerés, fordítások, jogosultság, mentés). |
 | `npm run test:e2e` | Böngészős tesztek egy külön tesztadatbázison (Edge böngészővel): menü, nyelvváltás, téma, belépés, Admin szerkesztők, mentés, akadálymentesség. |
 | `npm run screenshots` | Képernyőképek az oldalakról több méretben, világos és sötét módban (`test-results/screenshots`). |
+| `npm run image:cutout -- rajz.jpg` | Egyszínű (pl. fehér) hátterű rajzról levágja a hátteret → átlátszó hátterű PNG. Ha marad egy körülzárt folt (pl. a lábak között), jelöld meg: `--seed=1008,896`. |
+| `npm run image:import -- kep.png --alt="leírás" --as=figure` | Betesz egy képet a médiatárba, és rögtön beállítja (`--as=figure`: előtérben álló alak, `--as=hero`: kezdőlapi nagy kép). |
 | `npm run fonts:check` | Ellenőrzi, hogy minden betűtípus ismeri-e az ő, ű betűket. |
 | `npm run db:stats` | Kiírja, mennyi adat van az adatbázisban. |
 | `npm run check:secrets` | Ellenőrzi, hogy titkos adat (pl. jelszó) ne kerüljön a Gitbe. Commit előtt magától is lefut. |

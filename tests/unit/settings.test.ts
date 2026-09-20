@@ -26,6 +26,20 @@ describe("beállítások", () => {
     expect(home.guide.button).toBe("Hol vagy? Mi ez?");
     expect(home.guide.text).toContain("Botondember");
     expect(home.guide.showPages).toBe(true);
+    // Az előtérben álló alak alapból nincs beállítva.
+    expect(home.figureMediaId).toBeNull();
+    expect(home.figurePosition).toBe("center");
+    expect(home.figureSize).toBe(78);
+  });
+
+  it("az előtérben álló alak beállításai ellenőrzöttek", () => {
+    const ok = parseSetting("home", { ...settingDefaults.home, figureMediaId: 12, figurePosition: "right", figureSize: 60 });
+    expect(ok.figureMediaId).toBe(12);
+    expect(ok.figurePosition).toBe("right");
+    expect(ok.figureSize).toBe(60);
+    // Hibás érték (pl. túl nagy méret vagy ismeretlen hely) → minden visszaáll az alapértékre.
+    expect(parseSetting("home", { ...settingDefaults.home, figureSize: 300 })).toEqual(settingDefaults.home);
+    expect(parseSetting("home", { ...settingDefaults.home, figurePosition: "fent" })).toEqual(settingDefaults.home);
   });
 
   it("veszélyes linket nem enged a láblécbe", () => {

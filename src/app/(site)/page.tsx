@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { HomeGuide } from "@/components/pages/HomeGuide";
 import type { Page } from "@/db/schema";
 import { getImages } from "@/lib/data/media";
@@ -9,7 +10,7 @@ import { getAllSettings } from "@/lib/data/settings";
 import { PageIcon } from "@/lib/icons";
 import { getI18n } from "@/lib/i18n/server";
 import { stripInlineMarkdown } from "@/lib/markdown/toc";
-import type { FocalPoint } from "@/lib/settings";
+import type { FigurePosition, FocalPoint } from "@/lib/settings";
 
 /** Rövid összefoglaló egy aloldalról a leírás dobozaihoz (a saját bevezetőjéből). */
 function pageSummary(page: Page): string {
@@ -17,6 +18,13 @@ function pageSummary(page: Page): string {
   const text = stripInlineMarkdown(source.split(/\n{2,}/)[0] ?? "").replace(/\s+/g, " ");
   return text.length > 120 ? `${text.slice(0, 117).trimEnd()}…` : text;
 }
+
+/** Az előtérben álló alak vízszintes helye. */
+const FIGURE_JUSTIFY: Record<FigurePosition, string> = {
+  left: "justify-start",
+  center: "justify-center",
+  right: "justify-end",
+};
 
 /** A kép fókuszpontja (az Adminban választható) → CSS object-position. */
 const FOCAL_POSITION: Record<FocalPoint, string> = {
@@ -58,6 +66,7 @@ export default async function HomePage() {
   ]);
   const { t } = i18n;
   const hero = images(home.heroMediaId);
+  const figure = images(home.figureMediaId);
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
 
@@ -89,7 +98,30 @@ export default async function HomePage() {
         }}
       />
 
-      <div className="container-page pt-44 pb-[max(4.5rem,11vh)]">
+      {/* Előtérben álló alak (rajz): a szöveg mögötte fut. Mobilon fent, hogy ne takarja a szöveget. */}
+      {figure && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 top-[5%] bottom-auto z-20 flex px-3 sm:top-auto sm:bottom-0 sm:px-10 ${FIGURE_JUSTIFY[home.figurePosition]}`}
+        >
+          <Image
+            src={figure.src}
+            alt={figure.alt}
+            width={figure.width}
+            height={figure.height}
+            preload
+            sizes="(min-width: 640px) 45vw, 70vw"
+            className="h-[var(--figure-mobile)] w-auto max-w-[70vw] object-contain drop-shadow-[0_25px_45px_rgb(0_0_0/0.55)] sm:h-[var(--figure-height)] sm:max-w-[45vw]"
+            style={
+              {
+                "--figure-height": `${home.figureSize}svh`,
+                "--figure-mobile": `${Math.min(home.figureSize, 44)}svh`,
+              } as CSSProperties
+            }
+          />
+        </div>
+      )}
+
+      <div className="relative z-10 container-page pt-44 pb-[max(4.5rem,11vh)]">
         <div className="max-w-6xl">
           <span aria-hidden className="mb-7 block h-1.5 w-24 bg-[image:var(--gold-gradient)]" />
           <h1

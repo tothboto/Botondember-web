@@ -98,6 +98,7 @@ export function MediaField({
   onAltChange,
   aspect = "16 / 9",
   hint,
+  fit = "cover",
 }: {
   id: string;
   label: string;
@@ -107,6 +108,8 @@ export function MediaField({
   onAltChange: (alt: string) => void;
   aspect?: string;
   hint?: string;
+  /** „contain”: a teljes kép látszik (pl. átlátszó hátterű rajznál). */
+  fit?: "cover" | "contain";
 }) {
   const library = useMediaLibrary();
   const toast = useToast();
@@ -141,7 +144,7 @@ export function MediaField({
             style={{ aspectRatio: aspect }}
           >
             {current ? (
-              <Image src={current.src} alt="" fill sizes="384px" className="object-cover" />
+              <Image src={current.src} alt="" fill sizes="384px" className={fit === "contain" ? "object-contain" : "object-cover"} />
             ) : (
               <div className="grid h-full place-items-center p-2 text-center text-sm text-muted">Nincs kép kiválasztva</div>
             )}

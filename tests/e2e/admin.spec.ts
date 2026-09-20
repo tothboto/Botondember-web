@@ -39,6 +39,30 @@ test.describe("Admin szerkesztők", () => {
     await save(page);
   });
 
+  test("az előtérben álló alak feltöltése megjelenik a kezdőlapon", async ({ page }) => {
+    // 1×1 képpontos, átlátszó PNG – csak a folyamatot teszteljük.
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "base64",
+    );
+    await page.goto("/admin/kezdolap");
+    const field = page.locator("fieldset").filter({ has: page.locator("#home-figure-file") });
+    await page.locator("#home-figure-file").setInputFiles({ name: "alak.png", mimeType: "image/png", buffer: png });
+    await expect(page.getByRole("status")).toContainText("Kép feltöltve");
+    await page.locator("#home-figure-alt").fill("Teszt rajz Botondemberről");
+    await save(page);
+
+    await page.goto("/");
+    await expect(page.getByAltText("Teszt rajz Botondemberről")).toBeVisible();
+
+    // Takarítás: az alak eltávolítása.
+    await page.goto("/admin/kezdolap");
+    await field.getByRole("button", { name: "Eltávolítás" }).click();
+    await save(page);
+    await page.goto("/");
+    await expect(page.getByAltText("Teszt rajz Botondemberről")).toHaveCount(0);
+  });
+
   test("üres fő üzenet nem menthető – magyar hibaüzenet jelenik meg", async ({ page }) => {
     await page.goto("/admin/kezdolap");
     await page.getByLabel("Fő üzenet (nagy, vastag, nagybetűs)").fill("   ");
