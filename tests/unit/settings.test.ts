@@ -19,6 +19,15 @@ describe("beállítások", () => {
     expect(parseSetting("general", { defaultTheme: "rózsaszín" })).toEqual(settingDefaults.general);
   });
 
+  it("a régi (guide nélküli) mentésnél is megjelenik az útbaigazító leírás", () => {
+    // Így viselkedik egy korábban elmentett kezdőlap-beállítás, amiben még nincs „guide”.
+    const home = parseSetting("home", { message: "Szia!", focal: "center", overlay: 40, subtitle: "" });
+    expect(home.guide.enabled).toBe(true);
+    expect(home.guide.button).toBe("Hol vagy? Mi ez?");
+    expect(home.guide.text).toContain("Botondember");
+    expect(home.guide.showPages).toBe(true);
+  });
+
   it("veszélyes linket nem enged a láblécbe", () => {
     const footer = parseSetting("footer", { links: [{ label: "Rossz", url: "javascript:alert(1)" }] });
     expect(footer.links).toEqual([]);

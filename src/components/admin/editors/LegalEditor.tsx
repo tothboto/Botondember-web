@@ -169,7 +169,7 @@ function DocForm({ doc, fill }: { doc: LegalDocState; fill: (markdown: string) =
       <form onSubmit={submit} className="space-y-4" noValidate>
         <MarkdownEditor
           id={`legal-${doc.slug}`}
-          label="A tájékoztató szövege (Markdown)"
+          label={`${meta.title} – a szöveg (Markdown)`}
           value={bodyMd}
           rows={22}
           onChange={setBodyMd}

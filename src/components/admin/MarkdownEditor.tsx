@@ -147,7 +147,14 @@ export function MarkdownEditor({
         </div>
         <div className={view === "preview" ? "" : "hidden lg:block"}>
           <p className="mb-1.5 text-sm font-semibold text-muted">Előnézet</p>
-          <div className="max-h-[36rem] overflow-y-auto rounded-xl border border-line bg-bg p-4">
+          {/* A doboz görgethető, ezért billentyűzettel is elérhetőnek kell lennie (tabIndex).
+              A neve tartalmazza a mező nevét is, hogy egy oldalon több előnézet is megkülönböztethető legyen. */}
+          <div
+            tabIndex={0}
+            role="group"
+            aria-label={`Előnézet: ${label}`}
+            className="max-h-[36rem] overflow-y-auto rounded-xl border border-line bg-bg p-4"
+          >
             {preview.trim() ? <Markdown>{preview}</Markdown> : <p className="text-muted">(üres)</p>}
           </div>
         </div>

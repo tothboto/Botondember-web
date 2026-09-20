@@ -103,6 +103,14 @@ export const SEED_MESSAGES: Record<string, Row> = {
   // --- Kezdőlap ----------------------------------------------------------------------
   "home.motto": { hu: "Mottó", en: "Motto", es: "Lema", de: "Motto", is: "Kjörorð" },
 
+  "home.guide.pages": {
+    hu: "Az oldal részei",
+    en: "Sections of the site",
+    es: "Secciones del sitio",
+    de: "Bereiche der Website",
+    is: "Hlutar vefsins",
+  },
+
   // --- Lábléc ------------------------------------------------------------------------
   "footer.label": { hu: "Lábléc", en: "Footer", es: "Pie de página", de: "Fußzeile", is: "Síðufótur" },
   "footer.privacy": {

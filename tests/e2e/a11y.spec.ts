@@ -48,6 +48,13 @@ for (const theme of ["light", "dark"] as const) {
       }
     });
 
+    test("a kezdőlap leírás-ablaka nyitva", async ({ page }) => {
+      await page.goto("/");
+      await page.getByTestId("home-guide-button").click();
+      await expect(page.getByTestId("home-guide-dialog")).toBeVisible();
+      expect(await scan(page), `leírás ablak (${theme})`).toEqual([]);
+    });
+
     test("mobil nézet (375 px, nyitott menüvel)", async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 });
       await page.goto("/hobbijaim");

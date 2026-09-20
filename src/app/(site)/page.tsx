@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { HomeGuide } from "@/components/pages/HomeGuide";
+import type { Page } from "@/db/schema";
 import { getImages } from "@/lib/data/media";
+import { getVisiblePages, pageHref, pageTitleKey } from "@/lib/data/pages";
 import { getAllSettings } from "@/lib/data/settings";
+import { PageIcon } from "@/lib/icons";
 import { getI18n } from "@/lib/i18n/server";
+import { stripInlineMarkdown } from "@/lib/markdown/toc";
 import type { FocalPoint } from "@/lib/settings";
+
+/** Rövid összefoglaló egy aloldalról a leírás dobozaihoz (a saját bevezetőjéből). */
+function pageSummary(page: Page): string {
+  const source = page.introMd.trim() || page.seoDescription.trim();
+  const text = stripInlineMarkdown(source.split(/\n{2,}/)[0] ?? "").replace(/\s+/g, " ");
+  return text.length > 120 ? `${text.slice(0, 117).trimEnd()}…` : text;
+}
 
 /** A kép fókuszpontja (az Adminban választható) → CSS object-position. */
 const FOCAL_POSITION: Record<FocalPoint, string> = {
@@ -37,7 +50,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * Semmi más: nincs galéria, számláló, óra vagy animáció.
  */
 export default async function HomePage() {
-  const [{ home }, images, { t }] = await Promise.all([getAllSettings(), getImages(), getI18n()]);
+  const [{ home }, images, i18n, pages] = await Promise.all([
+    getAllSettings(),
+    getImages(),
+    getI18n(),
+    getVisiblePages(),
+  ]);
+  const { t } = i18n;
   const hero = images(home.heroMediaId);
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
@@ -98,6 +117,45 @@ export default async function HomePage() {
                 </p>
               )}
             </figure>
+          )}
+
+          {/* Útbaigazító leírás egy gomb mögött – a szöveg az Adminban szerkeszthető. */}
+          {home.guide.enabled && home.guide.text && (
+            <div className="mt-10">
+              <HomeGuide button={home.guide.button || "Hol vagy? Mi ez?"} title={home.guide.title} text={home.guide.text}>
+                {home.guide.showPages && pages.length > 0 && (
+                  <nav aria-label={t("home.guide.pages")}>
+                    <ul className="grid gap-3 sm:grid-cols-2">
+                      {pages.map((page) => {
+                        const summary = pageSummary(page);
+                        return (
+                          <li key={page.id}>
+                            <Link
+                              href={pageHref(page)}
+                              className="flex h-full items-start gap-3 rounded-2xl border border-line bg-surface p-4 hover:border-primary hover:bg-surface-2"
+                            >
+                              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-fg">
+                                <PageIcon name={page.icon} className="h-5 w-5" strokeWidth={2.2} />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block font-display font-extrabold tracking-wide uppercase">
+                                  {i18n.t(pageTitleKey(page))}
+                                </span>
+                                {summary && (
+                                  <span lang="hu" className="mt-0.5 block text-sm text-muted">
+                                    {summary}
+                                  </span>
+                                )}
+                              </span>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
+                )}
+              </HomeGuide>
+            </div>
           )}
         </div>
       </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { saveHome } from "@/app/actions/admin/settings";
 import type { FocalPoint, HomeSettings } from "@/lib/settings";
+import { MarkdownEditor } from "../MarkdownEditor";
 import { MediaField } from "../MediaField";
 import { useMediaLibrary } from "../MediaLibrary";
 import { useToast } from "../Toast";
@@ -158,6 +159,58 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
           </div>
         </Card>
 
+        <Card
+          title="Bemutatkozó a „Hol vagy? Mi ez” gomb mögött"
+          description="A kép alján lévő gombra kattintva egy ablakban jelenik meg ez a szöveg – ez igazítja útba a látogatót, hogy mi található az oldalon."
+        >
+          <div className="space-y-5">
+            <Toggle
+              id="home-guide-enabled"
+              label="Gomb és leírás megjelenítése"
+              checked={values.guide.enabled}
+              onChange={(enabled) => setValues((v) => ({ ...v, guide: { ...v.guide, enabled } }))}
+            />
+            {values.guide.enabled && (
+              <>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="A gomb felirata" htmlFor="home-guide-button" error={errors["guide.button"]}>
+                    <TextInput
+                      id="home-guide-button"
+                      value={values.guide.button}
+                      maxLength={60}
+                      onChange={(event) => setValues((v) => ({ ...v, guide: { ...v.guide, button: event.target.value } }))}
+                    />
+                  </Field>
+                  <Field label="Az ablak címe" htmlFor="home-guide-title" error={errors["guide.title"]}>
+                    <TextInput
+                      id="home-guide-title"
+                      value={values.guide.title}
+                      maxLength={120}
+                      onChange={(event) => setValues((v) => ({ ...v, guide: { ...v.guide, title: event.target.value } }))}
+                    />
+                  </Field>
+                </div>
+                <MarkdownEditor
+                  id="home-guide-text"
+                  label="A leírás szövege"
+                  value={values.guide.text}
+                  rows={10}
+                  error={errors["guide.text"]}
+                  hint="Mit talál a látogató az oldalon? Markdown formázás is használható."
+                  onChange={(text) => setValues((v) => ({ ...v, guide: { ...v.guide, text } }))}
+                />
+                <Toggle
+                  id="home-guide-pages"
+                  label="Az aloldalak dobozai is jelenjenek meg"
+                  description="A szöveg alatt egy-egy kattintható doboz minden aloldalhoz (ikon, cím és a bevezetője első mondata)."
+                  checked={values.guide.showPages}
+                  onChange={(showPages) => setValues((v) => ({ ...v, guide: { ...v.guide, showPages } }))}
+                />
+              </>
+            )}
+          </div>
+        </Card>
+
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={saving || !dirty} className="px-6 py-3 text-lg">
             {saving ? "Mentés…" : "Mentés"}
@@ -197,6 +250,11 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
               <p className="mt-4 border-l-4 border-rm-gold pl-3 text-sm italic">
                 „{values.motto.text}”{values.motto.author && <span className="not-italic text-rm-gold"> — {values.motto.author}</span>}
               </p>
+            )}
+            {values.guide.enabled && values.guide.text && (
+              <span className="mt-5 inline-flex items-center gap-2 rounded-full border-2 border-white/70 px-3.5 py-2 font-display text-xs font-extrabold tracking-wide uppercase">
+                {values.guide.button || "Hol vagy? Mi ez?"}
+              </span>
             )}
           </div>
         </div>

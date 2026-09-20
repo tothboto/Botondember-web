@@ -75,6 +75,15 @@ export const settingSchemas = {
       text: z.string().trim().max(300),
       author: z.string().trim().max(100),
     }),
+    /** Útbaigazító leírás a kezdőlapon, egy gomb mögött („Hol vagy? Mi ez”). */
+    guide: z.object({
+      enabled: z.boolean(),
+      button: z.string().trim().max(60),
+      title: z.string().trim().max(120),
+      text: z.string().trim().max(3000),
+      /** Az aloldalak dobozai a szöveg alatt. */
+      showPages: z.boolean(),
+    }),
   }),
   footer: z.object({
     text: z.string().trim().max(500),
@@ -129,6 +138,19 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
     message: "Helló! Botondember vagyok. Üdv az első honlapomon!",
     subtitle: "",
     motto: { enabled: false, text: "", author: "" },
+    guide: {
+      enabled: true,
+      button: "Hol vagy? Mi ez?",
+      title: "Hol vagy? Mi ez?",
+      text: [
+        "Szia, és köszönöm, hogy benéztél! **Botondember** vagyok, ez pedig az első saját weboldalam.",
+        "",
+        "Itt megmutatom, mi érdekel a legjobban: a hobbijaimat, a kedvenc játékaimat, a YouTube-kedvenceimet és a kedvenc focicsapatomat, a Real Madridot. Válassz egy témát az alábbi dobozok közül, vagy használd a fenti menüt!",
+        "",
+        "Az oldal öt nyelven olvasható – a fejléc zászlóival válthatsz –, és világos vagy sötét változatban is nézheted. Jó böngészést!",
+      ].join("\n"),
+      showPages: true,
+    },
   },
   footer: {
     text: "© 2026 Botondember",

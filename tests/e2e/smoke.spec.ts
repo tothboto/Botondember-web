@@ -27,6 +27,24 @@ test.describe("A nyilvános oldal alapjai", () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
+  test("a „Hol vagy? Mi ez” gomb megnyitja a leírást, és az aloldalakra visz", async ({ page }) => {
+    await page.goto("/");
+    const dialog = page.getByTestId("home-guide-dialog");
+    await expect(dialog).toBeHidden();
+    await page.getByTestId("home-guide-button").click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading", { level: 2 })).toHaveText("Hol vagy? Mi ez?");
+    await expect(dialog).toContainText("első saját weboldalam");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(page.getByTestId("home-guide-button")).toBeFocused();
+
+    await page.getByTestId("home-guide-button").click();
+    await dialog.getByRole("link", { name: /Hobbijaim/ }).click();
+    await expect(page).toHaveURL(/\/hobbijaim$/);
+  });
+
   test("a lábléc a két jogi oldalra visz", async ({ page }) => {
     await page.goto("/");
     const footer = page.getByRole("contentinfo");

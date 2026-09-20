@@ -4,7 +4,8 @@ Első teszt-weboldalam a kedvenc zenéimmel, YouTube csatornáimmal és videóim
 
 ---
 
-**Botondember első weboldala** – személyes bemutatkozó oldal: kezdőlap egy nagy képpel, **Hobbijaim**,
+**Botondember első weboldala** – személyes bemutatkozó oldal: kezdőlap egy nagy képpel (rajta a
+**„Hol vagy? Mi ez?”** gombbal, ami elmondja a látogatónak, mi található az oldalon), **Hobbijaim**,
 **Játékaim**, **YouTube-kedvenceim** és **Real Madrid** aloldal, öt nyelven (magyar, angol, spanyol,
 német, izlandi), világos és sötét témával. Az oldal **minden szövege, képe és beállítása egy saját
 Admin felületen szerkeszthető** – programozás nélkül.
@@ -126,7 +127,7 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
 | **Irányítópult** | Gyors linkek, az utolsó módosítások listája. |
 | **Általános** | Az oldal neve, a fejléc felirata, alap téma (világos/sötét/automatikus), ragadós fejléc, elrejtés a keresők elől, lábléc szövege és linkjei, **favicon** (a böngészőfül ikonja) feltöltése. |
 | **Megjelenés** | A márkaszínek (élő előnézettel és olvashatóság-ellenőrzéssel), a betűtípusok, az aloldalak kiemelő színe. |
-| **Kezdőlap** | A nagy kép (fókuszponttal és sötétítéssel), a fő üzenet, az alcím és a mottó – élő előnézettel. |
+| **Kezdőlap** | A nagy kép (fókuszponttal és sötétítéssel), a fő üzenet, az alcím, a mottó – élő előnézettel –, valamint a **„Hol vagy? Mi ez?” gomb** mögötti útbaigazító leírás (be/ki kapcsolható, a gomb felirata és a szöveg is szerkeszthető). |
 | **Menü és aloldalak** | Menüpontok sorrendje, elrejtése, ikonja, URL-címe, neve nyelvenként; **új aloldal** létrehozása és törlése. |
 | **Hobbijaim / Játékaim / YouTube / Real Madrid** | Az aloldalak tartalma: kártyák hozzáadása, szerkesztése, sorrendje, elrejtése, törlése. YouTube-nál elég beilleszteni a linket – a címet és a képet az oldal magától kitölti. |
 | **Jogi oldalak** | Az Adatkezelési és a Cookie tájékoztató szövege (Markdown-szerkesztő előnézettel) és az adatkezelő adatai. |
