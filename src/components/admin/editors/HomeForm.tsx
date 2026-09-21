@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { saveHome } from "@/app/actions/admin/settings";
+import { heroLines } from "@/lib/hero";
 import type { FigurePosition, FocalPoint, HomeSettings } from "@/lib/settings";
 import { MarkdownEditor } from "../MarkdownEditor";
 import { MediaField } from "../MediaField";
@@ -189,10 +190,15 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
 
         <Card title="Szöveg">
           <div className="space-y-5">
-            <Field label="Fő üzenet (nagy, vastag, nagybetűs)" htmlFor="home-message" error={errors.message}>
+            <Field
+              label="Fő üzenet (nagy, vastag, nagybetűs)"
+              htmlFor="home-message"
+              error={errors.message}
+              hint="Minden mondat külön sorba kerül, a sorok felváltva körvonalasak és teliek. Ha máshol szeretnél sortörést, nyomj Entert."
+            >
               <TextArea
                 id="home-message"
-                rows={2}
+                rows={3}
                 maxLength={200}
                 value={values.message}
                 onChange={(event) => setValues((v) => ({ ...v, message: event.target.value }))}
@@ -330,8 +336,15 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
           )}
           <div className="relative p-5 sm:p-7">
             <span aria-hidden className="mb-3 block h-1 w-12 bg-[image:var(--gold-gradient)]" />
-            <p lang="hu" className="font-display text-2xl leading-[0.95] font-black tracking-tight text-balance uppercase sm:text-4xl">
-              {values.message || "…"}
+            <p lang="hu" className="font-hero text-2xl leading-[0.92] font-extrabold tracking-[-0.045em] uppercase sm:text-4xl">
+              {(heroLines(values.message).length > 0 ? heroLines(values.message) : ["…"]).map((line, index) => (
+                <span
+                  key={index}
+                  className={index % 2 === 0 ? "block text-transparent [-webkit-text-stroke:1px_#ffffff]" : "block"}
+                >
+                  {line}
+                </span>
+              ))}
             </p>
             {values.subtitle && <p className="mt-3 text-sm text-white/90 sm:text-base">{values.subtitle}</p>}
             {values.motto.enabled && values.motto.text && (

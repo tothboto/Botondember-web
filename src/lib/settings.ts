@@ -66,6 +66,8 @@ export const settingSchemas = {
       body: z.enum(FONT_KEYS),
       heading: z.enum(FONT_KEYS),
       title: z.enum(FONT_KEYS),
+      /** A kezdőlap nagy felirata. */
+      hero: z.enum(FONT_KEYS),
     }),
   }),
   home: z.object({
@@ -138,7 +140,7 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
   },
   appearance: {
     colors: { white: null, blue: null, gold: null, navy: null, purple: null },
-    fonts: { body: "inter", heading: "interTight", title: "cinzel" },
+    fonts: { body: "inter", heading: "interTight", title: "cinzel", hero: "roboto" },
   },
   home: {
     heroMediaId: null,

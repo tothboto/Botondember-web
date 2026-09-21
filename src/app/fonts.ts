@@ -4,9 +4,10 @@
  * Mindegyik `latin-ext` alkészlettel, hogy az ő, ű, Ő, Ű is megjelenjen
  * (ellenőrzés: `npm run fonts:check`).
  *
- * Csak a nagy címek (Inter Tight) és a fejléc felirat (Cinzel) betűjét töltjük
- * elő (preload), mert ezek látszanak azonnal; a többi akkor töltődik le, amikor
- * az oldal ténylegesen használja (addig egy hasonló méretű rendszerbetű látszik).
+ * Csak a kezdőlap nagy feliratának (Roboto) és a fejléc feliratának (Cinzel)
+ * betűjét töltjük elő (preload), mert ezek látszanak azonnal; a többi akkor
+ * töltődik le, amikor az oldal ténylegesen használja (addig egy hasonló méretű
+ * rendszerbetű látszik).
  * Így mobilon a lassú hálózaton is hamarabb megjelenik az oldal.
  * (A next/font csak kiírt, „szó szerinti” beállításokat fogad el.)
  */
@@ -32,6 +33,7 @@ export const interTight = Inter_Tight({
   subsets: ["latin", "latin-ext"],
   variable: "--font-inter-tight",
   display: "swap",
+  preload: false,
 });
 
 export const cinzel = Cinzel({ subsets: ["latin", "latin-ext"], variable: "--font-cinzel", display: "swap" });
@@ -40,7 +42,6 @@ export const roboto = Roboto({
   subsets: ["latin", "latin-ext"],
   variable: "--font-roboto",
   display: "swap",
-  preload: false,
 });
 
 export const montserrat = Montserrat({

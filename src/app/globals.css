@@ -22,6 +22,7 @@
   --role-body: var(--font-inter);
   --role-heading: var(--font-inter-tight);
   --role-title: var(--font-cinzel);
+  --role-hero: var(--font-roboto);
 
   /* Származtatott árnyalatok */
   --gold-strong: color-mix(in oklab, var(--rm-gold) 64%, black);
@@ -280,6 +281,7 @@
   --font-sans: var(--role-body), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   --font-display: var(--role-heading), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   --font-royal: var(--role-title), Georgia, "Times New Roman", serif;
+  --font-hero: var(--role-hero), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   --font-gamer: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
   --font-yt: var(--font-roboto), Arial, sans-serif;
   --font-magazine: var(--font-oswald), "Arial Narrow", ui-sans-serif, sans-serif;

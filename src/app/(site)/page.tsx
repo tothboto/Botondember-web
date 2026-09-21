@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { HomeGuide } from "@/components/pages/HomeGuide";
 import type { Page } from "@/db/schema";
 import { getImages } from "@/lib/data/media";
 import { getVisiblePages, pageHref, pageTitleKey } from "@/lib/data/pages";
 import { getAllSettings } from "@/lib/data/settings";
+import { heroLines, longestLine } from "@/lib/hero";
 import { PageIcon } from "@/lib/icons";
 import { getI18n } from "@/lib/i18n/server";
 import { stripInlineMarkdown } from "@/lib/markdown/toc";
@@ -67,6 +68,7 @@ export default async function HomePage() {
   const { t } = i18n;
   const hero = images(home.heroMediaId);
   const figure = images(home.figureMediaId);
+  const lines = heroLines(home.message);
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
 
@@ -126,11 +128,28 @@ export default async function HomePage() {
       <div className="relative z-10 container-page pt-44 pb-[max(4.5rem,11vh)]">
         <div className="max-w-6xl">
           <span aria-hidden className="mb-7 block h-1.5 w-24 bg-[image:var(--gold-gradient)]" />
+          {/* Édesapa oldalának stílusában: soronként váltakozva körvonalas és teli betűk
+              (mobilon mindegyik sor teli). A méret a leghosszabb sorhoz igazodik. */}
           <h1
             lang="hu"
-            className="font-display text-[clamp(2.5rem,6.2vw,5.75rem)] leading-[0.95] font-black tracking-tight text-balance uppercase [text-shadow:0_2px_28px_rgb(0_0_0/0.45)]"
+            className="font-hero text-[length:clamp(2.5rem,calc(min(88vw,74rem)/(var(--hero-chars)*0.6)),11.5rem)] leading-[0.92] font-extrabold tracking-[-0.045em] uppercase"
+            style={{ "--hero-chars": longestLine(lines) } as CSSProperties}
           >
-            {home.message}
+            {lines.map((line, index) => (
+              <Fragment key={index}>
+                {/* A szóköz nem látszik, de a képernyőolvasó és a keresők egy mondatként olvassák. */}
+                {index > 0 && " "}
+                <span
+                  className={
+                    index % 2 === 0
+                      ? "block [text-shadow:0_2px_28px_rgb(0_0_0/0.45)] sm:text-transparent sm:[-webkit-text-stroke:2px_#ffffff] sm:[text-shadow:none]"
+                      : "block [text-shadow:0_2px_28px_rgb(0_0_0/0.45)]"
+                  }
+                >
+                  {line}
+                </span>
+              </Fragment>
+            ))}
           </h1>
 
           {home.subtitle && (

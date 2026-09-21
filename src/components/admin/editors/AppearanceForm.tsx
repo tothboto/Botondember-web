@@ -33,6 +33,7 @@ const FONT_ROLES: { key: keyof AppearanceSettings["fonts"]; label: string; hint:
   { key: "body", label: "Törzsszöveg", hint: "A bekezdések, leírások betűje – legyen jól olvasható!" },
   { key: "heading", label: "Címek", hint: "Az oldalak nagy címei és a kártyák címei." },
   { key: "title", label: "Fejléc felirat", hint: "Az oldal neve a fejlécben és a láblécben." },
+  { key: "hero", label: "Kezdőlap felirata", hint: "A nagy, körvonalas–teli felirat a kezdőlapon." },
 ];
 
 const SAMPLE = "Árvíztűrő tükörfúrógép – ŐŰ őű 2026";
@@ -216,7 +217,7 @@ export function AppearanceForm({ appearance, pages }: { appearance: AppearanceSe
         title="Betűtípusok"
         description="Mindegyik betű ismeri a magyar ékezeteket (ő, ű is). A betűket az oldal maga szolgálja ki, a látogató gépe nem kapcsolódik a Google-höz."
       >
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
           {FONT_ROLES.map((role) => {
             const font = values.fonts[role.key];
             const note = FONT_OPTIONS.find((option) => option.key === font)?.note;

@@ -19,6 +19,7 @@ export function brandCss(appearance: AppearanceSettings): string {
     `--role-body:var(${fontCssVar(fonts.body)});`,
     `--role-heading:var(${fontCssVar(fonts.heading)});`,
     `--role-title:var(${fontCssVar(fonts.title)});`,
+    `--role-hero:var(${fontCssVar(fonts.hero)});`,
     "}",
   ].join("");
 }
