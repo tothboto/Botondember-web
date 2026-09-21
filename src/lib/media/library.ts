@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import { desc, eq, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import { footballMoments, footballPlayers, footballSections, games, genericItems, hobbies, media, pages, settings, youtubeItems } from "@/db/schema";
+import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { parseSetting } from "@/lib/settings";
 import { ImageError, processImage } from "./process";
 import { mediaUrl, type MediaStorage } from "./storage";
@@ -87,7 +88,9 @@ export async function mediaUsageMap(db: Db): Promise<Map<number, string[]>> {
     map.set(id, list);
   };
   const [homeRow] = await db.select().from(settings).where(eq(settings.key, "home"));
-  add(parseSetting("home", homeRow?.value).heroMediaId, "Kezdőlap – nagy kép");
+  const home = parseSetting("home", homeRow?.value);
+  add(home.heroMediaId, "Kezdőlap – nagy kép");
+  add(home.figureMediaId, "Kezdőlap – előtérben álló alak (rajz)");
 
   const collect = async (label: string, rows: Promise<{ id: number | null; name: string }[]>) => {
     for (const row of await rows) add(row.id, `${label}: ${row.name}`);
@@ -115,8 +118,13 @@ export async function deleteMediaCompletely(db: Db, storage: MediaStorage, id: n
 
   const [homeRow] = await db.select().from(settings).where(eq(settings.key, "home"));
   const home = parseSetting("home", homeRow?.value);
-  if (home.heroMediaId === id) {
-    await db.update(settings).set({ value: { ...home, heroMediaId: null }, updatedAt: Date.now() }).where(eq(settings.key, "home"));
+  if (home.heroMediaId === id || home.figureMediaId === id) {
+    const value = {
+      ...home,
+      heroMediaId: home.heroMediaId === id ? null : home.heroMediaId,
+      figureMediaId: home.figureMediaId === id ? null : home.figureMediaId,
+    };
+    await db.update(settings).set({ value, updatedAt: Date.now() }).where(eq(settings.key, "home"));
   }
   await db.update(pages).set({ heroMediaId: null }).where(eq(pages.heroMediaId, id));
   await db.update(hobbies).set({ mediaId: null }).where(eq(hobbies.mediaId, id));
@@ -128,6 +136,7 @@ export async function deleteMediaCompletely(db: Db, storage: MediaStorage, id: n
   await db.update(genericItems).set({ mediaId: null }).where(eq(genericItems.mediaId, id));
 
   await db.delete(media).where(eq(media.id, id));
+  await deleteContentForEntity(db, "media", id);
   await storage.delete(row.path);
 }
 

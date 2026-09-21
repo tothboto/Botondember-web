@@ -1,5 +1,6 @@
 import { asc } from "drizzle-orm";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { TranslationsEditor, type TranslationEntry } from "@/components/admin/editors/TranslationsEditor";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { getDb } from "@/db/client";
@@ -8,7 +9,7 @@ import { requireAdminPage } from "@/lib/auth/guard";
 import { readAllSettings } from "@/lib/data/settings";
 import { MESSAGE_GROUPS, SEED_MESSAGES } from "@/lib/i18n/messages";
 
-export const metadata: Metadata = { title: "Fordítások – Admin" };
+export const metadata: Metadata = { title: "Nyelvek és felület – Admin" };
 
 export default async function AdminTranslationsPage() {
   await requireAdminPage();
@@ -39,8 +40,17 @@ export default async function AdminTranslationsPage() {
   return (
     <>
       <AdminPageHeader
-        title="Fordítások"
-        description="A felület szövegei minden nyelven. A te saját szövegeid (hobbik, leírások) nem fordítódnak – azok minden nyelven magyarul jelennek meg."
+        title="Nyelvek és felület"
+        description={
+          <>
+            A nyelvek és a felület szövegei (menü, gombok, feliratok) minden nyelven. A saját szövegeidet (hobbik, leírások,
+            kezdőlap) a{" "}
+            <Link href="/admin/tartalom-forditasa" className="font-bold text-link underline">
+              Saját szövegek fordítása
+            </Link>{" "}
+            oldalon fordíthatod le.
+          </>
+        }
         viewHref="/"
       />
       <TranslationsEditor

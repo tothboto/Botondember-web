@@ -10,6 +10,7 @@ import { logActivity } from "@/lib/audit";
 import { runAdmin, UserError, type ActionResult } from "@/lib/admin/result";
 import { writeSetting, writeTranslation } from "@/lib/admin/store";
 import { invalidateContent } from "@/lib/cache";
+import { deleteContentForLocale } from "@/lib/content-i18n/store";
 import { SEED_MESSAGES, SOURCE_LOCALE } from "@/lib/i18n/messages";
 import { missingPlaceholders } from "@/lib/i18n/translate";
 
@@ -160,6 +161,7 @@ export async function deleteLocale(code: string): Promise<ActionResult> {
     if (locale.isDefault) throw new UserError("Az alapnyelvet nem lehet törölni – előbb válassz másik alapnyelvet.");
     const db = getDb();
     await db.delete(translations).where(eq(translations.locale, locale.code));
+    await deleteContentForLocale(db, locale.code);
     await db.delete(locales).where(eq(locales.code, locale.code));
     await logActivity(db, "Fordítások", `Nyelv törölve: ${locale.name}`);
     invalidateContent();

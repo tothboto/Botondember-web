@@ -11,6 +11,7 @@ export function PageHeader({
   title,
   icon,
   intro,
+  introLang,
   titleClassName = "",
   className = "",
   children,
@@ -18,6 +19,8 @@ export function PageHeader({
   title: string;
   icon: string;
   intro?: string;
+  /** A bevezető nyelve (a látogató nyelve, ha van fordítás; különben magyar). */
+  introLang?: string;
   titleClassName?: string;
   className?: string;
   children?: ReactNode;
@@ -30,7 +33,11 @@ export function PageHeader({
         <PageIcon name={icon} className="h-[0.9em] w-[0.9em] shrink-0 text-page-accent" strokeWidth={2.2} />
         <span>{title}</span>
       </h1>
-      {intro && <Markdown className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">{intro}</Markdown>}
+      {intro && (
+        <Markdown lang={introLang} className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">
+          {intro}
+        </Markdown>
+      )}
       {children}
     </header>
   );

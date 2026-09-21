@@ -11,6 +11,7 @@ import { hexColor } from "@/lib/settings";
 import { mediaId, required, slugSchema, text } from "@/lib/admin/schemas";
 import { writeTranslation } from "@/lib/admin/store";
 import { invalidateContent } from "@/lib/cache";
+import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { pageMenuKey, pageTitleKey } from "@/lib/data/pages";
 import { SOURCE_LOCALE } from "@/lib/i18n/messages";
 import { isKnownIcon } from "@/lib/icons";
@@ -161,6 +162,9 @@ export async function deletePage(id: number): Promise<ActionResult> {
     const page = await requirePage(pageId.parse(id));
     if (page.isCore) throw new UserError("Az alap aloldalak nem törölhetők, csak elrejthetők.");
     const db = getDb();
+    const items = await db.select({ id: genericItems.id }).from(genericItems).where(eq(genericItems.pageId, page.id));
+    for (const item of items) await deleteContentForEntity(db, "generic_items", item.id);
+    await deleteContentForEntity(db, "pages", page.id);
     await db.delete(genericItems).where(eq(genericItems.pageId, page.id));
     await db.delete(translations).where(like(translations.key, `page.${page.key}.%`));
     await db.delete(pages).where(eq(pages.id, page.id));

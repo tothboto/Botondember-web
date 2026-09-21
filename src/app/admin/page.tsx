@@ -1,12 +1,16 @@
 import { count } from "drizzle-orm";
 import { ArrowRight, Circle, CircleCheck, History } from "lucide-react";
 import Link from "next/link";
+import { LanguageFlag, ProgressBar, progressSummary } from "@/components/admin/TranslationProgress";
 import { AdminPageHeader, Card } from "@/components/admin/ui";
 import { ADMIN_NAV } from "@/components/admin/nav";
 import { getDb } from "@/db/client";
-import { games, hobbies, media, youtubeItems } from "@/db/schema";
+import { games, hobbies, locales, media, youtubeItems } from "@/db/schema";
 import { setupChecklist } from "@/lib/admin/checklist";
 import { recentActivity } from "@/lib/audit";
+import { listContentFields } from "@/lib/content-i18n/registry";
+import { computeProgress, indexStored, readRequestSet, readStoredTranslations } from "@/lib/content-i18n/store";
+import { SOURCE_LOCALE } from "@/lib/i18n/messages";
 import { requireAdminPage } from "@/lib/auth/guard";
 import { formatDateTime } from "@/lib/format";
 
@@ -14,14 +18,25 @@ import { formatDateTime } from "@/lib/format";
 export default async function AdminDashboard() {
   const session = await requireAdminPage();
   const db = getDb();
-  const [activity, hobbyCount, gameCount, ytCount, mediaCount, checklist] = await Promise.all([
+  const [activity, hobbyCount, gameCount, ytCount, mediaCount, checklist, fields, stored, requests, localeRows] = await Promise.all([
     recentActivity(db, 10),
     db.select({ n: count() }).from(hobbies),
     db.select({ n: count() }).from(games),
     db.select({ n: count() }).from(youtubeItems),
     db.select({ n: count() }).from(media),
     setupChecklist(db, session.userId),
+    listContentFields(db),
+    readStoredTranslations(db),
+    readRequestSet(db),
+    db.select().from(locales),
   ]);
+  // A saját szövegek fordításának állása a bekapcsolt idegen nyelveken.
+  const translation = computeProgress(
+    fields,
+    indexStored(stored),
+    requests,
+    localeRows.filter((l) => l.enabled && l.code !== SOURCE_LOCALE).sort((a, b) => a.sort - b.sort),
+  );
   const remaining = checklist.filter((item) => !item.done).length;
 
   const stats = [
@@ -89,6 +104,32 @@ export default async function AdminDashboard() {
           </li>
         ))}
       </ul>
+
+      {translation.length > 0 && fields.length > 0 && (
+        <Card
+          title="Saját szövegek fordítása"
+          description="Hol tartanak a saját szövegeid fordításai az egyes nyelveken? Kattints egy nyelvre a folytatáshoz!"
+          className="mb-8"
+        >
+          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {translation.map((p) => (
+              <li key={p.code}>
+                <Link
+                  href={`/admin/tartalom-forditasa?nyelv=${p.code}`}
+                  className="flex h-full flex-col gap-2 rounded-xl border border-line p-4 hover:border-primary hover:bg-surface"
+                >
+                  <span className="flex items-center gap-2 font-bold">
+                    <LanguageFlag code={p.flag} />
+                    {p.name}
+                  </span>
+                  <ProgressBar progress={p} />
+                  <span className="text-sm text-muted">{progressSummary(p)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Card title="Gyors linkek">

@@ -54,7 +54,15 @@
 - Felületi („keretrendszer”) szövegek: `translations` tábla (kulcs × nyelv). Új kulcsot a
   seed-listába (`src/lib/i18n/messages.ts`) is vegyél fel mind a hat nyelven (hu, en, es, de, is, hr).
   Hiányzó fordításnál a magyar szöveg jelenik meg.
-- A beírt tartalom (Botond szövegei) nem fordítódik, és `lang="hu"` attribútumot kap.
+- A beírt tartalom (Botond saját szövegei) **fordítható**: a magyar marad az eredeti helyén, a
+  fordítások a `content_translations` táblába kerülnek (kulcs: `entitás:azonosító:mező`). Minden
+  fordítható mező a jegyzékben van: `src/lib/content-i18n/registry.ts` – **új szabad szöveges mezőt
+  ide is vegyél fel**, és a nyilvános oldalon a `getLocalizer()`-rel jelenítsd meg (a `lang`
+  attribútum a fordítás nyelve, fordítás hiányában `"hu"`). Elem törlésekor a fordításait is töröld
+  (`deleteContentForEntity`).
+- A saját szövegek gépi fordítását ingyenesen a Claude Code készíti: `/forditas` parancs
+  (`.claude/skills/forditas/SKILL.md`, `npm run translate:export` → fordítás → `npm run translate:import`).
+  A kézzel írt / jóváhagyott fordítást (`origin = manual`) gép soha nem írja felül.
 - Minden admin műveletet **a szerveren** ellenőrizz (`requireAdmin()`), minden bemenetet `zod`-dal
   validálj. Mentés után hívd meg az `invalidateContent()`-et.
 - Feltöltött fájl a tároló-rétegen át a `data/uploads`-ba kerül; a `/media/...` route szolgálja ki.

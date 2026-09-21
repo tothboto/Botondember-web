@@ -4,7 +4,8 @@ import Link from "next/link";
 import { EmptyState } from "@/components/site/EmptyState";
 import { ExampleBadge } from "@/components/site/ExampleBadge";
 import { Markdown } from "@/components/site/Markdown";
-import type { Page, YoutubeItem } from "@/db/schema";
+import type { Page, YoutubeItem as YoutubeRow } from "@/db/schema";
+import { getLocalizer, type LocalizedRow } from "@/lib/content-i18n/localize";
 import { getYoutubeItems } from "@/lib/data/content";
 import { getImages, type ImageInfo } from "@/lib/data/media";
 import { pageHref, pageTitleKey } from "@/lib/data/pages";
@@ -13,6 +14,10 @@ import { PageIcon } from "@/lib/icons";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 type Kind = "song" | "video" | "channel" | "playlist";
+
+/** A YouTube-elemek fordítható mezői. */
+const YOUTUBE_FIELDS = ["title", "author", "note"] as const;
+type YoutubeItem = LocalizedRow<YoutubeRow, (typeof YOUTUBE_FIELDS)[number]>;
 
 /** A szűrő fülek – az URL-ben pl. `?tab=zeneszamok`, így megosztható. */
 export const YOUTUBE_TABS: { key: string; labelKey: string; kinds: Kind[] }[] = [
@@ -44,7 +49,7 @@ function VideoCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo | n
           <Image
             src={image.src}
             alt={image.alt}
-            lang="hu"
+            lang={image.altLang}
             fill
             sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
@@ -59,16 +64,16 @@ function VideoCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo | n
         {item.isExample && <ExampleBadge label={t("common.example")} className="absolute top-2 left-2" />}
       </div>
       <div className="mt-3 pr-6">
-        <h3 lang="hu" className="line-clamp-2 text-base leading-snug font-medium group-hover:underline">
+        <h3 lang={item.lang.title} className="line-clamp-2 text-base leading-snug font-medium group-hover:underline">
           {item.title}
         </h3>
         {item.author && (
-          <p lang="hu" className="mt-1 text-sm text-page-muted">
+          <p lang={item.lang.author} className="mt-1 text-sm text-page-muted">
             {item.author}
           </p>
         )}
         {item.note && (
-          <p lang="hu" className="mt-0.5 line-clamp-2 text-sm text-page-muted">
+          <p lang={item.lang.note} className="mt-0.5 line-clamp-2 text-sm text-page-muted">
             {item.note}
           </p>
         )}
@@ -90,7 +95,7 @@ function PlaylistCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo 
             <Image
               src={image.src}
               alt={image.alt}
-              lang="hu"
+              lang={image.altLang}
               fill
               sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               className="object-cover"
@@ -104,16 +109,16 @@ function PlaylistCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo 
         </div>
       </div>
       <div className="mt-3">
-        <h3 lang="hu" className="line-clamp-2 text-base leading-snug font-medium group-hover:underline">
+        <h3 lang={item.lang.title} className="line-clamp-2 text-base leading-snug font-medium group-hover:underline">
           {item.title}
         </h3>
         {item.author && (
-          <p lang="hu" className="mt-1 text-sm text-page-muted">
+          <p lang={item.lang.author} className="mt-1 text-sm text-page-muted">
             {item.author}
           </p>
         )}
         {item.note && (
-          <p lang="hu" className="mt-0.5 line-clamp-2 text-sm text-page-muted">
+          <p lang={item.lang.note} className="mt-0.5 line-clamp-2 text-sm text-page-muted">
             {item.note}
           </p>
         )}
@@ -133,13 +138,13 @@ function ChannelCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo |
       className="group flex h-full flex-col items-center gap-3 rounded-xl p-4 text-center hover:bg-page-surface"
     >
       <div className="relative h-28 w-28 overflow-hidden rounded-full bg-page-surface ring-1 ring-black/5 sm:h-32 sm:w-32">
-        {image && <Image src={image.src} alt={image.alt} lang="hu" fill sizes="128px" className="object-cover" />}
+        {image && <Image src={image.src} alt={image.alt} lang={image.altLang} fill sizes="128px" className="object-cover" />}
       </div>
-      <h3 lang="hu" className="text-base font-medium group-hover:underline">
+      <h3 lang={item.lang.title} className="text-base font-medium group-hover:underline">
         {item.title}
       </h3>
       {item.note && (
-        <p lang="hu" className="line-clamp-3 text-sm text-page-muted">
+        <p lang={item.lang.note} className="line-clamp-3 text-sm text-page-muted">
           {item.note}
         </p>
       )}
@@ -200,8 +205,10 @@ function Section({
  * így a látogató böngészője nem kommunikál a Google-lel.
  */
 export async function YoutubePage({ page, tab }: { page: Page; tab: string }) {
-  const [{ t }, items, images] = await Promise.all([getI18n(), getYoutubeItems(), getImages()]);
+  const [{ t }, rows, images, l] = await Promise.all([getI18n(), getYoutubeItems(), getImages(), getLocalizer()]);
   const title = t(pageTitleKey(page));
+  const intro = l.get("pages", page.id, "introMd", page.introMd);
+  const items = rows.map((item) => l.row("youtube_items", item, YOUTUBE_FIELDS));
   const active = YOUTUBE_TABS.find((x) => x.key === tab) ?? YOUTUBE_TABS[0];
   const base = pageHref(page);
 
@@ -214,7 +221,11 @@ export async function YoutubePage({ page, tab }: { page: Page; tab: string }) {
           </span>
           <span>{title}</span>
         </h1>
-        {page.introMd && <Markdown className="mt-3 max-w-3xl [--md-fg:var(--page-muted)]">{page.introMd}</Markdown>}
+        {intro.text && (
+          <Markdown lang={intro.lang} className="mt-3 max-w-3xl [--md-fg:var(--page-muted)]">
+            {intro.text}
+          </Markdown>
+        )}
       </header>
 
       {/* „Chip” sáv – mint a YouTube szűrő fülei */}

@@ -501,6 +501,22 @@ export const SEED_MESSAGES: Record<string, Row> = {
     is: "Síðast uppfært: {date}",
     hr: "Posljednje ažuriranje: {date}",
   },
+  "legal.translated": {
+    hu: "Ez a tájékoztató fordítása. Eltérés esetén a magyar változat az irányadó.",
+    en: "This is a translation of the notice. In case of any discrepancy, the Hungarian version prevails.",
+    es: "Esta es una traducción del aviso. En caso de discrepancia, prevalece la versión húngara.",
+    de: "Dies ist eine Übersetzung des Hinweises. Bei Abweichungen ist die ungarische Fassung maßgeblich.",
+    is: "Þetta er þýðing á tilkynningunni. Ef misræmi er á milli gildir ungverska útgáfan.",
+    hr: "Ovo je prijevod obavijesti. U slučaju neslaganja mjerodavna je mađarska verzija.",
+  },
+  "legal.missingData": {
+    hu: "még nincs megadva",
+    en: "not provided yet",
+    es: "aún no indicado",
+    de: "noch nicht angegeben",
+    is: "ekki enn skráð",
+    hr: "još nije navedeno",
+  },
   "legal.onlyHungarian": {
     hu: "A tájékoztató magyar nyelvű.",
     en: "This notice is only available in Hungarian.",

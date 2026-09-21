@@ -18,10 +18,18 @@ export function escapeMarkdownText(value: string): string {
   return value.replace(/([\\`*_{}[\]()#+\-.!|<>~])/g, "\\$1");
 }
 
-const placeholder = (text: string) => `*[${text}]*`;
-
-export function fillLegalTokens(markdown: string, general: Pick<GeneralSettings, "siteName">, legal: LegalSettings): string {
+/**
+ * @param options a lefordított szövegnél: a dátum nyelve és a hiányzó adatok helyén
+ *                megjelenő rövid felirat (pl. „not provided yet”) az oldal nyelvén.
+ */
+export function fillLegalTokens(
+  markdown: string,
+  general: Pick<GeneralSettings, "siteName">,
+  legal: LegalSettings,
+  options: { locale?: string; missing?: string } = {},
+): string {
   const email = legal.controllerEmail.trim();
+  const placeholder = (hungarianHint: string) => `*[${options.missing ?? hungarianHint}]*`;
   const values: Record<(typeof LEGAL_TOKENS)[number], string> = {
     OLDAL_NEVE: escapeMarkdownText(general.siteName),
     ADATKEZELO_NEV: legal.controllerName.trim()
@@ -33,7 +41,7 @@ export function fillLegalTokens(markdown: string, general: Pick<GeneralSettings,
     TARHELYSZOLGALTATO: legal.hostingProvider.trim()
       ? escapeMarkdownText(legal.hostingProvider.trim())
       : placeholder("a tárhelyszolgáltató neve és elérhetősége – az élesítéskor kerül ide"),
-    HATALYBALEPES: formatDate(legal.effectiveDate, "hu"),
+    HATALYBALEPES: formatDate(legal.effectiveDate, options.locale ?? "hu"),
   };
   return markdown.replace(/\{\{([A-Z_]+)\}\}/g, (match, name: string) =>
     Object.prototype.hasOwnProperty.call(values, name) ? values[name as keyof typeof values] : match,

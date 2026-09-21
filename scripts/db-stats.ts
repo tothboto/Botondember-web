@@ -23,6 +23,7 @@ const TABLES = [
   "login_attempts",
   "audit_log",
   "content_translations",
+  "translation_requests",
 ];
 
 async function main() {

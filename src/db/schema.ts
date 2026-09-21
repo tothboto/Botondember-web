@@ -57,6 +57,23 @@ export const contentTranslations = sqliteTable(
     locale: text("locale").notNull(),
     value: text("value").notNull(),
     updatedAt: integer("updated_at").notNull(),
+    /** Ki készítette: `auto` = gépi (ellenőrizendő) · `manual` = kézzel írt / ellenőrzött · `keep` = maradjon az eredeti. */
+    origin: text("origin").notNull().default("manual"),
+    /** A magyar forrásszöveg ujjlenyomata a fordítás idején – ebből látszik, ha a magyar azóta megváltozott. */
+    sourceHash: text("source_hash").notNull().default(""),
+  },
+  (t) => [primaryKey({ columns: [t.entity, t.entityId, t.field, t.locale] })],
+);
+
+/** „Fordításra vár” lista: ezeket a szövegeket a következő `/forditas` futtatáskor fordítja le Claude. */
+export const translationRequests = sqliteTable(
+  "translation_requests",
+  {
+    entity: text("entity").notNull(),
+    entityId: text("entity_id").notNull(),
+    field: text("field").notNull(),
+    locale: text("locale").notNull(),
+    requestedAt: integer("requested_at").notNull(),
   },
   (t) => [primaryKey({ columns: [t.entity, t.entityId, t.field, t.locale] })],
 );

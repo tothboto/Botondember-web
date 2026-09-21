@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/site/Markdown";
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getLegalDoc } from "@/lib/data/content";
 import { getAllSettings } from "@/lib/data/settings";
 import { formatDate } from "@/lib/format";
@@ -13,14 +14,25 @@ import { extractToc } from "@/lib/markdown/toc";
  * szöveg (~70 karakteres sorhossz), tartalomjegyzékkel a fejezetekre ugráshoz.
  */
 export async function LegalPage({ slug, titleKey }: { slug: "privacy" | "cookie"; titleKey: string }) {
-  const [{ t, locale }, settings, doc] = await Promise.all([
+  const [{ t, locale }, settings, doc, l] = await Promise.all([
     getI18n(),
     getAllSettings(),
     getLegalDoc(slug, SOURCE_LOCALE),
+    getLocalizer(),
   ]);
   if (!doc) notFound();
 
-  const body = fillLegalTokens(doc.bodyMd, settings.general, settings.legal);
+  // A fordítás (ha van) az Admin „Saját szövegek fordítása” oldalán készül; a magyar az irányadó.
+  const translated = l.get("legal_docs", slug, "bodyMd", doc.bodyMd);
+  const isTranslation = translated.lang !== SOURCE_LOCALE;
+  const body = isTranslation
+    ? fillLegalTokens(
+        translated.text,
+        { siteName: l.get("settings", "general", "siteName", settings.general.siteName).text },
+        settings.legal,
+        { locale, missing: t("legal.missingData") },
+      )
+    : fillLegalTokens(doc.bodyMd, settings.general, settings.legal);
   const toc = extractToc(body);
   const title = t(titleKey);
 
@@ -37,7 +49,7 @@ export async function LegalPage({ slug, titleKey }: { slug: "privacy" | "cookie"
           </p>
           {locale !== SOURCE_LOCALE && (
             <p className="mt-2 inline-block rounded-lg bg-page-surface px-3 py-1.5 text-sm ring-1 ring-page-line">
-              {t("legal.onlyHungarian")}
+              {t(isTranslation ? "legal.translated" : "legal.onlyHungarian")}
             </p>
           )}
         </header>
@@ -50,7 +62,7 @@ export async function LegalPage({ slug, titleKey }: { slug: "privacy" | "cookie"
             <h2 id="legal-toc-title" className="text-sm font-bold tracking-wider text-page-muted uppercase">
               {t("legal.toc")}
             </h2>
-            <ol lang="hu" className="mt-3 space-y-1.5 text-sm">
+            <ol lang={translated.lang} className="mt-3 space-y-1.5 text-sm">
               {toc.map((item) => (
                 <li key={item.id} className={item.depth === 3 ? "pl-4" : ""}>
                   <a
@@ -66,7 +78,7 @@ export async function LegalPage({ slug, titleKey }: { slug: "privacy" | "cookie"
         )}
 
         <article className="min-w-0">
-          <Markdown withHeadingIds newTabLabel={t("common.opensInNewTab")} className="max-w-[70ch] prose-lg">
+          <Markdown lang={translated.lang} withHeadingIds newTabLabel={t("common.opensInNewTab")} className="max-w-[70ch] prose-lg">
             {body}
           </Markdown>
         </article>

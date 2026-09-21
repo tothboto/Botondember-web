@@ -1,3 +1,4 @@
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getAllSettings } from "@/lib/data/settings";
 import { getVisiblePages, pageHref, pageMenuKey } from "@/lib/data/pages";
 import { getI18n } from "@/lib/i18n/server";
@@ -12,7 +13,8 @@ export async function SiteHeader({
   isAdmin: boolean;
   logoutAction?: () => Promise<void>;
 }) {
-  const [i18n, settings, pages] = await Promise.all([getI18n(), getAllSettings(), getVisiblePages()]);
+  const [i18n, settings, pages, l] = await Promise.all([getI18n(), getAllSettings(), getVisiblePages(), getLocalizer()]);
+  const title = l.get("settings", "general", "headerTitle", settings.general.headerTitle);
 
   // Az ikonokat itt, a szerveren rajzoljuk ki – így a teljes ikonkészlet nem kerül a böngészőbe letöltendő kódba.
   const navItems: NavItem[] = pages.map((page) => ({
@@ -24,7 +26,8 @@ export async function SiteHeader({
 
   return (
     <HeaderClient
-      title={settings.general.headerTitle}
+      title={title.text}
+      titleLang={title.lang}
       navItems={navItems}
       sticky={settings.general.stickyHeader}
       locales={i18n.locales}

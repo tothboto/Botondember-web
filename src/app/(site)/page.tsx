@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Fragment, type CSSProperties } from "react";
 import { HomeGuide } from "@/components/pages/HomeGuide";
 import type { Page } from "@/db/schema";
+import { getLocalizer, type Localized, type Localizer } from "@/lib/content-i18n/localize";
 import { getImages } from "@/lib/data/media";
 import { getVisiblePages, pageHref, pageTitleKey } from "@/lib/data/pages";
 import { getAllSettings } from "@/lib/data/settings";
@@ -13,11 +14,13 @@ import { getI18n } from "@/lib/i18n/server";
 import { stripInlineMarkdown } from "@/lib/markdown/toc";
 import type { FigurePosition, FocalPoint } from "@/lib/settings";
 
-/** Rövid összefoglaló egy aloldalról a leírás dobozaihoz (a saját bevezetőjéből). */
-function pageSummary(page: Page): string {
-  const source = page.introMd.trim() || page.seoDescription.trim();
-  const text = stripInlineMarkdown(source.split(/\n{2,}/)[0] ?? "").replace(/\s+/g, " ");
-  return text.length > 120 ? `${text.slice(0, 117).trimEnd()}…` : text;
+/** Rövid összefoglaló egy aloldalról a leírás dobozaihoz (a saját bevezetőjéből, a látogató nyelvén). */
+function pageSummary(page: Page, l: Localizer): Localized {
+  const source = page.introMd.trim()
+    ? l.get("pages", page.id, "introMd", page.introMd)
+    : l.get("pages", page.id, "seoDescription", page.seoDescription);
+  const text = stripInlineMarkdown(source.text.trim().split(/\n{2,}/)[0] ?? "").replace(/\s+/g, " ");
+  return { text: text.length > 120 ? `${text.slice(0, 117).trimEnd()}…` : text, lang: source.lang };
 }
 
 /** Az előtérben álló alak vízszintes helye. */
@@ -37,16 +40,19 @@ const FOCAL_POSITION: Record<FocalPoint, string> = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [{ home, general }, images] = await Promise.all([getAllSettings(), getImages()]);
+  const [{ home, general }, images, l] = await Promise.all([getAllSettings(), getImages(), getLocalizer()]);
   const hero = images(home.heroMediaId);
-  const description = home.subtitle || home.message;
+  const siteName = l.get("settings", "general", "siteName", general.siteName).text;
+  const description = home.subtitle
+    ? l.get("settings", "home", "subtitle", home.subtitle).text
+    : l.get("settings", "home", "message", home.message).text;
   return {
-    title: { absolute: general.siteName },
+    title: { absolute: siteName },
     description,
     alternates: { canonical: "/" },
     openGraph: {
       type: "website",
-      title: general.siteName,
+      title: siteName,
       description,
       images: hero ? [{ url: hero.src, width: hero.width, height: hero.height, alt: hero.alt }] : undefined,
     },
@@ -59,16 +65,27 @@ export async function generateMetadata(): Promise<Metadata> {
  * Semmi más: nincs galéria, számláló, óra vagy animáció.
  */
 export default async function HomePage() {
-  const [{ home }, images, i18n, pages] = await Promise.all([
+  const [{ home }, images, i18n, pages, l] = await Promise.all([
     getAllSettings(),
     getImages(),
     getI18n(),
     getVisiblePages(),
+    getLocalizer(),
   ]);
   const { t } = i18n;
   const hero = images(home.heroMediaId);
   const figure = images(home.figureMediaId);
-  const lines = heroLines(home.message);
+  // A saját szövegek a látogató nyelvén (ha nincs fordítás: magyarul, lang="hu" jelöléssel).
+  const text = (field: string, source: string) => l.get("settings", "home", field, source);
+  const message = text("message", home.message);
+  const subtitle = text("subtitle", home.subtitle);
+  const motto = { text: text("motto.text", home.motto.text), author: text("motto.author", home.motto.author) };
+  const guide = {
+    button: home.guide.button ? text("guide.button", home.guide.button) : { text: "Hol vagy? Mi ez?", lang: "hu" },
+    title: text("guide.title", home.guide.title),
+    text: text("guide.text", home.guide.text),
+  };
+  const lines = heroLines(message.text);
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
 
@@ -78,7 +95,7 @@ export default async function HomePage() {
         <Image
           src={hero.src}
           alt={hero.alt}
-          lang="hu"
+          lang={hero.altLang}
           fill
           preload
           sizes="100vw"
@@ -109,7 +126,7 @@ export default async function HomePage() {
           <Image
             src={figure.src}
             alt={figure.alt}
-            lang="hu"
+            lang={figure.altLang}
             width={figure.width}
             height={figure.height}
             preload
@@ -131,7 +148,7 @@ export default async function HomePage() {
           {/* Édesapa oldalának stílusában: soronként váltakozva körvonalas és teli betűk
               (mobilon mindegyik sor teli). A méret a leghosszabb sorhoz igazodik. */}
           <h1
-            lang="hu"
+            lang={message.lang}
             className="font-hero text-[length:clamp(2.5rem,calc(min(88vw,74rem)/(var(--hero-chars)*0.6)),11.5rem)] leading-[0.92] font-extrabold tracking-[-0.045em] uppercase"
             style={{ "--hero-chars": longestLine(lines) } as CSSProperties}
           >
@@ -152,21 +169,21 @@ export default async function HomePage() {
             ))}
           </h1>
 
-          {home.subtitle && (
-            <p lang="hu" className="mt-7 max-w-2xl text-lg text-white/90 sm:text-xl">
-              {home.subtitle}
+          {subtitle.text && (
+            <p lang={subtitle.lang} className="mt-7 max-w-2xl text-lg text-white/90 sm:text-xl">
+              {subtitle.text}
             </p>
           )}
 
-          {home.motto.enabled && home.motto.text && (
+          {home.motto.enabled && motto.text.text && (
             <figure className="mt-10 max-w-xl border-l-4 border-rm-gold pl-5">
               <figcaption className="sr-only">{t("home.motto")}</figcaption>
-              <blockquote lang="hu" className="text-lg text-white/90 italic sm:text-xl">
-                „{home.motto.text}”
+              <blockquote lang={motto.text.lang} className="text-lg text-white/90 italic sm:text-xl">
+                „{motto.text.text}”
               </blockquote>
-              {home.motto.author && (
-                <p lang="hu" className="mt-2 text-sm font-bold tracking-[0.2em] text-rm-gold uppercase">
-                  — {home.motto.author}
+              {motto.author.text && (
+                <p lang={motto.author.lang} className="mt-2 text-sm font-bold tracking-[0.2em] text-rm-gold uppercase">
+                  — {motto.author.text}
                 </p>
               )}
             </figure>
@@ -175,12 +192,12 @@ export default async function HomePage() {
           {/* Útbaigazító leírás egy gomb mögött – a szöveg az Adminban szerkeszthető. */}
           {home.guide.enabled && home.guide.text && (
             <div className="mt-10">
-              <HomeGuide button={home.guide.button || "Hol vagy? Mi ez?"} title={home.guide.title} text={home.guide.text}>
+              <HomeGuide button={guide.button} title={guide.title} text={guide.text}>
                 {home.guide.showPages && pages.length > 0 && (
                   <nav aria-label={t("home.guide.pages")}>
                     <ul className="grid gap-3 sm:grid-cols-2">
                       {pages.map((page) => {
-                        const summary = pageSummary(page);
+                        const summary = pageSummary(page, l);
                         return (
                           <li key={page.id}>
                             <Link
@@ -194,9 +211,9 @@ export default async function HomePage() {
                                 <span className="block font-display font-extrabold tracking-wide uppercase">
                                   {i18n.t(pageTitleKey(page))}
                                 </span>
-                                {summary && (
-                                  <span lang="hu" className="mt-0.5 block text-sm text-muted">
-                                    {summary}
+                                {summary.text && (
+                                  <span lang={summary.lang} className="mt-0.5 block text-sm text-muted">
+                                    {summary.text}
                                   </span>
                                 )}
                               </span>

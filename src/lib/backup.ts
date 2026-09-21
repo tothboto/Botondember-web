@@ -37,6 +37,7 @@ const TABLES = {
   locales: schema.locales,
   translations: schema.translations,
   contentTranslations: schema.contentTranslations,
+  translationRequests: schema.translationRequests,
   media: schema.media,
   pages: schema.pages,
   hobbies: schema.hobbies,
@@ -53,6 +54,8 @@ const TABLES = {
 
 type TableName = keyof typeof TABLES;
 const TABLE_NAMES = Object.keys(TABLES) as TableName[];
+/** Később bevezetett táblák: a régebbi mentésekből hiányozhatnak (ilyenkor üresek lesznek). */
+const OPTIONAL_TABLES: ReadonlySet<TableName> = new Set(["translationRequests"]);
 
 type Row = Record<string, unknown>;
 
@@ -232,7 +235,7 @@ export async function restoreBackup(
   let droppedFields = 0;
   let rows = 0;
   for (const name of TABLE_NAMES) {
-    const list = parsed.tables[name];
+    const list = parsed.tables[name] ?? (OPTIONAL_TABLES.has(name) ? [] : null);
     if (!list) throw new BackupError(`Hiányos mentés: hiányzik a(z) „${name}” adatcsoport.`);
     tables[name] = list.map((row, index) => {
       const result = cleanRow(name, row, index);

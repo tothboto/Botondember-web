@@ -1,4 +1,5 @@
 import {
+  BookOpenText,
   Crown,
   DatabaseBackup,
   Gamepad2,
@@ -40,7 +41,18 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin/youtube", label: "YouTube", icon: MonitorPlay, description: "Zenék, videók, csatornák, listák" },
   { href: "/admin/real-madrid", label: "Real Madrid", icon: Crown, description: "Szekciók, játékosok, pillanatok, adatok" },
   { href: "/admin/jogi-oldalak", label: "Jogi oldalak", icon: Scale, description: "Tájékoztatók és az adatkezelő adatai" },
-  { href: "/admin/forditasok", label: "Fordítások", icon: Languages, description: "Szövegek nyelvenként, nyelvek, zászlók" },
+  {
+    href: "/admin/tartalom-forditasa",
+    label: "Saját szövegek fordítása",
+    icon: BookOpenText,
+    description: "A saját szövegeid (hobbik, leírások, kezdőlap) más nyelveken",
+  },
+  {
+    href: "/admin/forditasok",
+    label: "Nyelvek és felület",
+    icon: Languages,
+    description: "Nyelvek, zászlók és a felület (menü, gombok) szövegei",
+  },
   { href: "/admin/mediatar", label: "Médiatár", icon: Images, description: "Feltöltött képek, alt szövegek" },
   {
     href: "/admin/mentes",

@@ -24,6 +24,8 @@
     "admin:reset": "tsx scripts/reset-admin.ts",
     "image:cutout": "tsx scripts/cutout-image.ts",
     "image:import": "tsx scripts/import-image.ts",
+    "translate:export": "tsx scripts/translate-export.ts",
+    "translate:import": "tsx scripts/translate-import.ts",
     "fonts:check": "tsx scripts/check-fonts.ts",
     "screenshots": "tsx scripts/screenshots.ts"
   },

@@ -131,7 +131,8 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
 | **Menü és aloldalak** | Menüpontok sorrendje, elrejtése, ikonja, URL-címe, neve nyelvenként; **új aloldal** létrehozása és törlése. |
 | **Hobbijaim / Játékaim / YouTube / Real Madrid** | Az aloldalak tartalma: kártyák hozzáadása, szerkesztése, sorrendje, elrejtése, törlése. YouTube-nál elég beilleszteni a linket – a címet és a képet az oldal magától kitölti. |
 | **Jogi oldalak** | Az Adatkezelési és a Cookie tájékoztató szövege (Markdown-szerkesztő előnézettel) és az adatkezelő adatai. |
-| **Fordítások** | A felület szövegei hat nyelven (táblázat, keresés, a hiányzók kiemelve), nyelvek be/ki, új nyelv, zászlók ki/be. |
+| **Saját szövegek fordítása** | A saját szövegeid (kezdőlap, hobbik, játékok, leírások, képleírások, jogi szövegek) a többi nyelven: bal oldalt a magyar eredeti, jobb oldalt a fordítás. Állapotjelzés (Hiányzik / Fordításra vár / Gépi – ellenőrizd / Elavult / Kész / Magyarul marad), szűrés, keresés, automatikus fordítás kérése (lásd lent). |
+| **Nyelvek és felület** | A felület szövegei hat nyelven (táblázat, keresés, a hiányzók kiemelve), nyelvek be/ki, új nyelv, zászlók ki/be. |
 | **Médiatár** | Az összes kép: feltöltés, alt szöveg, törlés (figyelmeztet, ha a kép használatban van). |
 | **Mentés és visszaállítás** | Az egész oldal letöltése egy fájlba, és visszatöltése. |
 | **Fiók** | Jelszó és felhasználónév módosítása, kilépés (minden eszközön is). |
@@ -148,9 +149,32 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
   képernyőolvasója ezt olvassa fel.
 - A „Példa – cseréld le az Adminban” feliratú tartalmak mintaként szerepelnek: szerkesztés után a
   felirat magától eltűnik.
-- A saját szövegeid minden nyelven magyarul jelennek meg; csak a felület (menü, gombok) fordítódik.
+- A saját szövegeid addig jelennek meg magyarul a többi nyelven, amíg le nem fordítod őket
+  (**Saját szövegek fordítása**, lásd lent).
 - A **Markdown** egy egyszerű formázás: `**félkövér**`, `_dőlt_`, `## Címsor`, `- felsorolás`,
   `[link szövege](https://…)`. A szerkesztő gombjai ezt be is írják helyetted.
+
+### A saját szövegeid fordítása
+
+A kézzel beírt szövegeid is megjelenhetnek a látogató nyelvén. A fordítások az adatbázisba kerülnek
+(nem az oldal megnyitásakor készülnek), és bármikor átírhatod őket.
+
+1. **Admin → Saját szövegek fordítása:** válaszd ki a nyelvet (a zászlós dobozok mutatják, hol tartasz).
+2. **Kézzel:** írd be a fordítást a jobb oldali mezőbe, és nyomd meg a lenti **Mentés** gombot.
+3. **Automatikusan (ingyen, a Claude Code-dal):** nyomd meg a **Fordítás kérése** gombot egy szövegnél,
+   vagy a **Minden hiányzó és elavult szöveg kérése** gombot. Utána nyisd meg a Claude Code-ot ebben a
+   projektben, és írd be: **`/forditas`** (vagy `/forditas mind` – ez minden még le nem fordított
+   szöveget lefordít kérés nélkül is). Pár perc múlva a fordítások megjelennek **„Gépi – ellenőrizd”**
+   jelöléssel: nézd át őket, javítsd, ha kell, és nyomd meg a **Jóváhagyom** gombot.
+
+Jó tudni:
+
+- A kézzel írt vagy jóváhagyott fordítást (**Kész**) a gép soha nem írja felül.
+- Ha a magyar szöveget később átírod, a fordítás **Elavult** lesz – a látogatók addig a régebbi
+  fordítást látják. Javítsd ki, hagyd jóvá, vagy kérj rá új fordítást.
+- **Maradjon magyarul:** például egy névnél, ami minden nyelven ugyanaz.
+- A jogi szövegek is lefordíthatók; a lefordított változat tetején megjelenik, hogy eltérés esetén a
+  magyar az irányadó.
 
 ## 5. Mentés és visszaállítás
 
@@ -191,6 +215,7 @@ mentésével vidd át (vagy másold át a `data` mappát).
 | `npm run screenshots` | Képernyőképek az oldalakról több méretben, világos és sötét módban (`test-results/screenshots`). |
 | `npm run image:cutout -- rajz.jpg` | Egyszínű (pl. fehér) hátterű rajzról levágja a hátteret → átlátszó hátterű PNG. Ha marad egy körülzárt folt (pl. a lábak között), jelöld meg: `--seed=1008,896`. |
 | `npm run image:import -- kep.png --alt="leírás" --as=figure` | Betesz egy képet a médiatárba, és rögtön beállítja (`--as=figure`: előtérben álló alak, `--as=hero`: kezdőlapi nagy kép). |
+| `npm run translate:export` · `npm run translate:import` | A `/forditas` parancs két lépése: kiírja a fordításra váró saját szövegeket (`data/forditas/feladat.json`; `-- --all`: minden hiányzót), illetve betölti a kész fordításokat. Általában nem kell kézzel futtatnod – a Claude Code megteszi. |
 | `npm run fonts:check` | Ellenőrzi, hogy minden betűtípus ismeri-e az ő, ű betűket. |
 | `npm run db:stats` | Kiírja, mennyi adat van az adatbázisban. |
 | `npm run check:secrets` | Ellenőrzi, hogy titkos adat (pl. jelszó) ne kerüljön a Gitbe. Commit előtt magától is lefut. |

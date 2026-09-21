@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { InlineScript } from "@/components/InlineScript";
 import { ThemeManager } from "@/components/theme/ThemeManager";
 import { brandCss } from "@/lib/brand-css";
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getAllSettings } from "@/lib/data/settings";
 import { getI18n } from "@/lib/i18n/server";
 import { siteUrl } from "@/lib/site-url";
@@ -10,12 +11,13 @@ import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { general } = await getAllSettings();
+  const [{ general }, l] = await Promise.all([getAllSettings(), getLocalizer()]);
+  const siteName = l.get("settings", "general", "siteName", general.siteName).text;
   const icons = `/icons/${general.faviconVersion ?? "default"}`;
   return {
     metadataBase: siteUrl(),
-    title: { default: general.siteName, template: `%s · ${general.siteName}` },
-    applicationName: general.siteName,
+    title: { default: siteName, template: `%s · ${siteName}` },
+    applicationName: siteName,
     // Alapból rejtve a keresők elől (az Adminban kapcsolható).
     robots: general.noindex ? { index: false, follow: false } : { index: true, follow: true },
     icons: {

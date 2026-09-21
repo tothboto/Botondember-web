@@ -3,6 +3,7 @@ import { EmptyState } from "@/components/site/EmptyState";
 import { ExampleBadge } from "@/components/site/ExampleBadge";
 import { Markdown } from "@/components/site/Markdown";
 import type { Page } from "@/db/schema";
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getHobbies } from "@/lib/data/content";
 import { getImages } from "@/lib/data/media";
 import { pageTitleKey } from "@/lib/data/pages";
@@ -14,8 +15,10 @@ import { PageIcon } from "@/lib/icons";
  * erős kék és arany színblokkok, átlós díszítés, sok levegő.
  */
 export async function HobbiesPage({ page }: { page: Page }) {
-  const [{ t }, items, images] = await Promise.all([getI18n(), getHobbies(), getImages()]);
+  const [{ t }, rows, images, l] = await Promise.all([getI18n(), getHobbies(), getImages(), getLocalizer()]);
   const title = t(pageTitleKey(page));
+  const intro = l.get("pages", page.id, "introMd", page.introMd);
+  const items = rows.map((item) => l.row("hobbies", item, ["title", "body", "since", "tag"] as const));
 
   return (
     <div className="flex-1 bg-page-bg text-page-fg">
@@ -41,8 +44,10 @@ export async function HobbiesPage({ page }: { page: Page }) {
             </span>
             <span>{title}</span>
           </h1>
-          {page.introMd && (
-            <Markdown className="mt-6 max-w-xl prose-lg sm:prose-xl lg:max-w-[52%]">{page.introMd}</Markdown>
+          {intro.text && (
+            <Markdown lang={intro.lang} className="mt-6 max-w-xl prose-lg sm:prose-xl lg:max-w-[52%]">
+              {intro.text}
+            </Markdown>
           )}
         </div>
       </header>
@@ -66,7 +71,7 @@ export async function HobbiesPage({ page }: { page: Page }) {
                         <Image
                           src={image.src}
                           alt={image.alt}
-                          lang="hu"
+                          lang={image.altLang}
                           fill
                           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                           className="object-cover"
@@ -83,7 +88,7 @@ export async function HobbiesPage({ page }: { page: Page }) {
                     {item.tag && (
                       <span className="relative z-10 -mt-7 ml-5 w-fit -skew-x-12 bg-page-accent px-3 py-1 shadow-sm">
                         <span
-                          lang="hu"
+                          lang={item.lang.tag}
                           className="inline-block skew-x-12 font-magazine text-sm font-bold tracking-[0.2em] text-rm-navy uppercase"
                         >
                           {item.tag}
@@ -93,7 +98,7 @@ export async function HobbiesPage({ page }: { page: Page }) {
 
                     <div className="flex flex-1 flex-col gap-3 p-5 pt-4">
                       {item.isExample && <ExampleBadge label={t("common.example")} className="w-fit" />}
-                      <h2 lang="hu" className="font-magazine text-3xl leading-none font-bold uppercase">
+                      <h2 lang={item.lang.title} className="font-magazine text-3xl leading-none font-bold uppercase">
                         {item.title}
                       </h2>
                       {item.since && (
@@ -102,13 +107,13 @@ export async function HobbiesPage({ page }: { page: Page }) {
                           <span className="font-semibold tracking-wider text-page-muted uppercase">
                             {t("hobbies.since")}:
                           </span>
-                          <span lang="hu" className="font-magazine text-xl font-bold">
+                          <span lang={item.lang.since} className="font-magazine text-xl font-bold">
                             {item.since}
                           </span>
                         </p>
                       )}
                       {item.body && (
-                        <p lang="hu" className="text-page-muted">
+                        <p lang={item.lang.body} className="text-page-muted">
                           {item.body}
                         </p>
                       )}

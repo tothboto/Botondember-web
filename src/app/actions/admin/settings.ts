@@ -7,6 +7,7 @@ import { logActivity } from "@/lib/audit";
 import { runAdmin, type ActionResult } from "@/lib/admin/result";
 import { writeSetting } from "@/lib/admin/store";
 import { invalidateContent } from "@/lib/cache";
+import { remapFooterLinkTranslations } from "@/lib/content-i18n/store";
 import { readAllSettings } from "@/lib/data/settings";
 import { SOURCE_LOCALE } from "@/lib/i18n/messages";
 import { FAVICON_FILES, faviconKey } from "@/lib/media/favicon";
@@ -25,6 +26,7 @@ export async function saveGeneralPage(input: { general: unknown; footer: unknown
     const current = await readAllSettings();
     await writeSetting(db, "general", { ...general, faviconVersion: current.general.faviconVersion });
     await writeSetting(db, "footer", footer);
+    await remapFooterLinkTranslations(db, current.footer.links.map((l) => l.label), footer.links.map((l) => l.label));
     await logActivity(db, "Általános", "Beállítások mentve");
     invalidateContent();
     return null;

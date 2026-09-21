@@ -7,6 +7,7 @@ import { GenericPage } from "@/components/pages/GenericPage";
 import { HobbiesPage } from "@/components/pages/HobbiesPage";
 import { YoutubePage } from "@/components/pages/YoutubePage";
 import type { Page } from "@/db/schema";
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getImages } from "@/lib/data/media";
 import { getPageBySlug, pageTitleKey } from "@/lib/data/pages";
 import { getI18n } from "@/lib/i18n/server";
@@ -19,16 +20,17 @@ async function resolvePage(slugParts: string[]): Promise<Page | null> {
 export async function generateMetadata({ params }: PageProps<"/[...slug]">): Promise<Metadata> {
   const page = await resolvePage((await params).slug);
   if (!page) return {};
-  const [{ t }, images] = await Promise.all([getI18n(), getImages()]);
+  const [{ t }, images, l] = await Promise.all([getI18n(), getImages(), getLocalizer()]);
   const title = t(pageTitleKey(page));
   const hero = images(page.heroMediaId);
+  const description = l.get("pages", page.id, "seoDescription", page.seoDescription).text || undefined;
   return {
     title,
-    description: page.seoDescription || undefined,
+    description,
     alternates: { canonical: `/${page.slug}` },
     openGraph: {
       title,
-      description: page.seoDescription || undefined,
+      description,
       images: hero ? [{ url: hero.src, width: hero.width, height: hero.height, alt: hero.alt }] : undefined,
     },
   };

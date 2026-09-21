@@ -23,6 +23,7 @@ function subscribeScroll(callback: () => void) {
 
 export function HeaderClient({
   title,
+  titleLang,
   navItems,
   sticky,
   locales,
@@ -31,6 +32,8 @@ export function HeaderClient({
   logoutAction,
 }: {
   title: string;
+  /** A felirat nyelve (a látogató nyelve, ha van fordítás; különben magyar). */
+  titleLang: string;
   navItems: NavItem[];
   sticky: boolean;
   locales: PublicLocale[];
@@ -81,7 +84,7 @@ export function HeaderClient({
         >
           <Crown aria-hidden className="h-6 w-6 shrink-0 text-rm-gold sm:h-7 sm:w-7" strokeWidth={2.2} />
           <span
-            lang="hu"
+            lang={titleLang}
             className="brand-text font-royal text-[clamp(1rem,4.4vw,1.5rem)] leading-tight font-bold tracking-wide text-balance"
           >
             {title}

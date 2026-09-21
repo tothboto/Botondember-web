@@ -6,6 +6,7 @@ import { ExampleBadge } from "@/components/site/ExampleBadge";
 import { Markdown } from "@/components/site/Markdown";
 import { PageHeader } from "@/components/site/PageHeader";
 import type { FootballSection, Page } from "@/db/schema";
+import { getLocalizer } from "@/lib/content-i18n/localize";
 import { getFootball } from "@/lib/data/content";
 import { getImages } from "@/lib/data/media";
 import { pageTitleKey } from "@/lib/data/pages";
@@ -30,8 +31,14 @@ function SectionTitle({ children, id }: { children: ReactNode; id: string }) {
  * Jogvédett kép, címer vagy logó nincs a kódban – ezeket Botond töltheti fel.
  */
 export async function FootballPage({ page }: { page: Page }) {
-  const [{ t }, data, images] = await Promise.all([getI18n(), getFootball(), getImages()]);
+  const [{ t }, data, images, l] = await Promise.all([getI18n(), getFootball(), getImages(), getLocalizer()]);
   const pageTitle = t(pageTitleKey(page));
+  const intro = l.get("pages", page.id, "introMd", page.introMd);
+  const players = data.players.map((player) => l.row("football_players", player, ["name", "position", "note"] as const));
+  const moments = data.moments.map((moment) => l.row("football_moments", moment, ["year", "title", "body"] as const));
+  const facts = data.facts.map((fact) => l.row("football_facts", fact, ["label", "value"] as const));
+  const sectionText = (section: FootballSection, field: "title" | "bodyMd") =>
+    l.get("football_sections", section.id, field, section[field]);
   const newTab = t("common.opensInNewTab");
   const sections = data.sections.filter((section) => section.visible);
   const hasHero = sections.some((section) => section.type === "hero");
@@ -40,6 +47,9 @@ export async function FootballPage({ page }: { page: Page }) {
     switch (section.type) {
       case "hero": {
         const image = images(section.mediaId);
+        // Üres cím esetén a lap (felület szerint fordított) címe jelenik meg.
+        const heading = section.title ? sectionText(section, "title") : { text: pageTitle, lang: l.locale };
+        const subtitle = sectionText(section, "bodyMd");
         return (
           <section
             key={section.id}
@@ -49,7 +59,7 @@ export async function FootballPage({ page }: { page: Page }) {
               <Image
                 src={image.src}
                 alt={image.alt}
-                lang="hu"
+                lang={image.altLang}
                 fill
                 preload
                 sizes="100vw"
@@ -66,30 +76,35 @@ export async function FootballPage({ page }: { page: Page }) {
                 {pageTitle}
               </p>
               <h1
-                lang="hu"
+                lang={heading.lang}
                 className="mt-4 font-display text-[clamp(3.2rem,11vw,8.5rem)] leading-[0.88] font-black tracking-tight uppercase"
               >
-                {section.title || pageTitle}
+                {heading.text}
               </h1>
-              {section.bodyMd && (
-                <p lang="hu" className="mt-5 font-display text-xl font-semibold text-rm-gold italic sm:text-2xl">
-                  {section.bodyMd}
+              {subtitle.text && (
+                <p lang={subtitle.lang} className="mt-5 font-display text-xl font-semibold text-rm-gold italic sm:text-2xl">
+                  {subtitle.text}
                 </p>
               )}
-              {page.introMd && <Markdown className="mt-5 max-w-2xl prose-lg">{page.introMd}</Markdown>}
+              {intro.text && (
+                <Markdown lang={intro.lang} className="mt-5 max-w-2xl prose-lg">
+                  {intro.text}
+                </Markdown>
+              )}
             </div>
           </section>
         );
       }
 
-      case "why":
+      case "why": {
+        const body = sectionText(section, "bodyMd");
         return (
           <section key={section.id} aria-labelledby="rm-why" className="container-page py-16 md:py-24">
             <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16">
               <SectionTitle id="rm-why">{t("football.section.why")}</SectionTitle>
-              {section.bodyMd ? (
-                <Markdown className="prose-lg" newTabLabel={newTab}>
-                  {section.bodyMd}
+              {body.text ? (
+                <Markdown lang={body.lang} className="prose-lg" newTabLabel={newTab}>
+                  {body.text}
                 </Markdown>
               ) : (
                 <EmptyState text={t("common.empty")} />
@@ -97,17 +112,18 @@ export async function FootballPage({ page }: { page: Page }) {
             </div>
           </section>
         );
+      }
 
       case "players":
         return (
           <section key={section.id} aria-labelledby="rm-players" className="bg-page-surface py-16 md:py-24">
             <div className="container-page">
               <SectionTitle id="rm-players">{t("football.section.players")}</SectionTitle>
-              {data.players.length === 0 ? (
+              {players.length === 0 ? (
                 <EmptyState text={t("common.empty")} className="mt-10" />
               ) : (
                 <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {data.players.map((player) => {
+                  {players.map((player) => {
                     const image = images(player.mediaId);
                     return (
                       <li key={player.id}>
@@ -117,7 +133,7 @@ export async function FootballPage({ page }: { page: Page }) {
                               <Image
                                 src={image.src}
                                 alt={image.alt}
-                                lang="hu"
+                                lang={image.altLang}
                                 fill
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-cover"
@@ -137,12 +153,12 @@ export async function FootballPage({ page }: { page: Page }) {
                             )}
                             <div className="absolute inset-x-0 bottom-0 p-5">
                               {player.position && (
-                                <p lang="hu" className="text-xs font-bold tracking-[0.25em] text-rm-gold uppercase">
+                                <p className="text-xs font-bold tracking-[0.25em] text-rm-gold uppercase">
                                   <span className="sr-only">{t("football.position")}: </span>
-                                  {player.position}
+                                  <span lang={player.lang.position}>{player.position}</span>
                                 </p>
                               )}
-                              <h3 lang="hu" className="mt-1 font-display text-2xl leading-tight font-black uppercase">
+                              <h3 lang={player.lang.name} className="mt-1 font-display text-2xl leading-tight font-black uppercase">
                                 {player.name}
                               </h3>
                               {player.number && (
@@ -155,7 +171,7 @@ export async function FootballPage({ page }: { page: Page }) {
                           {(player.note || player.isExample) && (
                             <div className="flex flex-1 flex-col gap-3 p-5 pt-4">
                               {player.note && (
-                                <p lang="hu" className="text-white/85">
+                                <p lang={player.lang.note} className="text-white/85">
                                   {player.note}
                                 </p>
                               )}
@@ -176,11 +192,11 @@ export async function FootballPage({ page }: { page: Page }) {
         return (
           <section key={section.id} aria-labelledby="rm-moments" className="container-page py-16 md:py-24">
             <SectionTitle id="rm-moments">{t("football.section.moments")}</SectionTitle>
-            {data.moments.length === 0 ? (
+            {moments.length === 0 ? (
               <EmptyState text={t("common.empty")} className="mt-10" />
             ) : (
               <ol className="mt-12 space-y-12 border-l-2 border-page-accent pl-7 sm:pl-10">
-                {data.moments.map((moment) => {
+                {moments.map((moment) => {
                   const image = images(moment.mediaId);
                   return (
                     <li key={moment.id} className="relative">
@@ -191,15 +207,15 @@ export async function FootballPage({ page }: { page: Page }) {
                       <div className="grid gap-5 md:grid-cols-[1fr_18rem] md:items-start">
                         <div className="space-y-2">
                           {moment.year && (
-                            <p lang="hu" className="font-display text-4xl leading-none font-black text-page-accent-text">
+                            <p lang={moment.lang.year} className="font-display text-4xl leading-none font-black text-page-accent-text">
                               {moment.year}
                             </p>
                           )}
-                          <h3 lang="hu" className="font-display text-2xl font-bold uppercase">
+                          <h3 lang={moment.lang.title} className="font-display text-2xl font-bold uppercase">
                             {moment.title}
                           </h3>
                           {moment.body && (
-                            <p lang="hu" className="max-w-2xl text-lg text-page-muted">
+                            <p lang={moment.lang.body} className="max-w-2xl text-lg text-page-muted">
                               {moment.body}
                             </p>
                           )}
@@ -222,7 +238,7 @@ export async function FootballPage({ page }: { page: Page }) {
                             <Image
                               src={image.src}
                               alt={image.alt}
-                              lang="hu"
+                              lang={image.altLang}
                               fill
                               sizes="(min-width: 768px) 288px, 100vw"
                               className="object-cover"
@@ -247,16 +263,16 @@ export async function FootballPage({ page }: { page: Page }) {
           >
             <div className="container-page">
               <SectionTitle id="rm-facts">{t("football.section.facts")}</SectionTitle>
-              {data.facts.length === 0 ? (
+              {facts.length === 0 ? (
                 <p className="mt-8 text-white/80">{t("common.empty")}</p>
               ) : (
                 <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {data.facts.map((fact) => (
+                  {facts.map((fact) => (
                     <div key={fact.id} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/15">
-                      <dt lang="hu" className="text-xs font-bold tracking-[0.25em] text-rm-gold uppercase">
+                      <dt lang={fact.lang.label} className="text-xs font-bold tracking-[0.25em] text-rm-gold uppercase">
                         {fact.label}
                       </dt>
-                      <dd lang="hu" className="mt-2 font-display text-2xl font-bold">
+                      <dd lang={fact.lang.value} className="mt-2 font-display text-2xl font-bold">
                         {fact.value}
                       </dd>
                     </div>
@@ -295,7 +311,9 @@ export async function FootballPage({ page }: { page: Page }) {
 
   return (
     <div className="flex-1 bg-page-bg text-page-fg">
-      {!hasHero && <PageHeader title={pageTitle} icon={page.icon} intro={page.introMd} titleClassName="font-display" />}
+      {!hasHero && (
+        <PageHeader title={pageTitle} icon={page.icon} intro={intro.text} introLang={intro.lang} titleClassName="font-display" />
+      )}
       {sections.map(render)}
     </div>
   );

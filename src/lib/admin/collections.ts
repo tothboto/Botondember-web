@@ -6,6 +6,7 @@
 import { and, eq, ne, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import { footballFacts, footballMoments, footballPlayers, games, genericItems, hobbies, pages, youtubeItems } from "@/db/schema";
+import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { assertMediaExists } from "@/lib/media/library";
 import { COLLECTION_TABLES, itemSchemas, type CollectionKey } from "./schemas";
 import { UserError } from "./result";
@@ -167,5 +168,7 @@ export async function deleteItem(db: Db, collection: CollectionKey, id: number):
   const titleColumn = collection === "players" ? "name" : collection === "facts" ? "label" : "title";
   const rows = await db.all<{ title: string }>(sql`SELECT ${sql.raw(titleColumn)} AS title FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
   await db.run(sql`DELETE FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
+  // A saját szövegek fordításai a tábla nevével azonosítják az elemet (pl. `hobbies:12:title`).
+  await deleteContentForEntity(db, meta.table, id);
   return rows[0]?.title ?? "";
 }

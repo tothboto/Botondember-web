@@ -18,6 +18,8 @@ const ADMIN_PAGES = [
   "/admin/youtube",
   "/admin/real-madrid",
   "/admin/jogi-oldalak",
+  "/admin/tartalom-forditasa",
+  "/admin/tartalom-forditasa?nyelv=is",
   "/admin/forditasok",
   "/admin/mediatar",
   "/admin/mentes",

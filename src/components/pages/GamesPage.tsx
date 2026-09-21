@@ -5,6 +5,7 @@ import { ExampleBadge } from "@/components/site/ExampleBadge";
 import { Markdown } from "@/components/site/Markdown";
 import { Stars } from "@/components/site/Stars";
 import type { Game, Page } from "@/db/schema";
+import { getLocalizer, type LocalizedRow } from "@/lib/content-i18n/localize";
 import { getGames } from "@/lib/data/content";
 import { getImages, type ImageInfo } from "@/lib/data/media";
 import { pageTitleKey } from "@/lib/data/pages";
@@ -12,6 +13,10 @@ import { getI18n } from "@/lib/i18n/server";
 import { PageIcon } from "@/lib/icons";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
+
+/** A játékok fordítható mezői. */
+const GAME_FIELDS = ["title", "genre", "review"] as const;
+type LocalizedGame = LocalizedRow<Game, (typeof GAME_FIELDS)[number]>;
 
 /** A platformok felirata (a „Mobil” fordítódik, a többi márkanév). */
 export const PLATFORMS: { code: string; label: string | null }[] = [
@@ -63,7 +68,7 @@ function VisitLink({ href, t, size = "sm" }: { href: string; t: T; size?: "sm" |
   );
 }
 
-function FeaturedGame({ game, image, t }: { game: Game; image: ImageInfo | null; t: T }) {
+function FeaturedGame({ game, image, t }: { game: LocalizedGame; image: ImageInfo | null; t: T }) {
   return (
     <section aria-labelledby="featured-game-title" className="container-page">
       {/* A banner mindkét témában sötét – a helyi tokenek ehhez igazodnak. */}
@@ -88,7 +93,7 @@ function FeaturedGame({ game, image, t }: { game: Game; image: ImageInfo | null;
               <Image
                 src={image.src}
                 alt={image.alt}
-                lang="hu"
+                lang={image.altLang}
                 fill
                 sizes="(min-width: 768px) 240px, 208px"
                 className="object-cover"
@@ -102,21 +107,21 @@ function FeaturedGame({ game, image, t }: { game: Game; image: ImageInfo | null;
             </p>
             <h2
               id="featured-game-title"
-              lang="hu"
+              lang={game.lang.title}
               className="font-gamer text-[clamp(2rem,5vw,3.5rem)] leading-none font-bold uppercase"
             >
               {game.title}
             </h2>
             <PlatformBadges platforms={game.platforms} t={t} />
             {game.genre && (
-              <p lang="hu" className="text-white/80">
+              <p className="text-white/80">
                 <span className="sr-only">{t("games.genre")}: </span>
-                {game.genre}
+                <span lang={game.lang.genre}>{game.genre}</span>
               </p>
             )}
             <Stars rating={game.rating} label={t("games.ratingValue", { rating: game.rating })} />
             {game.review && (
-              <p lang="hu" className="max-w-2xl text-lg text-white/90">
+              <p lang={game.lang.review} className="max-w-2xl text-lg text-white/90">
                 {game.review}
               </p>
             )}
@@ -137,8 +142,10 @@ function FeaturedGame({ game, image, t }: { game: Game; image: ImageInfo | null;
  * álló (3:4) borítókból álló rács.
  */
 export async function GamesPage({ page }: { page: Page }) {
-  const [{ t }, items, images] = await Promise.all([getI18n(), getGames(), getImages()]);
+  const [{ t }, rows, images, l] = await Promise.all([getI18n(), getGames(), getImages(), getLocalizer()]);
   const title = t(pageTitleKey(page));
+  const intro = l.get("pages", page.id, "introMd", page.introMd);
+  const items = rows.map((game) => l.row("games", game, GAME_FIELDS));
   const featured = items.find((game) => game.featured) ?? null;
   const others = featured ? items.filter((game) => game.id !== featured.id) : items;
 
@@ -154,8 +161,10 @@ export async function GamesPage({ page }: { page: Page }) {
           </span>
           <span>{title}</span>
         </h1>
-        {page.introMd && (
-          <Markdown className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">{page.introMd}</Markdown>
+        {intro.text && (
+          <Markdown lang={intro.lang} className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">
+            {intro.text}
+          </Markdown>
         )}
       </header>
 
@@ -187,7 +196,7 @@ export async function GamesPage({ page }: { page: Page }) {
                             <Image
                               src={cover.src}
                               alt={cover.alt}
-                              lang="hu"
+                              lang={cover.altLang}
                               fill
                               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                               className="object-cover"
@@ -198,19 +207,19 @@ export async function GamesPage({ page }: { page: Page }) {
                           )}
                         </div>
                         <div className="mt-3 flex flex-1 flex-col gap-2">
-                          <h3 lang="hu" className="font-gamer text-lg leading-tight font-bold uppercase">
+                          <h3 lang={game.lang.title} className="font-gamer text-lg leading-tight font-bold uppercase">
                             {game.title}
                           </h3>
                           {game.genre && (
-                            <p lang="hu" className="text-sm text-page-muted">
+                            <p className="text-sm text-page-muted">
                               <span className="sr-only">{t("games.genre")}: </span>
-                              {game.genre}
+                              <span lang={game.lang.genre}>{game.genre}</span>
                             </p>
                           )}
                           <PlatformBadges platforms={game.platforms} t={t} />
                           <Stars rating={game.rating} label={t("games.ratingValue", { rating: game.rating })} />
                           {game.review && (
-                            <p lang="hu" className="line-clamp-3 text-sm text-page-muted">
+                            <p lang={game.lang.review} className="line-clamp-3 text-sm text-page-muted">
                               {game.review}
                             </p>
                           )}
