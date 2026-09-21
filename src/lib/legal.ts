@@ -43,7 +43,12 @@ export function fillLegalTokens(
       : placeholder("a tárhelyszolgáltató neve és elérhetősége – az élesítéskor kerül ide"),
     HATALYBALEPES: formatDate(legal.effectiveDate, options.locale ?? "hu"),
   };
-  return markdown.replace(/\{\{([A-Z_]+)\}\}/g, (match, name: string) =>
-    Object.prototype.hasOwnProperty.call(values, name) ? values[name as keyof typeof values] : match,
-  );
+  // A (félkövér) helyőrző után álló mondatvégi pontot is nézzük: a magyar és a horvát dátum
+  // pontra végződik („2026. szeptember 19.”), ilyenkor a mondat pontja már nem kell még egyszer.
+  return markdown.replace(/\{\{([A-Z_]+)\}\}(\**)(\.?)/g, (match, name: string, stars: string, dot: string) => {
+    if (!Object.prototype.hasOwnProperty.call(values, name)) return match;
+    const value = values[name as keyof typeof values];
+    const endsWithDot = name === "HATALYBALEPES" && value.endsWith(".");
+    return `${dot && endsWithDot ? value.slice(0, -1) : value}${stars}${dot}`;
+  });
 }

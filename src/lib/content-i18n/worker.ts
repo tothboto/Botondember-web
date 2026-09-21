@@ -112,7 +112,7 @@ export type ImportReport = {
 export function parseResultJson(content: string, file = "eredmeny.json"): ResultEntry[] {
   let data: unknown;
   try {
-    data = JSON.parse(content.replace(/^﻿/, ""));
+    data = JSON.parse(content.replace(/^\uFEFF/, ""));
   } catch (error) {
     throw new Error(`${file}: hibás JSON (${(error as Error).message})`);
   }
@@ -133,7 +133,7 @@ export function parseResultJson(content: string, file = "eredmeny.json"): Result
 }
 
 export function parseResultMarkdown(content: string, file = "eredmeny.md"): ResultEntry {
-  const match = /^﻿?---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(content);
+  const match = /^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(content);
   if (!match) throw new Error(`${file}: hiányzik a fejléc (--- key / locale / sourceHash ---).`);
   const header = Object.fromEntries(
     match[1]

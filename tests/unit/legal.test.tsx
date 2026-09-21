@@ -42,7 +42,18 @@ describe("jogi szövegek helyőrzői", () => {
     const filled = fillLegalTokens(PRIVACY_MD, settingDefaults.general, settingDefaults.legal);
     expect(filled).not.toMatch(/\{\{[A-Z_]+\}\}/);
     expect(filled).toContain("az adatkezelő neve – az Admin > Jogi oldalak menüben adható meg");
-    expect(filled).toContain("2026. szeptember 19.");
+    // A dátum pontja egyben a mondat vége is – nem lesz belőle dupla pont.
+    expect(filled).toContain("**2026. szeptember 19**. A tájékoztató");
+    expect(filled).not.toContain("19..");
+  });
+
+  it("a lefordított szövegben a dátum és a hiányzó adat felirata az oldal nyelvén jelenik meg", () => {
+    const text = "Name: {{ADATKEZELO_NEV}}\n\nFrom **{{HATALYBALEPES}}**. Then";
+    const en = fillLegalTokens(text, settingDefaults.general, settingDefaults.legal, { locale: "en", missing: "not provided yet" });
+    expect(en).toContain("Name: *[not provided yet]*");
+    expect(en).toContain("From **19 September 2026**. Then");
+    const hr = fillLegalTokens(text, settingDefaults.general, settingDefaults.legal, { locale: "hr", missing: "još nije navedeno" });
+    expect(hr).toContain("From **19. rujna 2026**. Then");
   });
 
   it("a megadott adatok bekerülnek, az e-mail kattintható link lesz", () => {

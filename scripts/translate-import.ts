@@ -41,7 +41,7 @@ async function main() {
 
   const archive = path.join(DIR, "kesz", new Date().toISOString().replace(/[:.]/g, "-"));
   fs.mkdirSync(archive, { recursive: true });
-  for (const file of [...jsonFiles, ...mdFiles]) fs.renameSync(file, path.join(archive, path.relative(DIR, file).replace(/[\/]/g, "_")));
+  for (const file of [...jsonFiles, ...mdFiles]) fs.renameSync(file, path.join(archive, path.relative(DIR, file).split(path.sep).join("_")));
 
   const perLocale: Record<string, number> = {};
   for (const item of report.saved) perLocale[item.locale] = (perLocale[item.locale] ?? 0) + 1;
