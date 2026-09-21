@@ -6,6 +6,7 @@ const LOCALE_TAGS: Record<string, string> = {
   es: "es-ES",
   de: "de-DE",
   is: "is-IS",
+  hr: "hr-HR",
 };
 
 export function localeTag(locale: string): string {

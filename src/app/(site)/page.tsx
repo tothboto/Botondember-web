@@ -76,6 +76,7 @@ export default async function HomePage() {
         <Image
           src={hero.src}
           alt={hero.alt}
+          lang="hu"
           fill
           preload
           sizes="100vw"
@@ -106,6 +107,7 @@ export default async function HomePage() {
           <Image
             src={figure.src}
             alt={figure.alt}
+            lang="hu"
             width={figure.width}
             height={figure.height}
             preload

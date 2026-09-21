@@ -6,8 +6,8 @@ Első teszt-weboldalam a kedvenc zenéimmel, YouTube csatornáimmal és videóim
 
 **Botondember első weboldala** – személyes bemutatkozó oldal: kezdőlap egy nagy képpel (rajta a
 **„Hol vagy? Mi ez?”** gombbal, ami elmondja a látogatónak, mi található az oldalon), **Hobbijaim**,
-**Játékaim**, **YouTube-kedvenceim** és **Real Madrid** aloldal, öt nyelven (magyar, angol, spanyol,
-német, izlandi), világos és sötét témával. Az oldal **minden szövege, képe és beállítása egy saját
+**Játékaim**, **YouTube-kedvenceim** és **Real Madrid** aloldal, hat nyelven (magyar, angol, spanyol,
+német, izlandi, horvát), világos és sötét témával. Az oldal **minden szövege, képe és beállítása egy saját
 Admin felületen szerkeszthető** – programozás nélkül.
 
 > Ez a leírás kezdőknek készült. Ha egy lépés nem működik, nézd meg a
@@ -131,7 +131,7 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
 | **Menü és aloldalak** | Menüpontok sorrendje, elrejtése, ikonja, URL-címe, neve nyelvenként; **új aloldal** létrehozása és törlése. |
 | **Hobbijaim / Játékaim / YouTube / Real Madrid** | Az aloldalak tartalma: kártyák hozzáadása, szerkesztése, sorrendje, elrejtése, törlése. YouTube-nál elég beilleszteni a linket – a címet és a képet az oldal magától kitölti. |
 | **Jogi oldalak** | Az Adatkezelési és a Cookie tájékoztató szövege (Markdown-szerkesztő előnézettel) és az adatkezelő adatai. |
-| **Fordítások** | A felület szövegei öt nyelven (táblázat, keresés, a hiányzók kiemelve), nyelvek be/ki, új nyelv, zászlók ki/be. |
+| **Fordítások** | A felület szövegei hat nyelven (táblázat, keresés, a hiányzók kiemelve), nyelvek be/ki, új nyelv, zászlók ki/be. |
 | **Médiatár** | Az összes kép: feltöltés, alt szöveg, törlés (figyelmeztet, ha a kép használatban van). |
 | **Mentés és visszaállítás** | Az egész oldal letöltése egy fájlba, és visszatöltése. |
 | **Fiók** | Jelszó és felhasználónév módosítása, kilépés (minden eszközön is). |

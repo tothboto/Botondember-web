@@ -49,6 +49,7 @@ export async function FootballPage({ page }: { page: Page }) {
               <Image
                 src={image.src}
                 alt={image.alt}
+                lang="hu"
                 fill
                 preload
                 sizes="100vw"
@@ -116,6 +117,7 @@ export async function FootballPage({ page }: { page: Page }) {
                               <Image
                                 src={image.src}
                                 alt={image.alt}
+                                lang="hu"
                                 fill
                                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                 className="object-cover"
@@ -220,6 +222,7 @@ export async function FootballPage({ page }: { page: Page }) {
                             <Image
                               src={image.src}
                               alt={image.alt}
+                              lang="hu"
                               fill
                               sizes="(min-width: 768px) 288px, 100vw"
                               className="object-cover"

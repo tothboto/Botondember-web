@@ -88,6 +88,7 @@ function FeaturedGame({ game, image, t }: { game: Game; image: ImageInfo | null;
               <Image
                 src={image.src}
                 alt={image.alt}
+                lang="hu"
                 fill
                 sizes="(min-width: 768px) 240px, 208px"
                 className="object-cover"
@@ -186,6 +187,7 @@ export async function GamesPage({ page }: { page: Page }) {
                             <Image
                               src={cover.src}
                               alt={cover.alt}
+                              lang="hu"
                               fill
                               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                               className="object-cover"

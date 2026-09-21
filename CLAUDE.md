@@ -52,7 +52,7 @@
 - **Minden tartalom és beállítás az adatbázisból jön**, és az Adminból szerkeszthető.
   Tartalmat ne égess a kódba.
 - Felületi („keretrendszer”) szövegek: `translations` tábla (kulcs × nyelv). Új kulcsot a
-  seed-listába (`src/lib/i18n/messages.ts`) is vegyél fel mind az öt nyelven (hu, en, es, de, is).
+  seed-listába (`src/lib/i18n/messages.ts`) is vegyél fel mind a hat nyelven (hu, en, es, de, is, hr).
   Hiányzó fordításnál a magyar szöveg jelenik meg.
 - A beírt tartalom (Botond szövegei) nem fordítódik, és `lang="hu"` attribútumot kap.
 - Minden admin műveletet **a szerveren** ellenőrizz (`requireAdmin()`), minden bemenetet `zod`-dal

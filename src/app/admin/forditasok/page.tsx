@@ -40,7 +40,7 @@ export default async function AdminTranslationsPage() {
     <>
       <AdminPageHeader
         title="Fordítások"
-        description="A felület szövegei öt nyelven. A te saját szövegeid (hobbik, leírások) nem fordítódnak – azok minden nyelven magyarul jelennek meg."
+        description="A felület szövegei minden nyelven. A te saját szövegeid (hobbik, leírások) nem fordítódnak – azok minden nyelven magyarul jelennek meg."
         viewHref="/"
       />
       <TranslationsEditor

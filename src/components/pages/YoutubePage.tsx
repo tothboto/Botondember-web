@@ -44,6 +44,7 @@ function VideoCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo | n
           <Image
             src={image.src}
             alt={image.alt}
+            lang="hu"
             fill
             sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
@@ -89,6 +90,7 @@ function PlaylistCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo 
             <Image
               src={image.src}
               alt={image.alt}
+              lang="hu"
               fill
               sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               className="object-cover"
@@ -131,7 +133,7 @@ function ChannelCard({ item, image, t }: { item: YoutubeItem; image: ImageInfo |
       className="group flex h-full flex-col items-center gap-3 rounded-xl p-4 text-center hover:bg-page-surface"
     >
       <div className="relative h-28 w-28 overflow-hidden rounded-full bg-page-surface ring-1 ring-black/5 sm:h-32 sm:w-32">
-        {image && <Image src={image.src} alt={image.alt} fill sizes="128px" className="object-cover" />}
+        {image && <Image src={image.src} alt={image.alt} lang="hu" fill sizes="128px" className="object-cover" />}
       </div>
       <h3 lang="hu" className="text-base font-medium group-hover:underline">
         {item.title}

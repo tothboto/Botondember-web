@@ -159,7 +159,7 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
         "",
         "Itt megmutatom, mi érdekel a legjobban: a hobbijaimat, a kedvenc játékaimat, a YouTube-kedvenceimet és a kedvenc focicsapatomat, a Real Madridot. Válassz egy témát az alábbi dobozok közül, vagy használd a fenti menüt!",
         "",
-        "Az oldal öt nyelven olvasható – a fejléc zászlóival válthatsz –, és világos vagy sötét változatban is nézheted. Jó böngészést!",
+        "Az oldal hat nyelven olvasható – a fejléc zászlóival válthatsz –, és világos vagy sötét változatban is nézheted. Jó böngészést!",
       ].join("\n"),
       showPages: true,
     },

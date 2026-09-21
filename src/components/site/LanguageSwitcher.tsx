@@ -24,6 +24,8 @@ export function LanguageSwitcher({ locales, size = "sm" }: { locales: PublicLoca
   };
 
   const flag = size === "lg" ? { w: 32, h: 24 } : { w: 24, h: 18 };
+  // „Váltás erre a nyelvre: {name}” – a mondat az oldal nyelvén van, csak a nyelv neve más nyelvű.
+  const [before, after = ""] = t("lang.switchTo").split("{name}");
 
   return (
     <ul aria-label={t("lang.choose")} aria-busy={pending || undefined} className="flex flex-wrap items-center gap-1">
@@ -48,8 +50,10 @@ export function LanguageSwitcher({ locales, size = "sm" }: { locales: PublicLoca
                 className="rounded-[3px] shadow-sm ring-1 ring-black/15"
                 style={{ width: flag.w, height: flag.h, objectFit: "cover" }}
               />
-              <span className="sr-only" lang={l.code}>
-                {current ? l.name : t("lang.switchTo", { name: l.name })}
+              <span className="sr-only">
+                {!current && before}
+                <span lang={l.code}>{l.name}</span>
+                {!current && after}
               </span>
             </button>
           </li>

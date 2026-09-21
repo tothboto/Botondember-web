@@ -25,7 +25,7 @@ export async function GenericPage({ page }: { page: Page }) {
       {hero && (
         <div className="container-page">
           <div className="relative aspect-[16/7] overflow-hidden rounded-2xl bg-page-surface ring-1 ring-page-line">
-            <Image src={hero.src} alt={hero.alt} fill preload sizes="(min-width: 1280px) 1216px, 100vw" className="object-cover" />
+            <Image src={hero.src} alt={hero.alt} lang="hu" fill preload sizes="(min-width: 1280px) 1216px, 100vw" className="object-cover" />
           </div>
         </div>
       )}
@@ -51,6 +51,7 @@ export async function GenericPage({ page }: { page: Page }) {
                         <Image
                           src={image.src}
                           alt={image.alt}
+                          lang="hu"
                           fill
                           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                           className="object-cover"

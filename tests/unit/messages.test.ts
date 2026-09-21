@@ -9,8 +9,16 @@ describe("a felület szövegei (seed)", () => {
     expect(SEED_LOCALES.find((l) => l.isDefault)?.code).toBe("hu");
   });
 
-  it("mind az öt nyelv szerepel: magyar, angol, spanyol, német, izlandi", () => {
-    expect(SEED_LOCALES.map((l) => l.code)).toEqual(["hu", "en", "es", "de", "is"]);
+  it("mind a hat nyelv szerepel: magyar, angol, spanyol, német, izlandi, horvát", () => {
+    expect(SEED_LOCALES.map((l) => l.code)).toEqual(["hu", "en", "es", "de", "is", "hr"]);
+    expect(SEED_LOCALES.find((l) => l.code === "hr")).toMatchObject({ name: "Hrvatski", flag: "hr" });
+  });
+
+  it("a horvát fordítás nem maradt magyarul (nincs benne magyar ékezetes betű)", () => {
+    // A horvát ábécében nincs á, é, í, ó, ö, ő, ú, ü, ű – ha mégis van, a szöveg lefordítatlan maradt.
+    for (const [key, row] of Object.entries(SEED_MESSAGES)) {
+      expect(row.hr, key).not.toMatch(/[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/);
+    }
   });
 
   it.each(Object.entries(SEED_MESSAGES))("%s – minden nyelven ki van töltve, azonos helyőrzőkkel", (_key, row) => {
