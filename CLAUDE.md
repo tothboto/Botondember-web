@@ -10,6 +10,9 @@
   `docs/DONTESEK.md` naplóba (dátum · kérdés · döntés · 1–2 mondatos indoklás).
 - A teljes feladatleírás: `docs/SPECIFIKACIO.md` (jelszó nélküli másolat). A döntésnapló pontosítja.
 - Mérföldkövek / nagyobb lépések végén rövid (3–6 soros) magyar összefoglaló: mi készült el, hol nézhető meg.
+- **Proaktivitás (a felhasználó kifejezetten megköszönte):** ha munka közben hibát vagy hiányosságot
+  találsz, javítsd ki, és az összefoglalóban röviden jelezd. Az eredményt ellenőrizd is (tesztek,
+  képernyőképek több képernyőméretben), mielőtt késznek mondod.
 
 ## Git és GitHub szinkron – kérdezés nélkül, folyamatosan
 
