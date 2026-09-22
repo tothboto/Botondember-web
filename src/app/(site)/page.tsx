@@ -8,7 +8,8 @@ import { getLocalizer, type Localized, type Localizer } from "@/lib/content-i18n
 import { getImages } from "@/lib/data/media";
 import { getVisiblePages, pageHref, pageTitleKey } from "@/lib/data/pages";
 import { getAllSettings } from "@/lib/data/settings";
-import { heroLines, longestLine } from "@/lib/hero";
+import { heroCharWidth } from "@/lib/font-options";
+import { heroLines, heroWidthEm } from "@/lib/hero";
 import { PageIcon } from "@/lib/icons";
 import { getI18n } from "@/lib/i18n/server";
 import { stripInlineMarkdown } from "@/lib/markdown/toc";
@@ -65,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * Semmi más: nincs galéria, számláló, óra vagy animáció.
  */
 export default async function HomePage() {
-  const [{ home }, images, i18n, pages, l] = await Promise.all([
+  const [{ home, appearance }, images, i18n, pages, l] = await Promise.all([
     getAllSettings(),
     getImages(),
     getI18n(),
@@ -86,6 +87,11 @@ export default async function HomePage() {
     text: text("guide.text", home.guide.text),
   };
   const lines = heroLines(message.text);
+  // A betűméret a leghosszabb sorhoz és a választott betűtípus szélességéhez igazodik (lásd .hero-title).
+  const heroSize = {
+    "--hero-em": heroWidthEm(lines, heroCharWidth(appearance.fonts.hero)),
+    "--hero-lines": Math.max(1, lines.length),
+  } as CSSProperties;
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
 
@@ -142,16 +148,13 @@ export default async function HomePage() {
         </div>
       )}
 
-      <div className="relative z-10 container-page pt-44 pb-[max(4.5rem,11vh)]">
-        <div className="max-w-6xl">
+      {/* A teljes szélességű keret a felirat méretezéséhez kell (konténer-egységek: cqw). */}
+      <div className="relative z-10 w-full @container">
+        <div className="container-page pt-44 pb-[max(4.5rem,11vh)]">
           <span aria-hidden className="mb-7 block h-1.5 w-24 bg-[image:var(--gold-gradient)]" />
           {/* Édesapa oldalának stílusában: soronként váltakozva körvonalas és teli betűk
               (mobilon mindegyik sor teli). A méret a leghosszabb sorhoz igazodik. */}
-          <h1
-            lang={message.lang}
-            className="font-hero text-[length:clamp(2.5rem,calc(min(88vw,74rem)/(var(--hero-chars)*0.6)),11.5rem)] leading-[0.92] font-extrabold tracking-[-0.045em] uppercase"
-            style={{ "--hero-chars": longestLine(lines) } as CSSProperties}
-          >
+          <h1 lang={message.lang} className="hero-title font-hero font-extrabold tracking-[-0.045em] uppercase" style={heroSize}>
             {lines.map((line, index) => (
               <Fragment key={index}>
                 {/* A szóköz nem látszik, de a képernyőolvasó és a keresők egy mondatként olvassák. */}

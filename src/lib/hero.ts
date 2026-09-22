@@ -21,3 +21,12 @@ export function heroLines(message: string): string[] {
 export function longestLine(lines: string[]): number {
   return Math.max(6, ...lines.map((line) => [...line].length));
 }
+
+/**
+ * A leghosszabb sor becsült szélessége a betűméret egységében („em”):
+ * karakterszám × a betűtípus átlagos karakterszélessége. A CSS ebből számolja
+ * ki a betűméretet, hogy a felirat kitöltse a rendelkezésre álló szélességet.
+ */
+export function heroWidthEm(lines: string[], charWidth: number): number {
+  return Math.round(longestLine(lines) * charWidth * 1000) / 1000;
+}

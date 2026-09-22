@@ -461,6 +461,40 @@
   background: rgb(4 10 22 / 0.72);
 }
 
+/*
+ * Kezdőlap: a nagy felirat. A betűméret úgy áll be, hogy a leghosszabb sor kitöltse
+ * a helyet a tartalom bal szélétől a képernyő jobb széléig (--hero-em: a leghosszabb
+ * sor becsült szélessége betűméretnyi egységben), de a felirat a képernyő magasságába
+ * is beleférjen (--hero-lines: a sorok száma). Tágas sorköz.
+ */
+.hero-title {
+  font-size: clamp(2.5rem, calc(min(88vw, 74rem) / var(--hero-em)), 11.5rem);
+  line-height: 1.1;
+}
+@supports (width: 1cqw) {
+  .hero-title {
+    --hero-pad: 1rem;
+    /* A tartalom szélessége + a jobb oldali margó (a container-page 80rem-es korlátján túl). */
+    --hero-width: calc(min(100cqw, 80rem) - 2 * var(--hero-pad) + max(0px, (100cqw - 80rem) / 2));
+    width: var(--hero-width);
+    font-size: clamp(
+      2.5rem,
+      min(calc(var(--hero-width) * 0.97 / var(--hero-em)), calc((100svh - 24rem) / (var(--hero-lines) * 1.1))),
+      14rem
+    );
+  }
+  @media (width >= 40rem) {
+    .hero-title {
+      --hero-pad: 1.5rem;
+    }
+  }
+  @media (width >= 64rem) {
+    .hero-title {
+      --hero-pad: 2rem;
+    }
+  }
+}
+
 /* Belépő ablak (modál) */
 .modal {
   margin: auto;

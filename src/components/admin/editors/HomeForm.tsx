@@ -336,7 +336,7 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
           )}
           <div className="relative p-5 sm:p-7">
             <span aria-hidden className="mb-3 block h-1 w-12 bg-[image:var(--gold-gradient)]" />
-            <p lang="hu" className="font-hero text-2xl leading-[0.92] font-extrabold tracking-[-0.045em] uppercase sm:text-4xl">
+            <p lang="hu" className="font-hero text-2xl leading-[1.1] font-extrabold tracking-[-0.045em] uppercase sm:text-4xl">
               {(heroLines(values.message).length > 0 ? heroLines(values.message) : ["…"]).map((line, index) => (
                 <span
                   key={index}
