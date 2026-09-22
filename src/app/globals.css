@@ -462,35 +462,68 @@
 }
 
 /*
- * Kezdőlap: a nagy felirat. A betűméret úgy áll be, hogy a leghosszabb sor kitöltse
- * a helyet a tartalom bal szélétől a képernyő jobb széléig (--hero-em: a leghosszabb
- * sor becsült szélessége betűméretnyi egységben), de a felirat a képernyő magasságába
- * is beleférjen (--hero-lines: a sorok száma). Tágas sorköz.
+ * Kezdőlap: a nagy felirat és az előtérben álló alak (rajz).
+ * A betűméret úgy áll be, hogy a leghosszabb sor kitöltse a helyet a tartalom bal
+ * szélétől a képernyő jobb széléig (--hero-em: a leghosszabb sor becsült szélessége
+ * betűméretnyi egységben), de a felirat a képernyő magasságába is beleférjen
+ * (--hero-lines: a sorok száma). Tágas sorköz. A számításhoz a kezdőlap teljes
+ * szélessége a „konténer” (cqw), így a felirat és a rajz ugyanabból számol.
  */
+.hero-frame {
+  container-type: inline-size;
+}
 .hero-title {
   font-size: clamp(2.5rem, calc(min(88vw, 74rem) / var(--hero-em)), 11.5rem);
   line-height: 1.1;
 }
+/* „A felirathoz igazítva”: mobilon (és régi böngészőben) középen, a szöveg fölött. */
+.hero-figure-at {
+  justify-content: center;
+  padding-inline: 0.75rem;
+}
 @supports (width: 1cqw) {
-  .hero-title {
+  .hero-frame {
     --hero-pad: 1rem;
+    /* A felirat bal széle: a tartalom (container-page, max. 80rem) bal széle. */
+    --hero-left: calc(max(0px, (100cqw - 80rem) / 2) + var(--hero-pad));
     /* A tartalom szélessége + a jobb oldali margó (a container-page 80rem-es korlátján túl). */
     --hero-width: calc(min(100cqw, 80rem) - 2 * var(--hero-pad) + max(0px, (100cqw - 80rem) / 2));
-    width: var(--hero-width);
-    font-size: clamp(
+    --hero-size: clamp(
       2.5rem,
       min(calc(var(--hero-width) * 0.97 / var(--hero-em)), calc((100svh - 24rem) / (var(--hero-lines) * 1.1))),
       14rem
     );
   }
   @media (width >= 40rem) {
-    .hero-title {
+    .hero-frame {
       --hero-pad: 1.5rem;
     }
   }
   @media (width >= 64rem) {
-    .hero-title {
+    .hero-frame {
       --hero-pad: 2rem;
+    }
+  }
+  .hero-title {
+    width: var(--hero-width);
+    font-size: var(--hero-size);
+  }
+  /*
+   * „A felirathoz igazítva”: a rajz bal széle a leghosszabb sor --figure-at részénél áll
+   * (0 = a felirat eleje, 1 = a becsült vége), de sosem lóg ki jobbra a képernyőből.
+   * Csak asztali / tablet nézetben – mobilon a rajz középen, a szöveg fölött marad.
+   */
+  @media (width >= 40rem) {
+    .hero-figure-at {
+      justify-content: flex-start;
+      padding-inline: 0;
+      padding-left: max(
+        0px,
+        min(
+          calc(var(--hero-left) + var(--figure-at) * var(--hero-em) * var(--hero-size)),
+          calc(100cqw - var(--figure-width) - var(--hero-pad))
+        )
+      );
     }
   }
 }

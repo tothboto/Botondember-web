@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import sharp from "sharp";
 import { loginAsAdmin } from "./helpers";
 
 /** Kattintás a „Mentés” gombra (az oldalon vagy egy űrlapon belül), és megvárja a „Mentve!” visszajelzést. */
@@ -40,11 +41,10 @@ test.describe("Admin szerkesztők", () => {
   });
 
   test("az előtérben álló alak feltöltése megjelenik a kezdőlapon", async ({ page }) => {
-    // 1×1 képpontos, átlátszó PNG – csak a folyamatot teszteljük.
-    const png = Buffer.from(
-      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-      "base64",
-    );
+    // Egy álló (30×80-as), egyszínű kép – nagyjából olyan arányú, mint egy rajzolt alak.
+    const png = await sharp({ create: { width: 30, height: 80, channels: 4, background: { r: 200, g: 40, b: 40, alpha: 1 } } })
+      .png()
+      .toBuffer();
     await page.goto("/admin/kezdolap");
     const field = page.locator("fieldset").filter({ has: page.locator("#home-figure-file") });
     await page.locator("#home-figure-file").setInputFiles({ name: "alak.png", mimeType: "image/png", buffer: png });
@@ -55,8 +55,32 @@ test.describe("Admin szerkesztők", () => {
     await page.goto("/");
     await expect(page.getByAltText("Teszt rajz Botondemberről")).toBeVisible();
 
-    // Takarítás: az alak eltávolítása.
+    // A felirathoz igazítva: a rajz bal széle a „vagyok” szó „o” betűjénél (71%).
     await page.goto("/admin/kezdolap");
+    await page.getByText("A felirathoz igazítva").click();
+    const offset = page.getByLabel(/A rajz bal széle a felirat/);
+    await expect(offset).toHaveValue("70");
+    await offset.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(offset).toHaveValue("71");
+    await save(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    const gap = await page.evaluate(() => {
+      const line = document.querySelectorAll("h1 span")[1].firstChild as Text;
+      const at = line.textContent!.toLowerCase().lastIndexOf("vagyok") + 4;
+      const range = document.createRange();
+      range.setStart(line, at);
+      range.setEnd(line, at + 1);
+      const figure = document.querySelector('img[alt="Teszt rajz Botondemberről"]')!;
+      return figure.getBoundingClientRect().left - range.getBoundingClientRect().left;
+    });
+    expect(Math.abs(gap)).toBeLessThan(15);
+
+    // Takarítás: az alak eltávolítása, a hely vissza középre.
+    await page.goto("/admin/kezdolap");
+    await page.getByText("Középen", { exact: true }).click();
     await field.getByRole("button", { name: "Eltávolítás" }).click();
     await save(page);
     await page.goto("/");

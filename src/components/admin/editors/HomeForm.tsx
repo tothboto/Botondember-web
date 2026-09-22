@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type CSSProperties, type FormEvent } from "react";
 import { saveHome } from "@/app/actions/admin/settings";
-import { heroLines } from "@/lib/hero";
+import { heroCharWidth } from "@/lib/font-options";
+import { heroLines, heroWidthEm } from "@/lib/hero";
 import type { FigurePosition, FocalPoint, HomeSettings } from "@/lib/settings";
 import { MarkdownEditor } from "../MarkdownEditor";
 import { MediaField } from "../MediaField";
@@ -17,6 +18,7 @@ const FIGURE_PLACES: { value: FigurePosition; label: string; justify: string }[]
   { value: "left", label: "Bal oldalon", justify: "justify-start" },
   { value: "center", label: "Középen", justify: "justify-center" },
   { value: "right", label: "Jobb oldalon", justify: "justify-end" },
+  { value: "text", label: "A felirathoz igazítva", justify: "justify-start" },
 ];
 
 const FOCAL: { value: FocalPoint; label: string; position: string }[] = [
@@ -167,6 +169,24 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
                     ))}
                   </div>
                 </fieldset>
+                {values.figurePosition === "text" && (
+                  <Field
+                    label={`A rajz bal széle a felirat ${values.figureOffset}%-ánál`}
+                    htmlFor="home-figure-offset"
+                    hint="0% = a felirat eleje, 100% = a leghosszabb sor vége. A rajz a felirattal együtt nő és mozog, így minden képernyőn ugyanannál a betűnél áll (a „vagyok” szó „o” betűje kb. 71%). Mobilon a rajz középen, a szöveg fölött marad."
+                  >
+                    <input
+                      id="home-figure-offset"
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={values.figureOffset}
+                      onChange={(event) => setValues((v) => ({ ...v, figureOffset: Number(event.target.value) }))}
+                      className="w-full accent-[var(--primary)]"
+                    />
+                  </Field>
+                )}
                 <Field
                   label={`Mekkora legyen: ${values.figureSize}%`}
                   htmlFor="home-figure-size"
@@ -324,7 +344,16 @@ export function HomeForm({ initial }: { initial: HomeSettings }) {
           />
           {/* Előtérben álló alak az előnézetben */}
           {figure && (
-            <div className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 flex px-3 ${figurePlace.justify}`}>
+            <div
+              className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 flex px-3 ${figurePlace.justify} ${
+                values.figurePosition === "text" ? "text-2xl sm:text-4xl pl-[calc(1.25rem+var(--fx))] sm:pl-[calc(1.75rem+var(--fx))]" : ""
+              }`}
+              style={
+                values.figurePosition === "text"
+                  ? ({ "--fx": `${(values.figureOffset / 100) * heroWidthEm(heroLines(values.message), heroCharWidth("roboto"))}em` } as CSSProperties)
+                  : undefined
+              }
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={figure.src}

@@ -42,6 +42,15 @@ describe("beállítások", () => {
     expect(parseSetting("home", { ...settingDefaults.home, figurePosition: "fent" })).toEqual(settingDefaults.home);
   });
 
+  it("a rajz a felirathoz is igazítható (a felirat szélességének 0–100%-ánál)", () => {
+    expect(settingDefaults.home.figureOffset).toBe(70);
+    const text = parseSetting("home", { ...settingDefaults.home, figurePosition: "text", figureOffset: 71 });
+    expect(text.figurePosition).toBe("text");
+    expect(text.figureOffset).toBe(71);
+    expect(parseSetting("home", { ...settingDefaults.home, figureOffset: 120 })).toEqual(settingDefaults.home);
+    expect(parseSetting("home", { ...settingDefaults.home, figureOffset: 12.5 })).toEqual(settingDefaults.home);
+  });
+
   it("veszélyes linket nem enged a láblécbe", () => {
     const footer = parseSetting("footer", { links: [{ label: "Rossz", url: "javascript:alert(1)" }] });
     expect(footer.links).toEqual([]);

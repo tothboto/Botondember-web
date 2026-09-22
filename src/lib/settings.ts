@@ -13,8 +13,11 @@ export type ThemeMode = (typeof THEME_MODES)[number];
 export const FOCAL_POINTS = ["center", "top", "bottom", "left", "right"] as const;
 export type FocalPoint = (typeof FOCAL_POINTS)[number];
 
-/** Az előtérben álló alak (rajz) helye a kezdőlapon. */
-export const FIGURE_POSITIONS = ["left", "center", "right"] as const;
+/**
+ * Az előtérben álló alak (rajz) helye a kezdőlapon. `text` = a nagy felirathoz igazítva:
+ * a rajz bal széle a felirat szélességének `figureOffset` százalékánál áll (asztali nézetben).
+ */
+export const FIGURE_POSITIONS = ["left", "center", "right", "text"] as const;
 export type FigurePosition = (typeof FIGURE_POSITIONS)[number];
 
 /** A Real Madrid színei (spec 7.1) – az Adminban felülírhatók. */
@@ -84,6 +87,8 @@ export const settingSchemas = {
     /** Előtérben álló alak (pl. rajz Botondemberről) – a szöveg mögötte fut. */
     figureMediaId: z.number().int().positive().nullable(),
     figurePosition: z.enum(FIGURE_POSITIONS),
+    /** A felirathoz igazított helynél: a rajz bal széle a felirat (leghosszabb sora) szélességének ennyi %-ánál. */
+    figureOffset: z.number().int().min(0).max(100),
     /** Az alak magassága a képernyő magasságának százalékában. */
     figureSize: z.number().int().min(30).max(100),
     /** Útbaigazító leírás a kezdőlapon, egy gomb mögött („Hol vagy? Mi ez”). */
@@ -151,6 +156,7 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
     motto: { enabled: false, text: "", author: "" },
     figureMediaId: null,
     figurePosition: "center",
+    figureOffset: 70,
     figureSize: 78,
     guide: {
       enabled: true,

@@ -24,11 +24,12 @@ function pageSummary(page: Page, l: Localizer): Localized {
   return { text: text.length > 120 ? `${text.slice(0, 117).trimEnd()}…` : text, lang: source.lang };
 }
 
-/** Az előtérben álló alak vízszintes helye. */
-const FIGURE_JUSTIFY: Record<FigurePosition, string> = {
-  left: "justify-start",
-  center: "justify-center",
-  right: "justify-end",
+/** Az előtérben álló alak vízszintes helye (a felirathoz igazított helyet a .hero-figure-at számolja). */
+const FIGURE_PLACE: Record<FigurePosition, string> = {
+  left: "justify-start px-3 sm:px-10",
+  center: "justify-center px-3 sm:px-10",
+  right: "justify-end px-3 sm:px-10",
+  text: "hero-figure-at",
 };
 
 /** A kép fókuszpontja (az Adminban választható) → CSS object-position. */
@@ -87,16 +88,22 @@ export default async function HomePage() {
     text: text("guide.text", home.guide.text),
   };
   const lines = heroLines(message.text);
-  // A betűméret a leghosszabb sorhoz és a választott betűtípus szélességéhez igazodik (lásd .hero-title).
-  const heroSize = {
+  // A betűméret a leghosszabb sorhoz és a választott betűtípus szélességéhez igazodik; a rajz
+  // helye ugyanebből számol (lásd .hero-frame, .hero-title és .hero-figure-at a globals.css-ben).
+  const heroFrame = {
     "--hero-em": heroWidthEm(lines, heroCharWidth(appearance.fonts.hero)),
     "--hero-lines": Math.max(1, lines.length),
+    "--figure-at": home.figureOffset / 100,
+    ...(figure ? { "--figure-width": `min(${((home.figureSize * figure.width) / figure.height).toFixed(2)}svh, 45vw)` } : {}),
   } as CSSProperties;
   const a = home.overlay / 100;
   const shade = (k: number) => `rgb(3 7 16 / ${Math.min(1, a * k).toFixed(3)})`;
 
   return (
-    <section className="tpl-home relative isolate flex min-h-[100svh] items-end overflow-hidden bg-[#050b17] text-white">
+    <section
+      className="tpl-home hero-frame relative isolate flex min-h-[100svh] items-end overflow-hidden bg-[#050b17] text-white"
+      style={heroFrame}
+    >
       {hero ? (
         <Image
           src={hero.src}
@@ -127,7 +134,7 @@ export default async function HomePage() {
       {/* Előtérben álló alak (rajz): a szöveg mögötte fut. Mobilon fent, hogy ne takarja a szöveget. */}
       {figure && (
         <div
-          className={`pointer-events-none absolute inset-x-0 top-[5%] bottom-auto z-20 flex px-3 sm:top-auto sm:bottom-0 sm:px-10 ${FIGURE_JUSTIFY[home.figurePosition]}`}
+          className={`pointer-events-none absolute inset-x-0 top-[5%] bottom-auto z-20 flex sm:top-auto sm:bottom-0 ${FIGURE_PLACE[home.figurePosition]}`}
         >
           <Image
             src={figure.src}
@@ -148,13 +155,12 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* A teljes szélességű keret a felirat méretezéséhez kell (konténer-egységek: cqw). */}
-      <div className="relative z-10 w-full @container">
+      <div className="relative z-10 w-full">
         <div className="container-page pt-44 pb-[max(4.5rem,11vh)]">
           <span aria-hidden className="mb-7 block h-1.5 w-24 bg-[image:var(--gold-gradient)]" />
           {/* Édesapa oldalának stílusában: soronként váltakozva körvonalas és teli betűk
               (mobilon mindegyik sor teli). A méret a leghosszabb sorhoz igazodik. */}
-          <h1 lang={message.lang} className="hero-title font-hero font-extrabold tracking-[-0.045em] uppercase" style={heroSize}>
+          <h1 lang={message.lang} className="hero-title font-hero font-extrabold tracking-[-0.045em] uppercase">
             {lines.map((line, index) => (
               <Fragment key={index}>
                 {/* A szóköz nem látszik, de a képernyőolvasó és a keresők egy mondatként olvassák. */}
