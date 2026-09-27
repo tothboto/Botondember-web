@@ -79,6 +79,7 @@ function FeaturedGame({ game, image, t }: { game: LocalizedGame; image: ImageInf
             alt=""
             aria-hidden
             fill
+            preload
             sizes="100vw"
             className="-z-20 scale-110 object-cover opacity-55 blur-2xl"
           />
@@ -95,6 +96,7 @@ function FeaturedGame({ game, image, t }: { game: LocalizedGame; image: ImageInf
                 alt={image.alt}
                 lang={image.altLang}
                 fill
+                preload
                 sizes="(min-width: 768px) 240px, 208px"
                 className="object-cover"
               />

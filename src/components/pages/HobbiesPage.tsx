@@ -73,6 +73,7 @@ export async function HobbiesPage({ page }: { page: Page }) {
                           alt={image.alt}
                           lang={image.altLang}
                           fill
+                          preload={index === 0}
                           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                           className="object-cover"
                         />

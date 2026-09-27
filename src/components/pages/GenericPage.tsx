@@ -45,7 +45,7 @@ export async function GenericPage({ page }: { page: Page }) {
       {items.length > 0 && (
         <section className="container-page pt-4">
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => {
+            {items.map((item, index) => {
               const image = images(item.mediaId);
               return (
                 <li key={item.id}>
@@ -57,6 +57,7 @@ export async function GenericPage({ page }: { page: Page }) {
                           alt={image.alt}
                           lang={image.altLang}
                           fill
+                          preload={!hero && index === 0}
                           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                           className="object-cover"
                         />
