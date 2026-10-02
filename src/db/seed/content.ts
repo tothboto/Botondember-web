@@ -45,6 +45,15 @@ export const CORE_PAGES = [
     introMd: "Hala Madrid! Ez a kedvenc focicsapatom – itt mesélek róla.",
     seoDescription: "Botondember kedvenc focicsapata, a Real Madrid: kedvenc játékosok, pillanatok és érdekességek.",
   },
+  {
+    key: "schools",
+    slug: "iskolaim",
+    template: "schools",
+    icon: "GraduationCap",
+    sort: 5,
+    introMd: "Az iskolák, ahova jártam és járok – mindegyiknek saját oldala van.",
+    seoDescription: "Botondember iskolái: az alma materek rövid bemutatása.",
+  },
 ] as const;
 
 export const FOOTBALL_SECTIONS = [
@@ -64,6 +73,26 @@ export const FOOTBALL_SECTIONS = [
   { type: "moments", sort: 4, title: "", bodyMd: "", link: "" },
   { type: "facts", sort: 5, title: "", bodyMd: "", link: "" },
   { type: "link", sort: 6, title: "", bodyMd: "", link: "https://www.realmadrid.com" },
+] as const;
+
+/** Példa iskola – az Adminban átírható vagy törölhető. */
+export const EXAMPLE_SCHOOLS = [
+  {
+    slug: "pelda-iskola",
+    name: "Példa iskola",
+    kind: "általános iskola",
+    city: "Példaváros",
+    address: "",
+    years: "2019–2027",
+    link: "",
+    lead: "Írd ide egy-két mondatban, milyen iskola ez, és mikor jártál ide.",
+    bodyMd:
+      "**Példa szöveg – írd át az Adminban!**\n\n" +
+      "Mesélj az iskoláról: mióta jársz ide, mi a kedvenc tantárgyad, milyen szakkörökre jársz, " +
+      "és mi a legjobb emléked.\n\n" +
+      "- Mikor kezdtél ide járni?\n- Mi a kedvenc tantárgyad?\n- Mi a legjobb emléked?",
+    placeholder: "school-1",
+  },
 ] as const;
 
 export const EXAMPLE_HOBBIES = [

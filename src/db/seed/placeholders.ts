@@ -360,6 +360,44 @@ export function monogramSvg(): string {
 }
 
 /** Az összes helykitöltő (név → leírás). */
+// ---------------------------------------------------------------------------
+// Iskoláim (16:9) – egyszerű iskolaépület rajza (nincs rajta valódi címer, logó)
+// ---------------------------------------------------------------------------
+function schoolPhoto(): PlaceholderSpec {
+  const w = 1600;
+  const h = 900;
+  const defs = [
+    linear("sky", [["0", "#0B1F3F"], ["1", "#1E4C85"]]),
+    radial("sun", 0.78, 0.22, 0.45, "#FEBE10", 0.3),
+  ].join("");
+  const windows = Array.from({ length: 8 }, (_, i) => {
+    const x = 560 + (i % 4) * 130;
+    const y = 470 + Math.floor(i / 4) * 150;
+    return `<rect x="${x}" y="${y}" width="90" height="110" rx="8" fill="#FEBE10" fill-opacity="${i % 3 === 0 ? 0.85 : 0.5}"/>`;
+  }).join("");
+  const body = `
+    <rect width="${w}" height="${h}" fill="url(#sky)"/>
+    <rect width="${w}" height="${h}" fill="url(#sun)"/>
+    <rect x="0" y="740" width="${w}" height="160" fill="#0A2B22"/>
+    <rect x="520" y="420" width="560" height="320" rx="10" fill="#F3F6FB"/>
+    <polygon points="500,420 800,250 1100,420" fill="#C8D4E6"/>
+    <rect x="760" y="600" width="90" height="140" rx="8" fill="#0B1F3F"/>
+    ${windows}
+    <rect x="796" y="180" width="8" height="80" fill="#C8D4E6"/>
+    <polygon points="804,186 904,212 804,238" fill="#00529F"/>
+    <circle cx="300" cy="700" r="90" fill="#17604A"/>
+    <rect x="288" y="690" width="24" height="90" fill="#3B2A1A"/>
+    <circle cx="1320" cy="690" r="110" fill="#17604A"/>
+    <rect x="1306" y="680" width="28" height="110" fill="#3B2A1A"/>`;
+  return {
+    name: "school-1",
+    width: w,
+    height: h,
+    alt: "Rajzolt iskolaépület: világos homlokzat, sárga ablakok, zászló a tetején, kétoldalt fák (helykitöltő kép)",
+    svg: svgDoc(w, h, defs, body),
+  };
+}
+
 export function placeholderSpecs(): PlaceholderSpec[] {
   return [
     homeHero(),
@@ -385,6 +423,7 @@ export function placeholderSpecs(): PlaceholderSpec[] {
     player(1),
     player(2),
     player(3),
+    schoolPhoto(),
     trophy(1),
     trophy(2),
   ];

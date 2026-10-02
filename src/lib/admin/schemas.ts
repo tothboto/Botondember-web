@@ -94,6 +94,20 @@ export const itemSchemas = {
     value: required(120, "Érték"),
     visible,
   }),
+  schools: z.object({
+    name: required(120, "Az iskola neve"),
+    /** Üresen hagyható: ilyenkor a névből készül (lásd saveItem). */
+    slug: text(60),
+    kind: text(60),
+    city: text(60),
+    address: text(160),
+    years: text(30),
+    link: optionalUrl,
+    mediaId,
+    lead: text(400),
+    bodyMd: text(8000),
+    visible,
+  }),
   generic: z.object({
     pageId: z.number().int().positive(),
     title: required(120, "Cím"),
@@ -115,6 +129,7 @@ export const COLLECTION_TABLES: Record<CollectionKey, { table: string; scope?: s
   players: { table: "football_players", label: "Real Madrid – játékosok" },
   moments: { table: "football_moments", label: "Real Madrid – pillanatok" },
   facts: { table: "football_facts", label: "Real Madrid – alapadatok" },
+  schools: { table: "schools", label: "Iskoláim" },
   generic: { table: "generic_items", scope: "page_id", label: "Aloldal kártyák" },
 };
 

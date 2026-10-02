@@ -491,6 +491,44 @@ export const SEED_MESSAGES: Record<string, Row> = {
   },
   "football.position": { hu: "Poszt", en: "Position", es: "Posición", de: "Position", is: "Staða", hr: "Pozicija" },
 
+  // --- Iskoláim ---------------------------------------------------------------------------------
+  "page.schools.menu": {
+    hu: "Iskoláim",
+    en: "My schools",
+    es: "Mis escuelas",
+    de: "Meine Schulen",
+    is: "Skólarnir mínir",
+    hr: "Moje škole",
+  },
+  "page.schools.title": {
+    hu: "Iskoláim",
+    en: "My schools",
+    es: "Mis escuelas",
+    de: "Meine Schulen",
+    is: "Skólarnir mínir",
+    hr: "Moje škole",
+  },
+  "schools.years": { hu: "Évek", en: "Years", es: "Años", de: "Jahre", is: "Ár", hr: "Godine" },
+  "schools.place": { hu: "Helyszín", en: "Place", es: "Lugar", de: "Ort", is: "Staður", hr: "Mjesto" },
+  "schools.address": { hu: "Cím", en: "Address", es: "Dirección", de: "Adresse", is: "Heimilisfang", hr: "Adresa" },
+  "schools.website": { hu: "Honlap", en: "Website", es: "Sitio web", de: "Website", is: "Vefsíða", hr: "Web-stranica" },
+  "schools.more": {
+    hu: "Tovább az iskolához",
+    en: "More about the school",
+    es: "Más sobre la escuela",
+    de: "Mehr über die Schule",
+    is: "Meira um skólann",
+    hr: "Više o školi",
+  },
+  "schools.back": {
+    hu: "Vissza az iskoláimhoz",
+    en: "Back to my schools",
+    es: "Volver a mis escuelas",
+    de: "Zurück zu meinen Schulen",
+    is: "Til baka í skólana mína",
+    hr: "Natrag na moje škole",
+  },
+
   // --- Jogi oldalak ------------------------------------------------------------------------------
   "legal.toc": { hu: "Tartalomjegyzék", en: "Contents", es: "Índice", de: "Inhalt", is: "Efnisyfirlit", hr: "Sadržaj" },
   "legal.updated": {
@@ -543,5 +581,6 @@ export const MESSAGE_GROUPS: Record<string, string> = {
   games: "Játékaim",
   youtube: "YouTube",
   football: "Real Madrid",
+  schools: "Iskoláim",
   legal: "Jogi oldalak",
 };

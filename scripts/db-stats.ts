@@ -18,6 +18,7 @@ const TABLES = [
   "football_moments",
   "football_facts",
   "generic_items",
+  "schools",
   "legal_docs",
   "admin_users",
   "login_attempts",

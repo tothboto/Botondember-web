@@ -20,6 +20,7 @@ import {
   legalDocs,
   media,
   pages,
+  schools,
   settings as settingsTable,
   translations,
   youtubeItems,
@@ -68,7 +69,7 @@ const short = (text: string, max = 40) => {
 
 /** Az összes fordítható mező, az Admin sorrendjében. Az üres magyar szövegek kimaradnak. */
 export async function listContentFields(db: Db): Promise<ContentField[]> {
-  const [settingRows, pageRows, pageLabels, hobbyRows, gameRows, youtubeRows, sectionRows, playerRows, momentRows, factRows, genericRows, mediaRows, legalRows] =
+  const [settingRows, pageRows, pageLabels, hobbyRows, gameRows, youtubeRows, sectionRows, playerRows, momentRows, factRows, schoolRows, genericRows, mediaRows, legalRows] =
     await Promise.all([
       db.select().from(settingsTable),
       db.select().from(pages).orderBy(asc(pages.sort), asc(pages.id)),
@@ -80,6 +81,7 @@ export async function listContentFields(db: Db): Promise<ContentField[]> {
       db.select().from(footballPlayers).orderBy(asc(footballPlayers.sort), asc(footballPlayers.id)),
       db.select().from(footballMoments).orderBy(asc(footballMoments.sort), asc(footballMoments.id)),
       db.select().from(footballFacts).orderBy(asc(footballFacts.sort), asc(footballFacts.id)),
+      db.select().from(schools).orderBy(asc(schools.sort), asc(schools.id)),
       db.select().from(genericItems).orderBy(asc(genericItems.pageId), asc(genericItems.sort), asc(genericItems.id)),
       db.select().from(media).orderBy(asc(media.id)),
       db.select().from(legalDocs).where(and(eq(legalDocs.locale, SOURCE_LOCALE))),
@@ -199,6 +201,16 @@ export async function listContentFields(db: Db): Promise<ContentField[]> {
         const name = `Alapadat: ${short(row.label, 30)}`;
         add("football_facts", row.id, "label", row.label, pageMeta(`${name} – megnevezés`, "text", 60));
         add("football_facts", row.id, "value", row.value, pageMeta(`${name} – érték`, "text", 120));
+      }
+    }
+    if (page.template === "schools") {
+      for (const row of schoolRows) {
+        const name = `Iskola: ${short(row.name, 30)}`;
+        add("schools", row.id, "name", row.name, pageMeta(`${name} – név`, "text", 120));
+        add("schools", row.id, "kind", row.kind, pageMeta(`${name} – milyen iskola`, "text", 60));
+        add("schools", row.id, "city", row.city, pageMeta(`${name} – város`, "text", 60));
+        add("schools", row.id, "lead", row.lead, pageMeta(`${name} – rövid bemutatás`, "multiline", 400));
+        add("schools", row.id, "bodyMd", row.bodyMd, pageMeta(`${name} – az aloldal szövege`, "markdown", 8000));
       }
     }
     if (page.template === "generic") {

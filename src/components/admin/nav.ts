@@ -1,6 +1,7 @@
 import {
   BookOpenText,
   Crown,
+  GraduationCap,
   DatabaseBackup,
   Gamepad2,
   House,
@@ -40,6 +41,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin/jatekaim", label: "Játékaim", icon: Gamepad2, description: "Bevezető, játékok, kiemelt játék" },
   { href: "/admin/youtube", label: "YouTube", icon: MonitorPlay, description: "Zenék, videók, csatornák, listák" },
   { href: "/admin/real-madrid", label: "Real Madrid", icon: Crown, description: "Szekciók, játékosok, pillanatok, adatok" },
+  { href: "/admin/iskolaim", label: "Iskoláim", icon: GraduationCap, description: "Iskolák és a saját aloldaluk" },
   { href: "/admin/jogi-oldalak", label: "Jogi oldalak", icon: Scale, description: "Tájékoztatók és az adatkezelő adatai" },
   {
     href: "/admin/tartalom-forditasa",

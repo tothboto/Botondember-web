@@ -34,8 +34,12 @@
 - Commit előtt a `.githooks/pre-commit` horog lefuttatja a `scripts/check-secrets.mjs`-t: ha a
   `.env.local` bármelyik titkos értéke a commitba kerülne, leállítja. (Bekapcsolás: `npm install`
   magától megcsinálja, vagy `git config core.hooksPath .githooks`.) A horgot soha ne kerüld meg.
-- Gyerek weboldala: a tartalomban csak a „Botondember” név szerepelhet – teljes név, iskola,
-  lakóhely nem. Feltöltött képekről a sharp eltávolítja az EXIF adatokat (pl. GPS).
+- Gyerek weboldala: a tartalomban csak a „Botondember” név szerepelhet – teljes név, lakcím nem.
+  Feltöltött képekről a sharp eltávolítja az EXIF adatokat (pl. GPS).
+- **Kivétel (2026-10-02, a szülő kifejezett kérésére):** az „Iskoláim” oldalon az iskola neve és
+  települése szerepelhet, de **csak az adatbázisban** – a kódba, a seedbe és a GitHubra nem kerülhet
+  (a seedbe csak „Példa iskola” való). Amíg ez a tartalom fent van, az oldal maradjon rejtve a
+  keresők elől (Admin > Általános), és élesítés előtt kérdezz rá újra.
 
 ## Stack
 

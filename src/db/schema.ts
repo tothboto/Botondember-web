@@ -213,6 +213,32 @@ export const footballFacts = sqliteTable("football_facts", {
   updatedAt: integer("updated_at").notNull(),
 });
 
+/**
+ * Iskoláim: minden iskolának saját aloldala van (`/iskolaim/<slug>`).
+ * A `slug` az aloldal címe az URL-ben, a `lead` a listában látható rövid szöveg.
+ */
+export const schools = sqliteTable("schools", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  /** Milyen iskola, pl. „általános iskola”, „gimnázium”. */
+  kind: text("kind").notNull().default(""),
+  city: text("city").notNull().default(""),
+  address: text("address").notNull().default(""),
+  /** Mettől meddig jártam ide, pl. „2019–2027”. */
+  years: text("years").notNull().default(""),
+  /** Az iskola hivatalos honlapja (nem kötelező). */
+  link: text("link").notNull().default(""),
+  mediaId: integer("media_id"),
+  /** Rövid bemutatás – ez látszik az iskolák listájában is. */
+  lead: text("lead").notNull().default(""),
+  bodyMd: text("body_md").notNull().default(""),
+  sort: integer("sort").notNull().default(0),
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
+  isExample: integer("is_example", { mode: "boolean" }).notNull().default(false),
+  updatedAt: integer("updated_at").notNull(),
+});
+
 /** Az „Általános” sablonú aloldalak kártyái. */
 export const genericItems = sqliteTable("generic_items", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -273,5 +299,6 @@ export type FootballPlayer = typeof footballPlayers.$inferSelect;
 export type FootballMoment = typeof footballMoments.$inferSelect;
 export type FootballFact = typeof footballFacts.$inferSelect;
 export type GenericItem = typeof genericItems.$inferSelect;
+export type School = typeof schools.$inferSelect;
 export type LegalDoc = typeof legalDocs.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;

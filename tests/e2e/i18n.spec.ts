@@ -6,18 +6,22 @@ import { expect, test, type Page } from "@playwright/test";
  * á, é, í, ó, ö, ő, ú, ü, ű – ha ilyen betű mégis előfordul olyan szövegben, ami
  * nincs más nyelvűnek (pl. lang="hu") jelölve, akkor az lefordítatlan maradt.
  */
-const PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
+const PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
 const HUNGARIAN = /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/;
 
 async function untranslated(page: Page): Promise<string[]> {
   return page.evaluate((pattern) => {
     const hungarian = new RegExp(pattern);
     const pageLang = document.documentElement.lang;
-    // Tulajdonnevek, amelyek szándékosan maradnak eredetiben (az oldal neve, a nyelvek neve).
+    // Ami szándékosan marad más nyelven: az oldal neve, a nyelvválasztó nyelvnevei, és minden
+    // olyan rövid szöveg, amit a kód más nyelvűnek jelöl (pl. a még le nem fordított saját
+    // szövegek `lang="hu"` jelöléssel). Ezek a böngészőfül címében is megjelenhetnek.
     const brand = document.querySelector("[data-brand-link]")?.textContent?.trim() ?? "";
-    const names = [brand, "Botondember", ...Array.from(document.querySelectorAll("[lang]"))
-      .filter((el) => el !== document.documentElement && el.closest("ul")?.getAttribute("aria-label"))
-      .map((el) => el.textContent?.trim() ?? "")].filter(Boolean);
+    const marked = Array.from(document.querySelectorAll("[lang]"))
+      .filter((el) => el !== document.documentElement && (el.getAttribute("lang") ?? pageLang) !== pageLang)
+      .map((el) => el.textContent?.replace(/\s+/g, " ").trim() ?? "")
+      .filter((text) => text.length > 0 && text.length <= 120);
+    const names = [brand, "Botondember", ...marked].filter(Boolean);
     const clean = (text: string) => names.reduce((acc, name) => acc.split(name).join(""), text);
     // Egy elem a saját (legközelebbi) lang jelölése szerint melyik nyelvű.
     const langOf = (el: Element) => el.closest("[lang]")?.getAttribute("lang") ?? pageLang;

@@ -12,6 +12,7 @@ import {
   genericItems,
   hobbies,
   legalDocs,
+  schools,
   youtubeItems,
 } from "@/db/schema";
 import { cached } from "@/lib/cache";
@@ -36,6 +37,16 @@ export const getYoutubeItems = cached(
       .orderBy(asc(youtubeItems.sort), asc(youtubeItems.id)),
   ["youtube"],
 );
+
+export const getSchools = cached(
+  async () => getDb().select().from(schools).where(eq(schools.visible, true)).orderBy(asc(schools.sort), asc(schools.id)),
+  ["schools"],
+);
+
+/** Egy iskola az URL-címe alapján (csak a látható iskolák). */
+export async function getSchoolBySlug(slug: string) {
+  return (await getSchools()).find((school) => school.slug === slug) ?? null;
+}
 
 export const getFootball = cached(async () => {
   const db = getDb();

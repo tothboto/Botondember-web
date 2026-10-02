@@ -219,13 +219,48 @@
   --focus: var(--rm-gold);
 }
 
+/* Iskoláim: évkönyv-hangulat – meleg papírszín, iskolazöld kiemeléssel */
+.tpl-schools {
+  --page-bg: #faf6ec;
+  --page-fg: #1c2433;
+  --page-muted: #4f5a70;
+  --page-surface: #ffffff;
+  --page-surface-2: #f1e9d8;
+  --page-line: #ded3bb;
+  --page-accent: #2f6b4f;
+  --page-accent-2: var(--rm-navy);
+  --page-accent-text: #1f5a41;
+  --page-accent-contrast: #ffffff;
+  --header-bg: #2f6b4f;
+  --header-fg: #ffffff;
+  --header-muted: #d7e7df;
+  --header-line: rgb(255 255 255 / 0.2);
+  --header-active: var(--rm-gold);
+  --brand-fill: var(--gold-gradient);
+  --focus: #1f5a41;
+}
+:root.dark .tpl-schools {
+  --page-bg: #121820;
+  --page-fg: #eef2f8;
+  --page-muted: #aab6c8;
+  --page-surface: #1a222c;
+  --page-surface-2: #222c38;
+  --page-line: #2d3947;
+  --page-accent: #3f8f6c;
+  --page-accent-text: #7fd0ac;
+  --page-accent-contrast: #08140f;
+  --header-bg: #16271f;
+  --focus: #7fd0ac;
+}
+
 /* A fejléc fókuszkerete: sötét fejléceken arany/neon, hogy jól látsszon */
 :root {
   --header-focus: var(--focus);
 }
 .tpl-home,
 .tpl-hobbies,
-.tpl-football {
+.tpl-football,
+.tpl-schools {
   --header-focus: var(--rm-gold);
 }
 .tpl-games {

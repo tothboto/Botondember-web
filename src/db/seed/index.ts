@@ -21,6 +21,7 @@ import {
   legalDocs,
   locales,
   pages,
+  schools,
   settings,
   translations,
   youtubeItems,
@@ -37,6 +38,7 @@ import {
   EXAMPLE_HOBBIES,
   EXAMPLE_MOMENTS,
   EXAMPLE_PLAYERS,
+  EXAMPLE_SCHOOLS,
   EXAMPLE_YOUTUBE,
   FOOTBALL_SECTIONS,
 } from "./content";
@@ -207,6 +209,24 @@ export async function seed(db: Db, storage: MediaStorage, options: SeedOptions =
         note: y.note,
         itemCount: y.itemCount,
         thumbMediaId: ids[y.placeholder] ?? null,
+        sort: i + 1,
+        isExample: true,
+        updatedAt: now,
+      })),
+    );
+
+    await db.insert(schools).values(
+      EXAMPLE_SCHOOLS.map((school, i) => ({
+        slug: school.slug,
+        name: school.name,
+        kind: school.kind,
+        city: school.city,
+        address: school.address,
+        years: school.years,
+        link: school.link,
+        lead: school.lead,
+        bodyMd: school.bodyMd,
+        mediaId: ids[school.placeholder] ?? null,
         sort: i + 1,
         isExample: true,
         updatedAt: now,
