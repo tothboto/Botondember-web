@@ -5,7 +5,7 @@
 import crypto from "node:crypto";
 import { desc, eq, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
-import { footballMoments, footballPlayers, footballSections, games, genericItems, hobbies, media, pages, settings, youtubeItems } from "@/db/schema";
+import { footballMoments, footballPlayers, footballSections, games, genericItems, hobbies, media, pages, schools, settings, youtubeItems } from "@/db/schema";
 import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { parseSetting } from "@/lib/settings";
 import { ImageError, processImage } from "./process";
@@ -103,6 +103,7 @@ export async function mediaUsageMap(db: Db): Promise<Map<number, string[]>> {
   await collect("Real Madrid játékos", db.select({ id: footballPlayers.mediaId, name: footballPlayers.name }).from(footballPlayers));
   await collect("Real Madrid pillanat", db.select({ id: footballMoments.mediaId, name: footballMoments.title }).from(footballMoments));
   await collect("Aloldal kártya", db.select({ id: genericItems.mediaId, name: genericItems.title }).from(genericItems));
+  await collect("Iskola", db.select({ id: schools.mediaId, name: schools.name }).from(schools));
   return map;
 }
 
@@ -134,6 +135,7 @@ export async function deleteMediaCompletely(db: Db, storage: MediaStorage, id: n
   await db.update(footballPlayers).set({ mediaId: null }).where(eq(footballPlayers.mediaId, id));
   await db.update(footballMoments).set({ mediaId: null }).where(eq(footballMoments.mediaId, id));
   await db.update(genericItems).set({ mediaId: null }).where(eq(genericItems.mediaId, id));
+  await db.update(schools).set({ mediaId: null }).where(eq(schools.mediaId, id));
 
   await db.delete(media).where(eq(media.id, id));
   await deleteContentForEntity(db, "media", id);

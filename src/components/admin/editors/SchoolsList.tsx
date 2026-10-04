@@ -49,11 +49,11 @@ function SlugField({ ctx }: { ctx: FormContext }) {
 }
 
 const FIELDS: FieldDef[] = [
-  { type: "text", name: "name", label: "Az iskola neve", maxLength: 120, placeholder: "pl. Bajai Szentistváni Általános Iskola" },
+  { type: "text", name: "name", label: "Az iskola neve", maxLength: 120, placeholder: "pl. Zöldfa Téri Általános Iskola" },
   { type: "text", name: "kind", label: "Milyen iskola", maxLength: 60, placeholder: "pl. általános iskola", hint: "Ez a név alatt jelenik meg." },
   { type: "text", name: "years", label: "Mettől meddig jártam ide", maxLength: 30, placeholder: "pl. 2019–2027" },
-  { type: "text", name: "city", label: "Város", maxLength: 60, placeholder: "pl. Baja" },
-  { type: "text", name: "address", label: "Cím (nem kötelező)", maxLength: 160, placeholder: "pl. 6500 Baja, Dózsa György út 131–133." },
+  { type: "text", name: "city", label: "Város", maxLength: 60, placeholder: "pl. Példaváros" },
+  { type: "text", name: "address", label: "Cím (nem kötelező)", maxLength: 160, placeholder: "pl. 1234 Példaváros, Fő utca 1." },
   { type: "url", name: "link", label: "Az iskola honlapja (nem kötelező)", placeholder: "https://…" },
   { type: "textarea", name: "lead", label: "Rövid bemutatás", maxLength: 400, rows: 3, hint: "Ez látszik az iskolák listájában is, az oldal tetején." },
   { type: "custom", name: "bodyMd", render: (ctx) => <BodyField ctx={ctx} /> },

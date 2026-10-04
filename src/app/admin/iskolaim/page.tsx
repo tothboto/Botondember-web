@@ -24,7 +24,7 @@ export default async function AdminSchoolsPage() {
     <MediaLibraryProvider initial={media}>
       <AdminPageHeader
         title="Iskoláim"
-        description="Az Iskoláim oldal bevezetője és az iskolák. Minden iskolának saját aloldala van (pl. /iskolaim/bajai-szentistvani-altalanos-iskola). A menüpont nevét és az URL-t a „Menü és aloldalak” részben tudod módosítani."
+        description="Az Iskoláim oldal bevezetője és az iskolák. Minden iskolának saját aloldala van (pl. /iskolaim/pelda-iskola). A menüpont nevét és az URL-t a „Menü és aloldalak” részben tudod módosítani."
         viewHref={`/${page.slug}`}
       />
       <div className="space-y-8">

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { asc, eq } from "drizzle-orm";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb, type Db } from "@/db/client";
 import { runMigrations } from "@/db/migrate";
@@ -9,6 +10,7 @@ import { seed } from "@/db/seed";
 import { deleteItem, saveItem } from "@/lib/admin/collections";
 import { itemSchemas } from "@/lib/admin/schemas";
 import { listContentFields } from "@/lib/content-i18n/registry";
+import { deleteMediaCompletely, mediaUsageMap, saveImage } from "@/lib/media/library";
 import { LocalDiskStorage } from "@/lib/media/storage";
 
 let dir: string;
@@ -48,7 +50,7 @@ describe("iskolák", () => {
 
   it("az URL-cím a névből készül, és sosem ütközik", async () => {
     const first = await saveItem(db, "schools", null, {
-      name: "Bajai Szentistváni Általános Iskola",
+      name: "Zöldfa Téri Általános Iskola",
       slug: "",
       kind: "általános iskola",
       city: "Baja",
@@ -61,7 +63,7 @@ describe("iskolák", () => {
       visible: true,
     });
     const second = await saveItem(db, "schools", null, {
-      name: "Bajai Szentistváni Általános Iskola",
+      name: "Zöldfa Téri Általános Iskola",
       slug: "",
       kind: "",
       city: "",
@@ -75,8 +77,8 @@ describe("iskolák", () => {
     });
     const [a] = await db.select().from(schools).where(eq(schools.id, first));
     const [b] = await db.select().from(schools).where(eq(schools.id, second));
-    expect(a.slug).toBe("bajai-szentistvani-altalanos-iskola");
-    expect(b.slug).toBe("bajai-szentistvani-altalanos-iskola-2");
+    expect(a.slug).toBe("zoldfa-teri-altalanos-iskola");
+    expect(b.slug).toBe("zoldfa-teri-altalanos-iskola-2");
 
     // A saját szövegei fordíthatók (megjelennek a fordítási jegyzékben).
     const keys = (await listContentFields(db)).map((field) => field.key);
@@ -86,6 +88,33 @@ describe("iskolák", () => {
 
     await deleteItem(db, "schools", first);
     await deleteItem(db, "schools", second);
+  });
+
+  it("az iskola képe „használatban” jelzést kap, és a kép törlésekor eltűnik a hivatkozás", async () => {
+    const storage = new LocalDiskStorage(path.join(dir, "uploads"));
+    const png = await sharp({ create: { width: 160, height: 90, channels: 3, background: "#2f6b4f" } }).png().toBuffer();
+    const image = await saveImage(db, storage, png, { originalName: "iskola.png", alt: "Teszt kép", source: "upload" });
+    const id = await saveItem(db, "schools", null, {
+      name: "Képes iskola",
+      slug: "",
+      kind: "",
+      city: "",
+      address: "",
+      years: "",
+      link: "",
+      lead: "",
+      bodyMd: "",
+      mediaId: image.id,
+      visible: true,
+    });
+
+    expect((await mediaUsageMap(db)).get(image.id)?.join(" ")).toContain("Képes iskola");
+
+    await deleteMediaCompletely(db, storage, image.id);
+    const [row] = await db.select().from(schools).where(eq(schools.id, id));
+    expect(row.mediaId).toBeNull();
+
+    await deleteItem(db, "schools", id);
   });
 
   it("a hibás adatokat nem fogadja el", () => {
