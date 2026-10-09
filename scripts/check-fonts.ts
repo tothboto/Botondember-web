@@ -19,6 +19,10 @@ const EXPECTED_FAMILIES = [
   "Oswald",
   "Playfair Display",
   "Chakra Petch",
+  // A fejléc emblémájának betűi (src/lib/logo-styles.ts)
+  "Barlow Condensed",
+  "Tilt Neon",
+  "Paytone One",
 ];
 
 const dirs = [".next/static/media", ".next/dev/static/media"].map((d) => path.join(process.cwd(), d));

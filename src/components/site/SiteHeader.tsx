@@ -28,6 +28,7 @@ export async function SiteHeader({
     <HeaderClient
       title={title.text}
       titleLang={title.lang}
+      logoStyle={settings.appearance.logoStyle}
       navItems={navItems}
       sticky={settings.general.stickyHeader}
       locales={i18n.locales}

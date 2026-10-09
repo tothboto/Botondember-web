@@ -171,4 +171,30 @@ test.describe("Admin szerkesztők", () => {
     await page.goto("/");
     expect(await readBlue()).toBe("#00529F");
   });
+
+  test("a fejléc emblémájának stílusa választható, és a felirat ugyanaz marad", async ({ page }) => {
+    const brand = page.locator("[data-brand-link] .brand");
+    // A választó elrejtett rádiógomb egy kártyában – a kártyára (a címkéjére) kattintunk.
+    const choose = async (name: RegExp) => {
+      await page.goto("/admin/megjelenes");
+      const radio = page.getByRole("radio", { name });
+      await page.locator("label").filter({ has: radio }).click();
+      await expect(radio).toBeChecked();
+      await save(page);
+      await page.goto("/");
+    };
+
+    await page.goto("/");
+    await expect(brand).toHaveAttribute("data-style", "esport");
+    const title = (await page.locator("[data-brand-link]").textContent())?.trim();
+    expect(title).toBe("Botondember első weboldala");
+
+    await choose(/^Neon/);
+    await expect(brand).toHaveAttribute("data-style", "neon");
+    // A díszítő rétegek (glitch, körvonal) nem kerülnek a link szövegébe.
+    expect((await page.locator("[data-brand-link]").textContent())?.trim()).toBe(title);
+
+    await choose(/^E-sport/);
+    await expect(brand).toHaveAttribute("data-style", "esport");
+  });
 });

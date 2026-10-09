@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { LOGO_STYLES } from "@/lib/logo-styles";
 import { mergeWithDefaults, parseSetting, resolveBrandColors, settingDefaults } from "@/lib/settings";
 import { isSafeHttpUrl, normalizeUrl } from "@/lib/url";
 
@@ -68,6 +69,20 @@ describe("beállítások", () => {
     });
     expect(colors.gold).toBe("#FFCC00");
     expect(colors.blue).toBe("#00529F");
+  });
+
+  it("a fejléc emblémája: régi mentésnél az alapstílus jön, a választott megmarad", () => {
+    // Így néz ki egy korábban elmentett beállítás – még nincs benne az embléma stílusa.
+    const stored = { colors: { gold: "#ffcc00" }, fonts: { body: "inter", heading: "interTight", title: "cinzel" } };
+    const old = parseSetting("appearance", stored);
+    expect(old.logoStyle).toBe("esport");
+    expect(old.colors.gold).toBe("#ffcc00");
+    expect(parseSetting("appearance", { ...stored, logoStyle: "neon" }).logoStyle).toBe("neon");
+    for (const style of LOGO_STYLES) {
+      expect(parseSetting("appearance", { logoStyle: style.key }).logoStyle).toBe(style.key);
+    }
+    // Ismeretlen stílusnál nem törik el az oldal: az alapértékek jönnek.
+    expect(parseSetting("appearance", { logoStyle: "nincs-ilyen" })).toEqual(settingDefaults.appearance);
   });
 });
 

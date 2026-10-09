@@ -1,14 +1,14 @@
 "use client";
 
-import { Crown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore, type ReactNode } from "react";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
-import { splitBrandTitle } from "@/lib/brand-title";
 import { useI18n } from "@/lib/i18n/client";
 import type { PublicLocale } from "@/lib/i18n/server";
+import type { LogoStyle } from "@/lib/logo-styles";
 import { BossArea } from "./BossArea";
+import { BrandMark } from "./BrandMark";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileMenu } from "./MobileMenu";
 
@@ -25,6 +25,7 @@ function subscribeScroll(callback: () => void) {
 export function HeaderClient({
   title,
   titleLang,
+  logoStyle,
   navItems,
   sticky,
   locales,
@@ -35,6 +36,8 @@ export function HeaderClient({
   title: string;
   /** A felirat nyelve (a látogató nyelve, ha van fordítás; különben magyar). */
   titleLang: string;
+  /** Az embléma stílusa (Admin > Megjelenés). */
+  logoStyle: LogoStyle;
   navItems: NavItem[];
   sticky: boolean;
   locales: PublicLocale[];
@@ -46,7 +49,6 @@ export function HeaderClient({
   const pathname = usePathname();
   const isHome = pathname === "/";
   const active = navItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)) ?? null;
-  const brand = splitBrandTitle(title);
   const template = isHome ? "home" : (active?.template ?? (LEGAL_PATHS.includes(pathname) ? "legal" : "default"));
 
   // Kezdőlapon, rögzített fejléccel: görgetés után sötét hátteret kap.
@@ -82,21 +84,9 @@ export function HeaderClient({
           href="/"
           data-brand-link
           aria-label={t("header.homeLinkLabel", { title })}
-          className="flex min-w-0 items-center gap-3 rounded-md py-1 sm:gap-3.5"
+          className="flex min-w-0 rounded-md py-1"
         >
-          {/* Embléma: döntött jelvény a név kezdőbetűjével, a sarkán koronával.
-              A betűt a CSS rajzolja ki (data-letter), így a link szövege maga a felirat marad. */}
-          <span aria-hidden className="brand-badge">
-            <Crown className="brand-badge-crown" fill="currentColor" strokeWidth={2} />
-            <span className="brand-badge-letter font-royal" data-letter={brand.initial} />
-          </span>
-          <span lang={titleLang} className="flex min-w-0 flex-col gap-1">
-            {brand.rest && brand.restFirst && <span className="brand-tagline font-display">{brand.rest}</span>}
-            {brand.rest && brand.restFirst && " "}
-            <span className="brand-lead font-royal">{brand.lead}</span>
-            {brand.rest && !brand.restFirst && " "}
-            {brand.rest && !brand.restFirst && <span className="brand-tagline font-display">{brand.rest}</span>}
-          </span>
+          <BrandMark title={title} lang={titleLang} style={logoStyle} />
         </Link>
 
         <nav aria-label={t("nav.mainLabel")} className="hidden xl:block">

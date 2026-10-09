@@ -4,6 +4,13 @@
 /* A sötét mód a <html class="dark"> osztályból jön (lásd src/lib/theme). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Animálható szög (az „Üveg” embléma forgó gyűrűjéhez). */
+@property --brand-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 /* =========================================================================
    1. DESIGN TOKENEK
    A márkaszínek (a Real Madrid színei) az Adminban felülírhatók: a gyökér-
@@ -273,28 +280,44 @@
   --header-focus: #3ea6ff;
 }
 
-/* A fejléc emblémája: a jelvény betűjének színe (--brand-on, a --brand-fill hátterén)
-   és a feliraton végigfutó csillanás színe (--brand-shine). */
-:root {
-  --brand-on: #ffffff;
-  --brand-shine: color-mix(in oklab, var(--rm-blue) 62%, white);
+/* A fejléc emblémájának színei (a rajza lent: `.brand`). A fejléc háttere szerint két
+   készlet van – világos (fehér fejléc) és sötét/színes –, a kiemelő szín pedig a sablonhoz igazodik.
+   --brand-accent: címke, árnyék, korona · --brand-accent-on: a címkén álló szöveg ·
+   --brand-plate: a „Neon” tábla háttere · --brand-glass*: az „Üveg” kapszula ·
+   --brand-flow: az „Üveg” feliratán áramló színek (mind legalább 4,5:1 kontraszt). */
+:root,
+.tpl-youtube {
+  --brand-accent: var(--rm-blue);
+  --brand-accent-on: #ffffff;
+  --brand-plate: #070c19;
+  --brand-glass: rgb(11 31 63 / 0.05);
+  --brand-glass-line: rgb(11 31 63 / 0.16);
+  --brand-flow: linear-gradient(90deg, #c2410c, #be185d, #1d4ed8, #0f766e, #c2410c);
 }
 :root.dark,
 .tpl-home,
 .tpl-hobbies,
 .tpl-games,
 .tpl-football,
-.tpl-schools {
-  --brand-on: var(--rm-navy);
-  --brand-shine: #ffffff;
+.tpl-schools,
+:root.dark .tpl-youtube {
+  --brand-accent: var(--rm-gold);
+  --brand-accent-on: var(--rm-navy);
+  --brand-plate: rgb(3 8 20 / 0.55);
+  --brand-glass: rgb(255 255 255 / 0.11);
+  --brand-glass-line: rgb(255 255 255 / 0.26);
+  --brand-flow: linear-gradient(90deg, #ffd43b, #ff8787, #74c0fc, #63e6be, #ffd43b);
+}
+.tpl-games {
+  --brand-accent: #38bdf8;
+  --brand-accent-on: #031524;
 }
 .tpl-youtube {
-  --brand-on: #ffffff;
-  --brand-shine: #6b6b6b;
+  --brand-accent: #cc0000;
 }
 :root.dark .tpl-youtube {
-  --brand-on: #0f0f0f;
-  --brand-shine: #8f8f8f;
+  --brand-accent: #ff4e45;
+  --brand-accent-on: #0f0f0f;
 }
 }
 
@@ -473,124 +496,539 @@
 
 @layer components {
 /*
- * A fejléc emblémája: döntött jelvény (a név kezdőbetűje, a sarkán korona), mellette
- * a név nagy, vastag betűkkel, alatta/fölötte kis sorban a felirat többi része.
- * A színek a fejléc tokenjeiből jönnek, így minden aloldal-sablonon és mindkét témában
- * a helyén van. A csillanás csak akkor fut, ha a látogató nem kért kevesebb mozgást.
+ * A fejléc emblémája (az oldal neve). A stílus az Adminban választható (Megjelenés),
+ * a szerkezet közös: jel (.brand-emblem), kiemelt szó (.brand-lead, benne a kis korona:
+ * .brand-lead-crown) és kis sor (.brand-tagline) – lásd src/components/site/BrandMark.tsx.
+ * A színek a fejléc tokenjeiből jönnek (--header-fg, --brand-*), így minden aloldalon és
+ * mindkét témában a helyükön vannak. A díszítő szövegrétegeket a CSS rajzolja a
+ * data-text-ből. Mozgás csak akkor van, ha a látogató nem kért kevesebbet (a blokk végén).
  */
-.brand-badge {
+.brand {
   position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+.brand-emblem {
   display: grid;
-  place-items: center;
   flex: none;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.85rem;
-  rotate: -7deg;
-  background-image: var(--brand-fill);
-  color: var(--brand-on);
-  box-shadow:
-    inset 0 1.5px 0 rgb(255 255 255 / 0.5),
-    inset 0 -3px 0 rgb(0 0 0 / 0.2),
-    0 8px 18px -8px rgb(0 0 0 / 0.7);
+  place-items: center;
 }
-.brand-badge-letter {
-  font-size: 1.6rem;
-  font-weight: 900;
-  line-height: 1;
+.brand-emblem svg,
+.brand-lead-crown {
+  display: block;
 }
-.brand-badge-letter::before {
-  content: attr(data-letter);
-}
-.brand-badge-crown {
-  position: absolute;
-  top: -0.72rem;
-  left: -0.55rem;
-  width: 1.3rem;
-  height: 1.3rem;
-  rotate: -20deg;
-  color: var(--header-active);
-  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.55));
+.brand-words {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
 }
 .brand-lead {
-  align-self: flex-start;
+  position: relative;
+  display: inline-block;
   max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.brand-tagline {
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* --- E-sport: vastag, dőlt betű kemény árnyékkal, ferde címke, glitch-rétegek --- */
+.brand[data-style="esport"] .brand-emblem {
+  display: none;
+}
+.brand[data-style="esport"] .brand-words {
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.3rem 0 0 0.4rem;
+}
+/* A betű kitöltése fémes színátmenet, rajta (első réteg) egy átfutó fénycsík; a kemény
+   árnyék és a ragyogás szűrő (drop-shadow), mert az átlátszó betű alatt a text-shadow átütne. */
+.brand[data-style="esport"] .brand-lead {
+  padding-right: 0.08em;
+  background-image:
+    linear-gradient(105deg, transparent 44%, var(--brand-accent) 50%, transparent 56%),
+    linear-gradient(180deg, var(--header-fg) 42%, color-mix(in oklab, var(--header-fg) 68%, var(--brand-accent)) 100%);
+  background-size:
+    300% 100%,
+    100% 100%;
+  background-position:
+    100% 0,
+    0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-logo-esport), "Arial Narrow", ui-sans-serif, sans-serif;
+  font-size: clamp(1.85rem, 8.4vw, 2.6rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: 0.012em;
+  text-transform: uppercase;
+  filter: drop-shadow(0.055em 0.055em 0 var(--brand-accent))
+    drop-shadow(0 0 0.45em color-mix(in oklab, var(--brand-accent) 42%, transparent));
+}
+.brand[data-style="esport"] .brand-lead::before,
+.brand[data-style="esport"] .brand-lead::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  text-shadow: none;
+  pointer-events: none;
+}
+.brand[data-style="esport"] .brand-lead::before {
+  color: #00e5ff;
+}
+.brand[data-style="esport"] .brand-lead::after {
+  color: #ff2d6f;
+}
+.brand[data-style="esport"] .brand-lead-crown {
+  position: absolute;
+  top: -0.3em;
+  left: -0.2em;
+  width: 0.46em;
+  height: 0.46em;
+  rotate: -20deg;
+  color: var(--brand-accent);
+  fill: currentColor;
+}
+/* Ha a kis sor van felül (pl. spanyolul), a korona a címke sarkára ül. */
+.brand[data-style="esport"][data-rest-first] .brand-lead-crown {
+  top: calc(-0.3em - 0.3rem - 1.42 * clamp(0.74rem, 3.1vw, 0.88rem));
+}
+.brand[data-style="esport"] .brand-tagline {
+  position: relative;
+  padding: 0.22em 0.8em 0.2em;
+  background: var(--brand-accent);
+  color: var(--brand-accent-on);
+  font-family: var(--font-logo-esport), "Arial Narrow", ui-sans-serif, sans-serif;
+  font-size: clamp(0.74rem, 3.1vw, 0.88rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: skewX(-12deg);
+  transform-origin: bottom left;
+}
+/* A címke ferde, a benne álló (eleve dőlt) betű viszont ne dőljön kétszer. */
+.brand[data-style="esport"] .brand-tagline > span {
+  display: inline-block;
+  transform: skewX(12deg);
+}
+.brand[data-style="esport"] .brand-tagline::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 0.3em);
+  width: 1.7em;
+  background: repeating-linear-gradient(90deg, var(--brand-accent) 0 0.22em, transparent 0.22em 0.5em);
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+
+/* --- Neon: világító felirat sötét táblán --- */
+.brand[data-style="neon"] {
+  gap: 0.65rem;
+  padding: 0.45rem 1rem 0.5rem 0.75rem;
+  border-radius: 1rem;
+  background: var(--brand-plate);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+    inset 0 0 22px rgb(0 0 0 / 0.7);
+}
+.brand[data-style="neon"] .brand-lead-crown {
+  display: none;
+}
+.brand[data-style="neon"] .brand-emblem {
+  rotate: -10deg;
+  color: #dff4ff;
+  filter: drop-shadow(0 0 2px #7dd3fc) drop-shadow(0 0 7px #0ea5e9) drop-shadow(0 0 16px #0284c7);
+}
+.brand[data-style="neon"] .brand-emblem svg {
+  width: clamp(1.45rem, 6vw, 1.9rem);
+  height: auto;
+}
+.brand[data-style="neon"] .brand-words {
+  gap: 0.22rem;
+}
+.brand[data-style="neon"] .brand-lead {
+  color: #fff6dc;
+  font-family: var(--font-logo-neon), ui-rounded, ui-sans-serif, sans-serif;
+  font-size: clamp(1.4rem, 6.2vw, 1.9rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-shadow:
+    0 0 1px #fff,
+    0 0 5px var(--gold-light),
+    0 0 12px var(--rm-gold),
+    0 0 26px color-mix(in oklab, var(--rm-gold) 65%, #ff6a00),
+    0 0 44px color-mix(in oklab, var(--rm-gold) 45%, #ff4d00);
+}
+.brand[data-style="neon"] .brand-tagline {
+  color: #e3f6ff;
+  font-family: var(--font-logo-neon), ui-rounded, ui-sans-serif, sans-serif;
+  font-size: clamp(0.62rem, 2.6vw, 0.76rem);
+  line-height: 1;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 1px #fff,
+    0 0 5px #38bdf8,
+    0 0 12px #0ea5e9,
+    0 0 22px #0284c7;
+}
+
+/* --- 3D matrica: rajzfilmes arany betű vastag sötét és fehér körvonallal --- */
+.brand[data-style="sticker"] .brand-emblem {
+  display: none;
+}
+.brand[data-style="sticker"] .brand-words {
+  align-items: flex-start;
+  padding: 0.25rem 0.5rem 0.15rem 0.6rem;
+  rotate: -3.5deg;
+}
+/* A valódi szöveg a sötét körvonal; fölötte az arany kitöltés, alatta a fehér szegély. */
+.brand[data-style="sticker"] .brand-lead {
+  isolation: isolate;
+  color: var(--rm-navy);
+  font-family: var(--font-logo-sticker), ui-rounded, ui-sans-serif, sans-serif;
+  font-size: clamp(1.35rem, 6.1vw, 1.95rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 0.3em var(--rm-navy);
+  /* Lekerekített körvonal-sarkok – különben a hegyes betűcsúcsoknál tüske lógna ki. */
+  stroke-linejoin: round;
+  text-shadow:
+    0 0.11em 0 var(--rm-navy),
+    0 0.17em 0 var(--rm-navy);
+}
+.brand[data-style="sticker"] .brand-lead::before,
+.brand[data-style="sticker"] .brand-lead::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.brand[data-style="sticker"] .brand-lead::before {
+  z-index: -1;
+  color: #fff;
+  -webkit-text-stroke: 0.52em #fff;
+  text-shadow:
+    0 0.11em 0 #fff,
+    0 0.17em 0 #fff;
+}
+.brand[data-style="sticker"] .brand-lead::after {
+  z-index: 1;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--rm-gold) 22%, white) 0%,
+    var(--gold-light) 30%,
+    var(--rm-gold) 58%,
+    color-mix(in oklab, var(--rm-gold) 62%, #e8590c) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.brand[data-style="sticker"] .brand-lead-crown {
+  position: absolute;
+  z-index: 2;
+  top: -0.42em;
+  left: -0.38em;
+  width: 0.66em;
+  height: 0.66em;
+  rotate: -24deg;
+  color: var(--rm-navy);
+  fill: var(--rm-gold);
+  stroke-width: 2.6;
+}
+.brand[data-style="sticker"] .brand-tagline {
+  position: relative;
+  z-index: 3;
+  margin: -0.05rem 0 0 1.4rem;
+  padding: 0.22em 0.7em 0.2em;
+  border: 0.2em solid var(--rm-navy);
+  border-radius: 0.6em;
+  background: var(--rm-blue);
+  box-shadow: 0 0.2em 0 var(--rm-navy);
+  color: #fff;
+  font-family: var(--font-logo-sticker), ui-rounded, ui-sans-serif, sans-serif;
+  font-size: clamp(0.7rem, 2.9vw, 0.84rem);
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  rotate: 1.5deg;
+}
+
+/* --- Üveg: áttetsző kapszula, forgó színes gyűrű, áramló színátmenet --- */
+.brand[data-style="glass"] {
+  gap: 0.7rem;
+  padding: 0.36rem 1.15rem 0.36rem 0.42rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--brand-glass), transparent 140%);
+  box-shadow:
+    inset 0 0 0 1px var(--brand-glass-line),
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    0 12px 30px -14px rgb(0 0 0 / 0.65);
+  backdrop-filter: blur(14px) saturate(170%);
+}
+.brand[data-style="glass"] .brand-lead-crown,
+.brand[data-style="glass"] .brand-emblem svg {
+  display: none;
+}
+.brand[data-style="glass"] .brand-emblem {
+  position: relative;
+  width: clamp(2.1rem, 9vw, 2.5rem);
+  height: clamp(2.1rem, 9vw, 2.5rem);
+  border-radius: 50%;
+  background: conic-gradient(
+    from var(--brand-angle),
+    #febe10,
+    #ff7a18,
+    #e64980,
+    #7950f2,
+    #00a8ff,
+    #38d9a9,
+    #febe10
+  );
+}
+.brand[data-style="glass"] .brand-emblem::after {
+  content: attr(data-letter);
+  position: absolute;
+  inset: 3px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #1c3d73, #0b1f3f 70%);
+  color: #fff;
+  font-family: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.brand[data-style="glass"] .brand-words {
+  gap: 0.12rem;
+}
+.brand[data-style="glass"] .brand-lead {
+  background-image: var(--brand-flow);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.15rem, 5vw, 1.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.brand[data-style="glass"] .brand-tagline {
+  color: color-mix(in oklab, var(--header-fg) 78%, transparent);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.66rem, 2.7vw, 0.74rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+/* --- Királyi: az eredeti – korona és díszes felirat egy sorban --- */
+.brand[data-style="royal"] {
+  gap: 0.625rem;
+}
+.brand[data-style="royal"] .brand-lead-crown {
+  display: none;
+}
+.brand[data-style="royal"] .brand-emblem {
+  color: var(--rm-gold);
+}
+.brand[data-style="royal"] .brand-emblem svg {
+  width: clamp(1.5rem, 5vw, 1.75rem);
+  height: auto;
+  stroke-width: 2.2;
+}
+.brand[data-style="royal"] .brand-words {
+  display: block;
   background-image: var(--brand-fill);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: clamp(1.2rem, 5.2vw, 1.75rem);
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--role-title), Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 4.4vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
   text-wrap: balance;
 }
-.brand-tagline {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--header-fg);
-  font-size: clamp(0.62rem, 2.5vw, 0.74rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
+.brand[data-style="royal"] .brand-lead,
+.brand[data-style="royal"] .brand-tagline {
+  display: inline;
 }
-.brand-tagline::before {
-  content: "";
-  flex: none;
-  width: 1.4rem;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--header-active);
-}
-@media (width >= 80rem) {
-  .brand-badge {
-    width: 2.9rem;
-    height: 2.9rem;
-    border-radius: 1rem;
-  }
-  .brand-badge-letter {
-    font-size: 1.9rem;
-  }
-}
+
+/* Kényszerített (nagy kontrasztú) színeknél a színátmenetes szöveg sima szöveg lesz. */
 @media (forced-colors: active) {
-  .brand-badge {
-    background: none;
-    border: 2px solid CanvasText;
-    color: CanvasText;
+  .brand[data-style="sticker"] .brand-lead::before,
+  .brand[data-style="sticker"] .brand-lead::after {
+    display: none;
   }
-  .brand-lead {
+  .brand[data-style="sticker"] .brand-lead {
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+  .brand[data-style="esport"] .brand-lead {
+    filter: none;
+  }
+  .brand[data-style="esport"] .brand-lead,
+  .brand[data-style="sticker"] .brand-lead,
+  .brand[data-style="glass"] .brand-lead,
+  .brand[data-style="royal"] .brand-words {
     background: none;
     color: CanvasText;
   }
 }
+
 @media (prefers-reduced-motion: no-preference) {
-  .brand-lead {
-    background-image:
-      linear-gradient(105deg, transparent 42%, var(--brand-shine) 50%, transparent 58%), var(--brand-fill);
-    background-size:
-      220% 100%,
-      100% 100%;
-    background-repeat: no-repeat;
-    background-position:
-      150% 0,
-      0 0;
-    animation: brand-shine 7s ease-in-out infinite;
+  /* E-sport: fénycsík fut át a betűkön, a sebességcsíkok mozognak, és néhány
+     másodpercenként rövid „glitch” – a két színes réteg szeletei elcsúsznak. */
+  .brand[data-style="esport"] .brand-lead {
+    animation: brand-sheen 5s ease-in-out infinite;
   }
-  @keyframes brand-shine {
-    0%,
-    72% {
-      background-position:
-        150% 0,
-        0 0;
-    }
-    100% {
-      background-position:
-        -50% 0,
-        0 0;
-    }
+  .brand[data-style="esport"] .brand-tagline::after {
+    animation: brand-stripes 0.9s linear infinite;
+  }
+  .brand[data-style="esport"] .brand-lead::before {
+    animation: brand-glitch-a 7s steps(1, end) infinite;
+  }
+  .brand[data-style="esport"] .brand-lead::after {
+    animation: brand-glitch-b 7s steps(1, end) infinite;
+  }
+  /* Neon: a cső néha megvillan. */
+  .brand[data-style="neon"] .brand-lead {
+    animation: brand-flicker 9s linear infinite;
+  }
+  /* 3D matrica: néha megbillen. */
+  .brand[data-style="sticker"] .brand-words {
+    animation: brand-wobble 6s ease-in-out infinite;
+  }
+  /* Üveg: a gyűrű forog, a felirat színei áramlanak. */
+  .brand[data-style="glass"] .brand-emblem {
+    animation: brand-spin 6s linear infinite;
+  }
+  .brand[data-style="glass"] .brand-lead {
+    animation: brand-flow 9s linear infinite;
+  }
+}
+@keyframes brand-sheen {
+  0%,
+  55% {
+    background-position:
+      100% 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      0% 0,
+      0 0;
+  }
+}
+@keyframes brand-stripes {
+  to {
+    background-position: 0.5em 0;
+  }
+}
+@keyframes brand-glitch-a {
+  0%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0.95;
+    transform: translate(-0.07em, 0);
+    clip-path: inset(8% 0 58% 0);
+  }
+  92% {
+    opacity: 0.95;
+    transform: translate(0.05em, 0.02em);
+    clip-path: inset(64% 0 6% 0);
+  }
+  94% {
+    opacity: 0.95;
+    transform: translate(-0.04em, -0.02em);
+    clip-path: inset(34% 0 38% 0);
+  }
+}
+@keyframes brand-glitch-b {
+  0%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0.95;
+    transform: translate(0.07em, 0.02em);
+    clip-path: inset(55% 0 12% 0);
+  }
+  92% {
+    opacity: 0.95;
+    transform: translate(-0.05em, 0);
+    clip-path: inset(12% 0 60% 0);
+  }
+  94% {
+    opacity: 0.95;
+    transform: translate(0.04em, 0.02em);
+    clip-path: inset(70% 0 4% 0);
+  }
+}
+@keyframes brand-flicker {
+  0%,
+  86%,
+  88%,
+  90%,
+  100% {
+    opacity: 1;
+  }
+  87% {
+    opacity: 0.45;
+  }
+  89% {
+    opacity: 0.7;
+  }
+}
+@keyframes brand-wobble {
+  0%,
+  82%,
+  100% {
+    rotate: -3.5deg;
+    scale: 1;
+  }
+  87% {
+    rotate: -6.5deg;
+    scale: 1.06;
+  }
+  92% {
+    rotate: -1.5deg;
+    scale: 1.03;
+  }
+  96% {
+    rotate: -4.5deg;
+    scale: 1;
+  }
+}
+@keyframes brand-spin {
+  to {
+    --brand-angle: 360deg;
+  }
+}
+@keyframes brand-flow {
+  to {
+    background-position: 200% 0;
   }
 }
 

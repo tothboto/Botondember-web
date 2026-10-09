@@ -34,10 +34,10 @@ export default async function AdminAppearancePage() {
     <>
       <AdminPageHeader
         title="Megjelenés"
-        description="Színek és betűtípusok. Mentés előtt az előnézetben kipróbálhatod, és azt is látod, elég jól olvasható-e a szöveg."
+        description="Színek, betűtípusok és a fejléc emblémája. Mentés előtt az előnézetben kipróbálhatod, és azt is látod, elég jól olvasható-e a szöveg."
         viewHref="/"
       />
-      <AppearanceForm appearance={settings.appearance} pages={accentPages} />
+      <AppearanceForm appearance={settings.appearance} pages={accentPages} headerTitle={settings.general.headerTitle} />
     </>
   );
 }

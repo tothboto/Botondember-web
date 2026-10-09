@@ -6,8 +6,10 @@ import { useState, type CSSProperties, type FormEvent } from "react";
 import { savePageAccents } from "@/app/actions/admin/pages";
 import { saveAppearance } from "@/app/actions/admin/settings";
 import { contrastLevel, contrastRatio } from "@/lib/color";
+import { BrandMark } from "@/components/site/BrandMark";
 import { FONT_OPTIONS, fontCssVar, type FontKey } from "@/lib/font-options";
 import { PageIcon } from "@/lib/icons";
+import { LOGO_STYLES } from "@/lib/logo-styles";
 import {
   BRAND_COLOR_DEFAULTS,
   resolveBrandColors,
@@ -32,7 +34,7 @@ const COLOR_LABELS: Record<BrandColorKey, { label: string; description: string }
 const FONT_ROLES: { key: keyof AppearanceSettings["fonts"]; label: string; hint: string }[] = [
   { key: "body", label: "Törzsszöveg", hint: "A bekezdések, leírások betűje – legyen jól olvasható!" },
   { key: "heading", label: "Címek", hint: "Az oldalak nagy címei és a kártyák címei." },
-  { key: "title", label: "Fejléc felirat", hint: "Az oldal neve a fejlécben és a láblécben." },
+  { key: "title", label: "Fejléc felirat", hint: "Az oldal neve a láblécben, és a fejlécben a „Királyi” emblémánál." },
   { key: "hero", label: "Kezdőlap felirata", hint: "A nagy, körvonalas–teli felirat a kezdőlapon." },
 ];
 
@@ -77,8 +79,17 @@ function ContrastRow({ label, fg, bg, min }: { label: string; fg: string; bg: st
   );
 }
 
-/** Megjelenés: márkaszínek (kontraszt-ellenőrzéssel), betűtípusok, aloldalak akcentusszíne. */
-export function AppearanceForm({ appearance, pages }: { appearance: AppearanceSettings; pages: AccentPage[] }) {
+/** Megjelenés: márkaszínek (kontraszt-ellenőrzéssel), a fejléc emblémája, betűtípusok, aloldalak akcentusszíne. */
+export function AppearanceForm({
+  appearance,
+  pages,
+  headerTitle,
+}: {
+  appearance: AppearanceSettings;
+  pages: AccentPage[];
+  /** A fejléc felirata (magyarul) – az emblémák előnézetéhez. */
+  headerTitle: string;
+}) {
   const router = useRouter();
   const toast = useToast();
   const initialAccents = Object.fromEntries(pages.map((p) => [String(p.id), p.accentColor])) as Record<string, string | null>;
@@ -111,7 +122,7 @@ export function AppearanceForm({ appearance, pages }: { appearance: AppearanceSe
       toast.error(failed.error);
       return;
     }
-    toast.success("Mentve! Az új színek és betűk már az egész oldalon látszanak.");
+    toast.success("Mentve! A változások már az egész oldalon látszanak.");
     router.refresh();
   };
 
@@ -212,6 +223,54 @@ export function AppearanceForm({ appearance, pages }: { appearance: AppearanceSe
           </Card>
         </div>
       </div>
+
+      <Card
+        title="A fejléc emblémája"
+        description="Milyen stílusban álljon az oldal neve a fejlécben? A szövegét az Általános oldalon írhatod át (A fejléc felirata)."
+      >
+        <fieldset>
+          <legend className="sr-only">Az embléma stílusa</legend>
+          <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+            {LOGO_STYLES.map((style) => {
+              const selected = values.logoStyle === style.key;
+              return (
+                <label key={style.key} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="logo-style"
+                    value={style.key}
+                    checked={selected}
+                    onChange={() => setValues((v) => ({ ...v, logoStyle: style.key }))}
+                    className="peer sr-only"
+                  />
+                  <span className="block h-full overflow-hidden rounded-xl border-2 border-line peer-checked:border-primary peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus">
+                    {/* Előnézet a kezdőlap sötét fejlécének színeivel (a valódi embléma, a valódi felirattal). */}
+                    <span
+                      aria-hidden
+                      lang="hu"
+                      className="tpl-home flex h-28 items-center justify-center overflow-hidden bg-[#0a1a36] px-4 text-header-fg"
+                    >
+                      <BrandMark title={headerTitle} style={style.key} />
+                    </span>
+                    <span className="block space-y-1 p-3">
+                      <span className="flex items-center justify-between gap-2 font-bold">
+                        {style.label}
+                        {selected && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-xs text-primary-fg">
+                            <CircleCheck aria-hidden className="h-3.5 w-3.5" />
+                            Kiválasztva
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-sm text-muted">{style.note}</span>
+                    </span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      </Card>
 
       <Card
         title="Betűtípusok"

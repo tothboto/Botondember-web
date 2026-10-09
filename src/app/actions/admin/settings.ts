@@ -55,7 +55,7 @@ export async function saveAppearance(input: unknown): Promise<ActionResult> {
     const value = settingSchemas.appearance.parse(input);
     const db = getDb();
     await writeSetting(db, "appearance", value);
-    await logActivity(db, "Megjelenés", "Színek és betűk mentve");
+    await logActivity(db, "Megjelenés", "Színek, betűk és embléma mentve");
     invalidateContent();
     return null;
   });

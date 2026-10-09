@@ -126,7 +126,7 @@ Ez beállítja az új jelszót, és feloldja az esetleges tiltást. Belépés ut
 |---|---|
 | **Irányítópult** | Gyors linkek, az utolsó módosítások listája. |
 | **Általános** | Az oldal neve, a fejléc felirata, alap téma (világos/sötét/automatikus), ragadós fejléc, elrejtés a keresők elől, lábléc szövege és linkjei, **favicon** (a böngészőfül ikonja) feltöltése. |
-| **Megjelenés** | A márkaszínek (élő előnézettel és olvashatóság-ellenőrzéssel), a betűtípusok, az aloldalak kiemelő színe. |
+| **Megjelenés** | A márkaszínek (élő előnézettel és olvashatóság-ellenőrzéssel), a fejléc emblémájának stílusa (E-sport, Neon, 3D matrica, Üveg, Királyi), a betűtípusok, az aloldalak kiemelő színe. |
 | **Kezdőlap** | A nagy kép (fókuszponttal és sötétítéssel), az **előtérben álló alak** (pl. rajz rólad – mérete és helye állítható: bal, közép, jobb, vagy **a felirathoz igazítva**, pl. egy adott betűnél; a szöveg mögötte fut), a fő üzenet, az alcím, a mottó – élő előnézettel –, valamint a **„Hol vagy? Mi ez?” gomb** mögötti útbaigazító leírás. |
 | **Menü és aloldalak** | Menüpontok sorrendje, elrejtése, ikonja, URL-címe, neve nyelvenként; **új aloldal** létrehozása és törlése. |
 | **Iskoláim** | Az iskolák, ahova jártál. Mindegyiknek **saját aloldala** van (pl. `/iskolaim/pelda-iskola`): név, évek, város, cím, honlap, kép és szabad szöveg. Új iskolát egy gombbal vehetsz fel. |

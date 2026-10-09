@@ -75,6 +75,11 @@
 - Feltöltött fájl a tároló-rétegen át a `data/uploads`-ba kerül; a `/media/...` route szolgálja ki.
   **SVG feltöltés tilos.**
 - Scriptek platformfüggetlenek legyenek (Node / tsx), Windows-on is működjenek.
+- A fejléc emblémája (az oldal neve) választható stílusú (Admin > Megjelenés): a lista a
+  `src/lib/logo-styles.ts`-ben, a rajz a `globals.css`-ben (`.brand[data-style="…"]`), a saját betűk a
+  `src/app/fonts.ts`-ben (és a `scripts/check-fonts.ts` listájában) vannak. A szerkezet közös
+  (`BrandMark.tsx`); a díszítő szövegrétegeket a CSS rajzolja (`data-text`), a link szövege maga a felirat.
+  Botond ízlése: a gamer / e-sport irány tetszik, a díszes, talpas „királyi” betűt gagyinak találta.
 - Nincs hover-animáció (csak fókuszkeret, szín- és aláhúzás-változás). A `prefers-reduced-motion`
   beállítást tartsd tiszteletben.
 - Mindkét témában (világos/sötét) WCAG AA kontraszt; arany szöveg fehér háttéren tilos.

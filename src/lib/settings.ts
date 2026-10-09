@@ -5,6 +5,7 @@
  */
 import { z } from "zod";
 import { FONT_KEYS } from "./font-options";
+import { LOGO_STYLE_KEYS } from "./logo-styles";
 import { isSafeHttpUrl } from "./url";
 
 export const THEME_MODES = ["system", "light", "dark"] as const;
@@ -72,6 +73,8 @@ export const settingSchemas = {
       /** A kezdőlap nagy felirata. */
       hero: z.enum(FONT_KEYS),
     }),
+    /** A fejléc emblémájának stílusa. */
+    logoStyle: z.enum(LOGO_STYLE_KEYS),
   }),
   home: z.object({
     heroMediaId: z.number().int().positive().nullable(),
@@ -146,6 +149,7 @@ export const settingDefaults: { [K in SettingKey]: SettingValue<K> } = {
   appearance: {
     colors: { white: null, blue: null, gold: null, navy: null, purple: null },
     fonts: { body: "inter", heading: "interTight", title: "cinzel", hero: "roboto" },
+    logoStyle: "esport",
   },
   home: {
     heroMediaId: null,

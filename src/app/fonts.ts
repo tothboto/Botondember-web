@@ -4,22 +4,25 @@
  * Mindegyik `latin-ext` alkészlettel, hogy az ő, ű, Ő, Ű is megjelenjen
  * (ellenőrzés: `npm run fonts:check`).
  *
- * Csak a kezdőlap nagy feliratának (Roboto) és a fejléc feliratának (Cinzel)
- * betűjét töltjük elő (preload), mert ezek látszanak azonnal; a többi akkor
- * töltődik le, amikor az oldal ténylegesen használja (addig egy hasonló méretű
- * rendszerbetű látszik).
+ * Csak a kezdőlap nagy feliratának (Roboto) és a fejléc emblémájának (az alap
+ * „E-sport” stílus: Barlow Condensed) betűjét töltjük elő (preload), mert ezek
+ * látszanak azonnal; a többi akkor töltődik le, amikor az oldal ténylegesen
+ * használja (addig egy hasonló méretű rendszerbetű látszik).
  * Így mobilon a lassú hálózaton is hamarabb megjelenik az oldal.
  * (A next/font csak kiírt, „szó szerinti” beállításokat fogad el.)
  */
 import {
+  Barlow_Condensed,
   Chakra_Petch,
   Cinzel,
   Inter,
   Inter_Tight,
   Montserrat,
   Oswald,
+  Paytone_One,
   Playfair_Display,
   Roboto,
+  Tilt_Neon,
 } from "next/font/google";
 
 export const inter = Inter({
@@ -36,7 +39,12 @@ export const interTight = Inter_Tight({
   preload: false,
 });
 
-export const cinzel = Cinzel({ subsets: ["latin", "latin-ext"], variable: "--font-cinzel", display: "swap" });
+export const cinzel = Cinzel({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-cinzel",
+  display: "swap",
+  preload: false,
+});
 
 export const roboto = Roboto({
   subsets: ["latin", "latin-ext"],
@@ -73,7 +81,46 @@ export const chakra = Chakra_Petch({
   preload: false,
 });
 
+/*
+ * A fejléc emblémájának saját betűi (stílusonként egy – lásd src/lib/logo-styles.ts).
+ * Ezek nem választhatók a betűtípusok között: a stílus része, hogy melyikkel készül.
+ */
+export const logoEsport = Barlow_Condensed({
+  subsets: ["latin", "latin-ext"],
+  weight: "900",
+  style: "italic",
+  variable: "--font-logo-esport",
+  display: "swap",
+});
+
+export const logoNeon = Tilt_Neon({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-logo-neon",
+  display: "swap",
+  preload: false,
+});
+
+export const logoSticker = Paytone_One({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  variable: "--font-logo-sticker",
+  display: "swap",
+  preload: false,
+});
+
 /** Az összes betű CSS változója (a `<html>` elemre kerül). */
-export const fontVariables = [inter, interTight, cinzel, roboto, montserrat, oswald, playfair, chakra]
+export const fontVariables = [
+  inter,
+  interTight,
+  cinzel,
+  roboto,
+  montserrat,
+  oswald,
+  playfair,
+  chakra,
+  logoEsport,
+  logoNeon,
+  logoSticker,
+]
   .map((font) => font.variable)
   .join(" ");
