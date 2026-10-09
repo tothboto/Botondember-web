@@ -272,6 +272,30 @@
 :root.dark .tpl-youtube {
   --header-focus: #3ea6ff;
 }
+
+/* A fejléc emblémája: a jelvény betűjének színe (--brand-on, a --brand-fill hátterén)
+   és a feliraton végigfutó csillanás színe (--brand-shine). */
+:root {
+  --brand-on: #ffffff;
+  --brand-shine: color-mix(in oklab, var(--rm-blue) 62%, white);
+}
+:root.dark,
+.tpl-home,
+.tpl-hobbies,
+.tpl-games,
+.tpl-football,
+.tpl-schools {
+  --brand-on: var(--rm-navy);
+  --brand-shine: #ffffff;
+}
+.tpl-youtube {
+  --brand-on: #ffffff;
+  --brand-shine: #6b6b6b;
+}
+:root.dark .tpl-youtube {
+  --brand-on: #0f0f0f;
+  --brand-shine: #8f8f8f;
+}
 }
 
 /* =========================================================================
@@ -448,6 +472,128 @@
 }
 
 @layer components {
+/*
+ * A fejléc emblémája: döntött jelvény (a név kezdőbetűje, a sarkán korona), mellette
+ * a név nagy, vastag betűkkel, alatta/fölötte kis sorban a felirat többi része.
+ * A színek a fejléc tokenjeiből jönnek, így minden aloldal-sablonon és mindkét témában
+ * a helyén van. A csillanás csak akkor fut, ha a látogató nem kért kevesebb mozgást.
+ */
+.brand-badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.85rem;
+  rotate: -7deg;
+  background-image: var(--brand-fill);
+  color: var(--brand-on);
+  box-shadow:
+    inset 0 1.5px 0 rgb(255 255 255 / 0.5),
+    inset 0 -3px 0 rgb(0 0 0 / 0.2),
+    0 8px 18px -8px rgb(0 0 0 / 0.7);
+}
+.brand-badge-letter {
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.brand-badge-letter::before {
+  content: attr(data-letter);
+}
+.brand-badge-crown {
+  position: absolute;
+  top: -0.72rem;
+  left: -0.55rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  rotate: -20deg;
+  color: var(--header-active);
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.55));
+}
+.brand-lead {
+  align-self: flex-start;
+  max-width: 100%;
+  background-image: var(--brand-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(1.2rem, 5.2vw, 1.75rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.brand-tagline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--header-fg);
+  font-size: clamp(0.62rem, 2.5vw, 0.74rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.brand-tagline::before {
+  content: "";
+  flex: none;
+  width: 1.4rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--header-active);
+}
+@media (width >= 80rem) {
+  .brand-badge {
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: 1rem;
+  }
+  .brand-badge-letter {
+    font-size: 1.9rem;
+  }
+}
+@media (forced-colors: active) {
+  .brand-badge {
+    background: none;
+    border: 2px solid CanvasText;
+    color: CanvasText;
+  }
+  .brand-lead {
+    background: none;
+    color: CanvasText;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brand-lead {
+    background-image:
+      linear-gradient(105deg, transparent 42%, var(--brand-shine) 50%, transparent 58%), var(--brand-fill);
+    background-size:
+      220% 100%,
+      100% 100%;
+    background-repeat: no-repeat;
+    background-position:
+      150% 0,
+      0 0;
+    animation: brand-shine 7s ease-in-out infinite;
+  }
+  @keyframes brand-shine {
+    0%,
+    72% {
+      background-position:
+        150% 0,
+        0 0;
+    }
+    100% {
+      background-position:
+        -50% 0,
+        0 0;
+    }
+  }
+}
+
 /* Mobilmenü: jobbról beúszó panel (natív <dialog>) */
 .drawer {
   margin: 0 0 0 auto;
