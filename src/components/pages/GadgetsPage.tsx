@@ -69,9 +69,13 @@ export async function GadgetsPage({ page }: { page: Page }) {
                   <span lang={group.lang} className="font-display text-2xl font-bold tracking-wide uppercase">
                     {group.title}
                   </span>
-                  <span className="text-sm font-semibold text-page-muted">
-                    {t("gadgets.count", { count: group.items.length })}
-                  </span>
+                  {/* Egy elemnél elhagyjuk: a „{count} darab” alak egy nyelven sem
+                      helyes egyesben (pl. „1 items”). */}
+                  {group.items.length > 1 && (
+                    <span className="text-sm font-semibold text-page-muted">
+                      {t("gadgets.count", { count: group.items.length })}
+                    </span>
+                  )}
                 </h2>
 
                 <ul className="mt-6 grid gap-5 lg:grid-cols-2">
