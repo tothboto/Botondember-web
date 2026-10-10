@@ -108,6 +108,17 @@ export const itemSchemas = {
     bodyMd: text(8000),
     visible,
   }),
+  gadgets: z.object({
+    name: required(120, "Az eszköz neve"),
+    category: text(60),
+    maker: text(60),
+    since: text(30),
+    rating: z.number().int().min(0).max(5),
+    note: text(600),
+    link: optionalUrl,
+    mediaId,
+    visible,
+  }),
   generic: z.object({
     pageId: z.number().int().positive(),
     title: required(120, "Cím"),
@@ -130,6 +141,7 @@ export const COLLECTION_TABLES: Record<CollectionKey, { table: string; scope?: s
   moments: { table: "football_moments", label: "Real Madrid – pillanatok" },
   facts: { table: "football_facts", label: "Real Madrid – alapadatok" },
   schools: { table: "schools", label: "Iskoláim" },
+  gadgets: { table: "gadgets", label: "Kedvenc eszközeim" },
   generic: { table: "generic_items", scope: "page_id", label: "Aloldal kártyák" },
 };
 

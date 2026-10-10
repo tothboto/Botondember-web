@@ -54,6 +54,15 @@ export const CORE_PAGES = [
     introMd: "Az iskolák, ahova jártam és járok – mindegyiknek saját oldala van.",
     seoDescription: "Botondember iskolái: az alma materek rövid bemutatása.",
   },
+  {
+    key: "gadgets",
+    slug: "eszkozeim",
+    template: "gadgets",
+    icon: "Laptop",
+    sort: 6,
+    introMd: "A kedvenc gépeim, óráim, tabletjeim – és minden más tárgy, amit szeretek.",
+    seoDescription: "Botondember kedvenc eszközei: számítógépek, okosórák, tabletek és egyéb kedvencek.",
+  },
 ] as const;
 
 export const FOOTBALL_SECTIONS = [
@@ -73,6 +82,40 @@ export const FOOTBALL_SECTIONS = [
   { type: "moments", sort: 4, title: "", bodyMd: "", link: "" },
   { type: "facts", sort: 5, title: "", bodyMd: "", link: "" },
   { type: "link", sort: 6, title: "", bodyMd: "", link: "https://www.realmadrid.com" },
+] as const;
+
+/** Példa eszközök – az Adminban átírhatók vagy törölhetők. */
+export const EXAMPLE_GADGETS = [
+  {
+    name: "Példa laptop",
+    category: "Számítógépek",
+    maker: "Példa gyártó",
+    since: "2024 óta",
+    rating: 5,
+    note: "Írd ide, mire használod: játék, tanulás, programozás? Mi tetszik rajta a legjobban?",
+    link: "",
+    placeholder: "gadget-1",
+  },
+  {
+    name: "Példa okosóra",
+    category: "Okosórák",
+    maker: "Példa gyártó",
+    since: "2025 óta",
+    rating: 4,
+    note: "Mit tud? Méri a lépéseidet, az edzést, vagy csak jól néz ki?",
+    link: "",
+    placeholder: "gadget-2",
+  },
+  {
+    name: "Példa tárgy",
+    category: "Egyéb kincseim",
+    maker: "",
+    since: "",
+    rating: 5,
+    note: "Ide nem csak digitális dolgok jöhetnek! Bármi, ami fontos neked: egy labda, egy könyv, egy ajándék.",
+    link: "",
+    placeholder: "gadget-3",
+  },
 ] as const;
 
 /** Példa iskola – az Adminban átírható vagy törölhető. */

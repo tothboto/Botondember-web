@@ -398,6 +398,65 @@ function schoolPhoto(): PlaceholderSpec {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Kedvenc eszközeim (1:1) – egyszerű rajzok: laptop, okosóra, ajándékdoboz
+// ---------------------------------------------------------------------------
+function gadget(kind: "laptop" | "watch" | "treasure"): PlaceholderSpec {
+  const size = 800;
+  const defs = [
+    linear(`gbg-${kind}`, [["0", "#F6F1E9"], ["1", "#E4D9C9"]]),
+    radial(`gglow-${kind}`, 0.5, 0.38, 0.55, "#C2410C", 0.18),
+  ].join("");
+
+  const drawings = {
+    laptop: `
+      <rect x="196" y="236" width="408" height="268" rx="22" fill="#2B2520"/>
+      <rect x="222" y="262" width="356" height="216" rx="12" fill="#5B93C4"/>
+      <path d="M222 478 L222 262 L578 262 Z" fill="#8FBEE3" fill-opacity="0.55"/>
+      <path d="M150 504 H650 L690 566 H110 Z" fill="#3B332C"/>
+      <rect x="110" y="566" width="580" height="18" rx="9" fill="#2B2520"/>
+      <rect x="338" y="520" width="124" height="14" rx="7" fill="#6E635A"/>`,
+    watch: `
+      <rect x="330" y="120" width="140" height="180" rx="40" fill="#3B332C"/>
+      <rect x="330" y="500" width="140" height="180" rx="40" fill="#3B332C"/>
+      <rect x="248" y="248" width="304" height="304" rx="68" fill="#2B2520"/>
+      <rect x="282" y="282" width="236" height="236" rx="48" fill="#17604A"/>
+      <path d="M282 518 L282 282 L518 282 Z" fill="#3FA07C" fill-opacity="0.5"/>
+      <g stroke="#F6F1E9" stroke-width="14" stroke-linecap="round">
+        <path d="M400 400 V332"/><path d="M400 400 H454"/>
+      </g>
+      <circle cx="400" cy="400" r="12" fill="#F6F1E9"/>
+      <rect x="552" y="356" width="26" height="76" rx="13" fill="#C2410C"/>`,
+    treasure: `
+      <rect x="170" y="330" width="460" height="290" rx="26" fill="#C2410C"/>
+      <rect x="170" y="330" width="460" height="74" rx="22" fill="#A8360A"/>
+      <rect x="368" y="330" width="64" height="290" fill="#F6C454"/>
+      <rect x="170" y="430" width="460" height="40" fill="#F6C454"/>
+      <path d="M200 330 Q400 170 600 330 Z" fill="#A8360A"/>
+      <circle cx="400" cy="508" r="32" fill="#A8360A"/>
+      <circle cx="400" cy="500" r="9" fill="#F6C454"/>
+      <rect x="394" y="502" width="12" height="22" rx="6" fill="#F6C454"/>
+      <g fill="#F6C454">
+        <circle cx="180" cy="220" r="16"/><circle cx="640" cy="248" r="12"/><circle cx="560" cy="180" r="9"/>
+      </g>`,
+  };
+
+  const alts = {
+    laptop: "Rajzolt laptop világoskék képernyővel, homokszínű háttéren (helykitöltő kép)",
+    watch: "Rajzolt okosóra zöld kijelzővel és óramutatókkal, homokszínű háttéren (helykitöltő kép)",
+    treasure: "Rajzolt kincsesláda arany pánttal és lakattal, homokszínű háttéren (helykitöltő kép)",
+  };
+
+  const names = { laptop: "gadget-1", watch: "gadget-2", treasure: "gadget-3" };
+
+  const body = `
+    <rect width="${size}" height="${size}" fill="url(#gbg-${kind})"/>
+    <rect width="${size}" height="${size}" fill="url(#gglow-${kind})"/>
+    ${drawings[kind]}`;
+
+  return { name: names[kind], width: size, height: size, alt: alts[kind], svg: svgDoc(size, size, defs, body) };
+}
+
 export function placeholderSpecs(): PlaceholderSpec[] {
   return [
     homeHero(),
@@ -424,6 +483,9 @@ export function placeholderSpecs(): PlaceholderSpec[] {
     player(2),
     player(3),
     schoolPhoto(),
+    gadget("laptop"),
+    gadget("watch"),
+    gadget("treasure"),
     trophy(1),
     trophy(2),
   ];

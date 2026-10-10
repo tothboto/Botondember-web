@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { FootballPage } from "@/components/pages/FootballPage";
+import { GadgetsPage } from "@/components/pages/GadgetsPage";
 import { GamesPage } from "@/components/pages/GamesPage";
 import { GenericPage } from "@/components/pages/GenericPage";
 import { HobbiesPage } from "@/components/pages/HobbiesPage";
@@ -97,6 +98,9 @@ export default async function DynamicPage({ params, searchParams }: PageProps<"/
         break;
       case "schools":
         content = <SchoolsPage page={page} />;
+        break;
+      case "gadgets":
+        content = <GadgetsPage page={page} />;
         break;
       default:
         content = <GenericPage page={page} />;

@@ -16,6 +16,7 @@ import {
   footballMoments,
   footballPlayers,
   footballSections,
+  gadgets,
   games,
   hobbies,
   legalDocs,
@@ -34,6 +35,7 @@ import { parseSetting, settingDefaults, SETTING_KEYS } from "@/lib/settings";
 import {
   CORE_PAGES,
   EXAMPLE_FACTS,
+  EXAMPLE_GADGETS,
   EXAMPLE_GAMES,
   EXAMPLE_HOBBIES,
   EXAMPLE_MOMENTS,
@@ -47,6 +49,9 @@ import { ensurePlaceholders, monogramSvg } from "./placeholders";
 
 /** Ezzel a kulccsal jegyezzük meg, hogy a példatartalom már be lett töltve. */
 export const EXAMPLES_FLAG_KEY = "_seed.examples";
+
+/** A „Kedvenc eszközeim” oldal később készült, ezért saját jelölője van. */
+export const GADGETS_FLAG_KEY = "_seed.examples.gadgets";
 
 export type SeedOptions = {
   adminUsername?: string;
@@ -282,6 +287,32 @@ export async function seed(db: Db, storage: MediaStorage, options: SeedOptions =
     await db.insert(settings).values({ key: EXAMPLES_FLAG_KEY, value: { loadedAt: now }, updatedAt: now });
     await db.insert(auditLog).values({ createdAt: now, area: "Rendszer", message: "Kezdő adatok és példatartalom betöltve" });
     report.examplesLoaded = true;
+  }
+
+  // 10) Később hozzáadott oldalak példatartalma – saját jelölővel, hogy a már
+  // meglévő oldalakra is bekerüljön egyszer. Ha törlik, többé nem jön vissza.
+  if (options.withExamples !== false) {
+    const gadgetFlag = await db.select({ key: settings.key }).from(settings).where(eq(settings.key, GADGETS_FLAG_KEY));
+    if (gadgetFlag.length === 0) {
+      const ids = await ensurePlaceholders(db, storage);
+      await db.insert(gadgets).values(
+        EXAMPLE_GADGETS.map((g, i) => ({
+          name: g.name,
+          category: g.category,
+          maker: g.maker,
+          since: g.since,
+          rating: g.rating,
+          note: g.note,
+          link: g.link,
+          mediaId: ids[g.placeholder] ?? null,
+          sort: i + 1,
+          isExample: true,
+          updatedAt: now,
+        })),
+      );
+      await db.insert(settings).values({ key: GADGETS_FLAG_KEY, value: { loadedAt: now }, updatedAt: now });
+      log("Kedvenc eszközeim: példatartalom betöltve.");
+    }
   }
 
   return report;

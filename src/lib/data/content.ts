@@ -8,6 +8,7 @@ import {
   footballMoments,
   footballPlayers,
   footballSections,
+  gadgets,
   games,
   genericItems,
   hobbies,
@@ -41,6 +42,11 @@ export const getYoutubeItems = cached(
 export const getSchools = cached(
   async () => getDb().select().from(schools).where(eq(schools.visible, true)).orderBy(asc(schools.sort), asc(schools.id)),
   ["schools"],
+);
+
+export const getGadgets = cached(
+  async () => getDb().select().from(gadgets).where(eq(gadgets.visible, true)).orderBy(asc(gadgets.sort), asc(gadgets.id)),
+  ["gadgets"],
 );
 
 /** Egy iskola az URL-címe alapján (csak a látható iskolák). */

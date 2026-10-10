@@ -5,7 +5,7 @@
  */
 import { and, eq, ne, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
-import { footballFacts, footballMoments, footballPlayers, games, genericItems, hobbies, pages, schools, youtubeItems } from "@/db/schema";
+import { footballFacts, footballMoments, footballPlayers, gadgets, games, genericItems, hobbies, pages, schools, youtubeItems } from "@/db/schema";
 import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { assertMediaExists } from "@/lib/media/library";
 import { COLLECTION_TABLES, itemSchemas, type CollectionKey } from "./schemas";
@@ -153,6 +153,18 @@ export async function saveItem(db: Db, collection: CollectionKey, id: number | n
       await db.update(schools).set({ ...v, slug, isExample: false, updatedAt: now }).where(eq(schools.id, id));
       return id;
     }
+    case "gadgets": {
+      const v = values as Parsed<"gadgets">;
+      if (id === null) {
+        const [row] = await db
+          .insert(gadgets)
+          .values({ ...v, sort: await nextSort(db, collection, null), isExample: false, updatedAt: now })
+          .returning({ id: gadgets.id });
+        return row.id;
+      }
+      await db.update(gadgets).set({ ...v, isExample: false, updatedAt: now }).where(eq(gadgets.id, id));
+      return id;
+    }
     case "generic": {
       const v = values as Parsed<"generic">;
       const [page] = await db.select({ id: pages.id }).from(pages).where(and(eq(pages.id, v.pageId), eq(pages.template, "generic")));
@@ -195,7 +207,8 @@ export async function setItemVisible(db: Db, collection: CollectionKey, id: numb
 export async function deleteItem(db: Db, collection: CollectionKey, id: number): Promise<string> {
   const meta = COLLECTION_TABLES[collection];
   await requireRow(db, collection, id);
-  const titleColumn = collection === "players" || collection === "schools" ? "name" : collection === "facts" ? "label" : "title";
+  const titleColumn =
+    collection === "players" || collection === "schools" || collection === "gadgets" ? "name" : collection === "facts" ? "label" : "title";
   const rows = await db.all<{ title: string }>(sql`SELECT ${sql.raw(titleColumn)} AS title FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
   await db.run(sql`DELETE FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
   // A saját szövegek fordításai a tábla nevével azonosítják az elemet (pl. `hobbies:12:title`).

@@ -6,7 +6,7 @@ import { expect, test, type Page } from "@playwright/test";
  * á, é, í, ó, ö, ő, ú, ü, ű – ha ilyen betű mégis előfordul olyan szövegben, ami
  * nincs más nyelvűnek (pl. lang="hu") jelölve, akkor az lefordítatlan maradt.
  */
-const PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
+const PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/eszkozeim", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
 const HUNGARIAN = /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/;
 
 async function untranslated(page: Page): Promise<string[]> {

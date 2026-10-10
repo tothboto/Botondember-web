@@ -239,6 +239,32 @@ export const schools = sqliteTable("schools", {
   updatedAt: integer("updated_at").notNull(),
 });
 
+/**
+ * Kedvenc eszközeim: számítógépek, okosórák, tabletek – és minden más tárgy,
+ * amit Botond említésre méltónak tart. A lista a `category` szerint csoportosítva
+ * jelenik meg (a csoport szabadon beírható, pl. „Okosórák”, „Egyéb kincseim”).
+ */
+export const gadgets = sqliteTable("gadgets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  /** Csoport a listában, pl. „Számítógépek”. Üresen a „többi” csoportba kerül. */
+  category: text("category").notNull().default(""),
+  /** Gyártó vagy márka, pl. „Apple”. */
+  maker: text("maker").notNull().default(""),
+  /** Mióta van meg, pl. „2024 óta”. */
+  since: text("since").notNull().default(""),
+  /** 0 = nincs értékelés, 1–5 csillag */
+  rating: integer("rating").notNull().default(0),
+  /** Miért szeretem / mire használom. */
+  note: text("note").notNull().default(""),
+  link: text("link").notNull().default(""),
+  mediaId: integer("media_id"),
+  sort: integer("sort").notNull().default(0),
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
+  isExample: integer("is_example", { mode: "boolean" }).notNull().default(false),
+  updatedAt: integer("updated_at").notNull(),
+});
+
 /** Az „Általános” sablonú aloldalak kártyái. */
 export const genericItems = sqliteTable("generic_items", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -300,5 +326,6 @@ export type FootballMoment = typeof footballMoments.$inferSelect;
 export type FootballFact = typeof footballFacts.$inferSelect;
 export type GenericItem = typeof genericItems.$inferSelect;
 export type School = typeof schools.$inferSelect;
+export type Gadget = typeof gadgets.$inferSelect;
 export type LegalDoc = typeof legalDocs.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;
