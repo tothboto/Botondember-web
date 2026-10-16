@@ -64,7 +64,7 @@ export async function FriendPage({ page, friend: row }: { page: Page; friend: Fr
             <PageIcon name={page.icon} className="h-5 w-5 shrink-0" />
             {t(pageTitleKey(page))}
           </p>
-          <h1 lang={friend.lang.name} className="font-display text-[clamp(1.9rem,5vw,3.25rem)] leading-tight font-black tracking-tight">
+          <h1 lang={friend.lang.name} className="font-display text-[clamp(1.9rem,5vw,3.25rem)] leading-tight font-black tracking-tight break-words">
             {friend.name}
           </h1>
           {row.isExample && <ExampleBadge label={t("common.example")} />}

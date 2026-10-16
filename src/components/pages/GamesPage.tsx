@@ -154,14 +154,14 @@ export async function GamesPage({ page }: { page: Page }) {
   return (
     <div className="flex-1 bg-page-bg pb-16 text-page-fg">
       <header className="container-page pt-10 pb-8 sm:pt-14">
-        <h1 className="flex items-center gap-3 font-gamer text-[clamp(2.2rem,6vw,4rem)] leading-none font-bold tracking-wide uppercase sm:gap-4">
+        <h1 className="flex items-center gap-3 font-gamer text-[clamp(1.9rem,6vw,4rem)] leading-none font-bold tracking-wide uppercase sm:gap-4">
           <span
             aria-hidden
             className="grid h-[1.15em] w-[1.15em] shrink-0 place-items-center rounded-xl bg-page-accent/15 ring-1 ring-page-accent/50"
           >
             <PageIcon name={page.icon} className="h-[0.7em] w-[0.7em] text-page-accent" strokeWidth={2.2} />
           </span>
-          <span>{title}</span>
+          <span className="min-w-0 break-words">{title}</span>
         </h1>
         {intro.text && (
           <Markdown lang={intro.lang} className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">

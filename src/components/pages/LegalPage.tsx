@@ -41,7 +41,7 @@ export async function LegalPage({ slug, titleKey }: { slug: "privacy" | "cookie"
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-10 sm:py-14 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-14">
         <header className="lg:col-span-2">
           <span aria-hidden className="block h-1.5 w-16 bg-[image:var(--gold-gradient)]" />
-          <h1 className="mt-5 font-display text-[clamp(2rem,5vw,3.25rem)] leading-tight font-black tracking-tight uppercase">
+          <h1 className="mt-5 font-display text-[clamp(2rem,5vw,3.25rem)] leading-tight font-black tracking-tight break-words uppercase">
             {title}
           </h1>
           <p className="mt-3 text-sm text-page-muted">

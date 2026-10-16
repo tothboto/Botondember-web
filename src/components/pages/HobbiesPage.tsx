@@ -42,7 +42,7 @@ export async function HobbiesPage({ page }: { page: Page }) {
             >
               <PageIcon name={page.icon} className="h-[0.5em] w-[0.5em] skew-x-6" strokeWidth={2.4} />
             </span>
-            <span>{title}</span>
+            <span className="min-w-0 break-words">{title}</span>
           </h1>
           {intro.text && (
             <Markdown lang={intro.lang} className="mt-6 max-w-xl prose-lg sm:prose-xl lg:max-w-[52%]">

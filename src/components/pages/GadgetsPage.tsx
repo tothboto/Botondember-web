@@ -66,7 +66,7 @@ export async function GadgetsPage({ page }: { page: Page }) {
             {[...groups.entries()].map(([key, group]) => (
               <section key={key}>
                 <h2 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-2 border-page-accent pb-2">
-                  <span lang={group.lang} className="font-display text-2xl font-bold tracking-wide uppercase">
+                  <span lang={group.lang} className="min-w-0 font-display text-2xl font-bold tracking-wide break-words uppercase">
                     {group.title}
                   </span>
                   {/* Egy elemnél elhagyjuk: a „{count} darab” alak egy nyelven sem
@@ -141,7 +141,7 @@ export async function GadgetsPage({ page }: { page: Page }) {
                                 <ExternalLink aria-hidden className="h-4 w-4" />
                                 <span className="sr-only">
                                   {" – "}
-                                  <span lang={item.lang.name}>{item.name}</span> ({t("common.opensInNewTab")})
+                                  <span lang={item.lang.name}>{item.name}</span> {t("common.opensInNewTab")}
                                 </span>
                               </a>
                             )}

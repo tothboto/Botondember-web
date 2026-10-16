@@ -58,7 +58,7 @@ export function FriendLinks({
               <Icon aria-hidden className={icon} strokeWidth={2.2} />
               <span className="sr-only">
                 <span lang={nameLang}>{name}</span> {" – "}
-                {label(network)} ({newTabLabel})
+                {label(network)} {newTabLabel}
               </span>
             </a>
           </li>

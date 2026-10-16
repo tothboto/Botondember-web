@@ -45,7 +45,7 @@ export async function SchoolPage({ page, school: row }: { page: Page; school: Sc
         </p>
         <h1
           lang={school.lang.name}
-          className="mt-3 font-display text-[clamp(2rem,5.5vw,3.5rem)] leading-tight font-black tracking-tight"
+          className="mt-3 font-display text-[clamp(2rem,5.5vw,3.5rem)] leading-tight font-black tracking-tight break-words"
         >
           {school.name}
         </h1>

@@ -17,7 +17,7 @@ function SectionTitle({ children, id }: { children: ReactNode; id: string }) {
   return (
     <div>
       <span aria-hidden className="block h-1.5 w-16 bg-page-accent" />
-      <h2 id={id} className="mt-5 font-display text-[clamp(2rem,5vw,3.25rem)] leading-none font-black tracking-tight uppercase">
+      <h2 id={id} className="mt-5 font-display text-[clamp(2rem,5vw,3.25rem)] leading-none font-black tracking-tight break-words uppercase">
         {children}
       </h2>
     </div>
@@ -77,7 +77,7 @@ export async function FootballPage({ page }: { page: Page }) {
               </p>
               <h1
                 lang={heading.lang}
-                className="mt-4 font-display text-[clamp(3.2rem,11vw,8.5rem)] leading-[0.88] font-black tracking-tight uppercase"
+                className="mt-4 font-display text-[clamp(3.2rem,11vw,8.5rem)] leading-[0.88] font-black tracking-tight break-words uppercase"
               >
                 {heading.text}
               </h1>

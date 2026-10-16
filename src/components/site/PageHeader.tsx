@@ -31,7 +31,7 @@ export function PageHeader({
         className={`flex items-center gap-3 text-[clamp(2rem,6vw,3.75rem)] leading-[1.05] font-extrabold tracking-tight uppercase sm:gap-4 ${titleClassName}`}
       >
         <PageIcon name={icon} className="h-[0.9em] w-[0.9em] shrink-0 text-page-accent" strokeWidth={2.2} />
-        <span>{title}</span>
+        <span className="min-w-0 break-words">{title}</span>
       </h1>
       {intro && (
         <Markdown lang={introLang} className="mt-4 max-w-2xl prose-lg [--md-fg:var(--page-muted)]">

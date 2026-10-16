@@ -150,12 +150,38 @@ test.describe("Mobil nézet", () => {
     await expect(drawer).toBeHidden();
   });
 
-  test("egyik oldalon sincs vízszintes görgetés (360 px)", async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 800 });
-    for (const path of ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato"]) {
-      await page.goto(path);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(overflow, path).toBeLessThanOrEqual(1);
-    }
-  });
+  // Magyarul és németül is: a német szavak jóval hosszabbak (pl. „Meine Lieblingsgeräte”),
+  // ezért ott csúszna ki leghamarabb valami a képernyőről.
+  for (const locale of ["hu", "de"]) {
+    test(`egyik oldalon sincs vízszintes görgetés (360 px, ${locale})`, async ({ page, context, baseURL }) => {
+      await context.addCookies([{ name: "locale", value: locale, domain: new URL(baseURL ?? "http://localhost").hostname, path: "/" }]);
+      await page.setViewportSize({ width: 360, height: 800 });
+      for (const path of [
+        "/",
+        "/hobbijaim",
+        "/jatekaim",
+        "/youtube",
+        "/real-madrid",
+        "/iskolaim",
+        "/iskolaim/pelda-iskola",
+        "/eszkozeim",
+        "/baratok",
+        "/baratok/pelda-barat",
+        "/adatkezelesi-tajekoztato",
+        "/cookie-tajekoztato",
+      ]) {
+        await page.goto(path);
+        const { overflow, culprits } = await page.evaluate(() => {
+          const width = window.innerWidth;
+          const culprits = Array.from(document.querySelectorAll("body *"))
+            .map((el) => ({ el, rect: el.getBoundingClientRect() }))
+            .filter(({ rect }) => rect.width > 0 && rect.right > width + 1)
+            .map(({ el, rect }) => `${el.tagName.toLowerCase()}.${String(el.className).slice(0, 60)} → ${Math.round(rect.right)}px: „${(el.textContent ?? "").trim().slice(0, 40)}”`)
+            .slice(0, 5);
+          return { overflow: document.documentElement.scrollWidth - width, culprits };
+        });
+        expect(overflow, `${path} (${locale})\n${culprits.join("\n")}`).toBeLessThanOrEqual(1);
+      }
+    });
+  }
 });

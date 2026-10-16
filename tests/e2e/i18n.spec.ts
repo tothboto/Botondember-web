@@ -1,15 +1,30 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Fordítás-ellenőrzés: horvát nyelven minden oldalon végignézi a szövegeket és a
- * rejtett feliratokat (aria-label, title, alt, placeholder). A horvát ábécében nincs
- * á, é, í, ó, ö, ő, ú, ü, ű – ha ilyen betű mégis előfordul olyan szövegben, ami
- * nincs más nyelvűnek (pl. lang="hu") jelölve, akkor az lefordítatlan maradt.
+ * Fordítás-ellenőrzés: MINDEN nyelven végignézi az összes oldalt – a látható
+ * szövegeket és a rejtett feliratokat (aria-label, title, alt, placeholder) is.
+ *
+ * Hogyan derül ki, hogy valami magyarul maradt? Minden nyelvhez felsoroljuk azokat
+ * a magyar ékezetes betűket, amelyek abban a nyelvben nem fordulhatnak elő (pl. a
+ * horvátban egyik sem, a németben viszont az ä/ö/ü igen, ezért azokat ott nem
+ * nézzük). Ha ilyen betű mégis előkerül olyan szövegben, amit a kód nem jelölt meg
+ * más nyelvűnek (pl. `lang="hu"`), akkor az a szöveg lefordítatlan maradt.
  */
 const PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/eszkozeim", "/baratok", "/baratok/pelda-barat", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
+
+/** Nyelv → a benne elő nem forduló magyar ékezetes betűk. */
+const LANGUAGES = [
+  { code: "en", name: "Angol", letters: "áéíóöőúüű" },
+  { code: "es", name: "Spanyol", letters: "öőű" },
+  { code: "de", name: "Német", letters: "áéíóőúű" },
+  { code: "is", name: "Izlandi", letters: "őűü" },
+  { code: "hr", name: "Horvát", letters: "áéíóöőúüű" },
+] as const;
+
+const pattern = (letters: string) => `[${letters}${letters.toUpperCase()}]`;
 const HUNGARIAN = /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/;
 
-async function untranslated(page: Page): Promise<string[]> {
+async function untranslated(page: Page, source: string = HUNGARIAN.source): Promise<string[]> {
   return page.evaluate((pattern) => {
     const hungarian = new RegExp(pattern);
     const pageLang = document.documentElement.lang;
@@ -46,8 +61,26 @@ async function untranslated(page: Page): Promise<string[]> {
     const title = clean(document.title);
     if (hungarian.test(title)) found.add(`böngészőfül címe: „${document.title}”`);
     return [...found];
-  }, HUNGARIAN.source);
+  }, source);
 }
+
+/** Minden nyelven, minden oldalon: maradt-e magyar szöveg? */
+test.describe("Fordítás-ellenőrzés minden nyelven", () => {
+  for (const language of LANGUAGES) {
+    test(`${language.name}: egyik oldalon sem maradt lefordítatlan (magyar) felirat`, async ({ page, context, baseURL }) => {
+      await context.addCookies([
+        { name: "locale", value: language.code, domain: new URL(baseURL ?? "http://localhost").hostname, path: "/" },
+      ]);
+      const problems: string[] = [];
+      for (const path of PAGES) {
+        await page.goto(path);
+        await expect(page.locator("html")).toHaveAttribute("lang", language.code);
+        for (const item of await untranslated(page, pattern(language.letters))) problems.push(`${path} → ${item}`);
+      }
+      expect(problems, problems.join("\n")).toEqual([]);
+    });
+  }
+});
 
 test.describe("Horvát fordítás", () => {
   test.beforeEach(async ({ context, baseURL }) => {
