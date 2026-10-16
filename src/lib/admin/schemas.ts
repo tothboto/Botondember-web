@@ -3,6 +3,7 @@
  * ellenőrzésre kerül, a felület elrejtése nem elég.
  */
 import { z } from "zod";
+import { FRIEND_LINK_KINDS } from "@/lib/friends";
 import { isSafeHttpUrl, normalizeUrl } from "@/lib/url";
 
 export const PLATFORM_CODES = ["pc", "playstation", "xbox", "switch", "mobile"] as const;
@@ -108,6 +109,18 @@ export const itemSchemas = {
     bodyMd: text(8000),
     visible,
   }),
+  friends: z.object({
+    name: required(80, "A barát neve"),
+    /** Üresen hagyható: ilyenkor a névből készül (lásd saveItem). */
+    slug: text(60),
+    mediaId,
+    bodyMd: text(4000),
+    links: z
+      .array(z.object({ kind: z.enum(FRIEND_LINK_KINDS), url: optionalUrl }))
+      .max(8, "Legfeljebb 8 link adható meg.")
+      .transform((rows) => rows.filter((row) => row.url !== "")),
+    visible,
+  }),
   gadgets: z.object({
     name: required(120, "Az eszköz neve"),
     category: text(60),
@@ -142,6 +155,7 @@ export const COLLECTION_TABLES: Record<CollectionKey, { table: string; scope?: s
   facts: { table: "football_facts", label: "Real Madrid – alapadatok" },
   schools: { table: "schools", label: "Iskoláim" },
   gadgets: { table: "gadgets", label: "Kedvenc eszközeim" },
+  friends: { table: "friends", label: "Barátok" },
   generic: { table: "generic_items", scope: "page_id", label: "Aloldal kártyák" },
 };
 

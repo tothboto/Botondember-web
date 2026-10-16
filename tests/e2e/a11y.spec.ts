@@ -6,7 +6,7 @@ import { loginAsAdmin } from "./helpers";
  * Akadálymentességi ellenőrzés (axe-core, WCAG 2.1 A és AA szabályok) –
  * minden fő oldalon, világos és sötét módban is.
  */
-const PUBLIC_PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/eszkozeim", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
+const PUBLIC_PAGES = ["/", "/hobbijaim", "/jatekaim", "/youtube", "/real-madrid", "/iskolaim", "/iskolaim/pelda-iskola", "/eszkozeim", "/baratok", "/baratok/pelda-barat", "/adatkezelesi-tajekoztato", "/cookie-tajekoztato", "/nincs-ilyen-oldal"];
 const ADMIN_PAGES = [
   "/admin",
   "/admin/altalanos",
@@ -19,6 +19,7 @@ const ADMIN_PAGES = [
   "/admin/real-madrid",
   "/admin/iskolaim",
   "/admin/eszkozeim",
+  "/admin/baratok",
   "/admin/jogi-oldalak",
   "/admin/tartalom-forditasa",
   "/admin/tartalom-forditasa?nyelv=is",

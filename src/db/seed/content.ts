@@ -63,6 +63,43 @@ export const CORE_PAGES = [
     introMd: "A kedvenc gépeim, óráim, tabletjeim – és minden más tárgy, amit szeretek.",
     seoDescription: "Botondember kedvenc eszközei: számítógépek, okosórák, tabletek és egyéb kedvencek.",
   },
+  {
+    key: "friends",
+    slug: "baratok",
+    template: "friends",
+    icon: "Users",
+    sort: 7,
+    introMd: "A csapat. Nézz be hozzájuk ott, ahol az interneten megtalálod őket!",
+    seoDescription: "Botondember barátai: mindenkinek saját oldala van.",
+  },
+] as const;
+
+/**
+ * Példa barátok – kitalált nevekkel és rajzolt profilképpel (valódi gyerek neve
+ * és fényképe csak az ő és a szülei engedélyével kerülhet ide).
+ */
+export const EXAMPLE_FRIENDS = [
+  {
+    slug: "pelda-barat",
+    name: "Példa Barát",
+    bodyMd:
+      "**Példa szöveg – írd át az Adminban!**\n\n" +
+      "Mesélj a barátodról: honnan ismeritek egymást, mit szoktatok együtt csinálni, " +
+      "mi a legjobb közös emléketek?\n\n" +
+      "- Honnan ismeritek egymást?\n- Mit szoktatok együtt játszani?\n- Mi a legviccesebb közös emléketek?",
+    links: [{ kind: "game", url: "https://example.com" }],
+    placeholder: "friend-1",
+  },
+  {
+    slug: "zold-sarkany",
+    name: "Zöld Sárkány",
+    bodyMd:
+      "**Példa szöveg – írd át az Adminban!**\n\n" +
+      "Ide becenévvel is felveheted a barátaidat – nem kell a teljes nevüket kiírni. " +
+      "A profilkép lehet rajz is, nem muszáj fénykép.",
+    links: [],
+    placeholder: "friend-2",
+  },
 ] as const;
 
 export const FOOTBALL_SECTIONS = [

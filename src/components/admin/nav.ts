@@ -16,6 +16,7 @@ import {
   Scale,
   Settings,
   Sparkles,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -44,6 +45,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin/real-madrid", label: "Real Madrid", icon: Crown, description: "Szekciók, játékosok, pillanatok, adatok" },
   { href: "/admin/iskolaim", label: "Iskoláim", icon: GraduationCap, description: "Iskolák és a saját aloldaluk" },
   { href: "/admin/eszkozeim", label: "Kedvenc eszközeim", icon: Laptop, description: "Gépek, órák, tabletek és egyéb kedvencek" },
+  { href: "/admin/baratok", label: "Barátok", icon: Users, description: "Barátok, profilképpel és saját aloldallal" },
   { href: "/admin/jogi-oldalak", label: "Jogi oldalak", icon: Scale, description: "Tájékoztatók és az adatkezelő adatai" },
   {
     href: "/admin/tartalom-forditasa",

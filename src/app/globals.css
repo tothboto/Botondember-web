@@ -260,6 +260,40 @@
   --focus: #7fd0ac;
 }
 
+/* Barátok: közösségi, barátságos hangulat – lágy lila és világos szürkéskék */
+.tpl-friends {
+  --page-bg: #f5f4fb;
+  --page-fg: #1b1930;
+  --page-muted: #504c6e;
+  --page-surface: #ffffff;
+  --page-surface-2: #eceaf8;
+  --page-line: #d9d5ef;
+  --page-accent: #6d3fc4;
+  --page-accent-2: #1f5aa8;
+  --page-accent-text: #5a32a8;
+  --page-accent-contrast: #ffffff;
+  --header-bg: #2a2350;
+  --header-fg: #ffffff;
+  --header-muted: #cfc9ea;
+  --header-line: rgb(255 255 255 / 0.2);
+  --header-active: #c4b5fd;
+  --brand-fill: var(--gold-gradient);
+  --focus: #5a32a8;
+}
+:root.dark .tpl-friends {
+  --page-bg: #13111f;
+  --page-fg: #efecfa;
+  --page-muted: #b3acd2;
+  --page-surface: #1c1930;
+  --page-surface-2: #252040;
+  --page-line: #342d55;
+  --page-accent: #9a7bea;
+  --page-accent-text: #c4b1ff;
+  --page-accent-contrast: #140c28;
+  --header-bg: #0f0d1a;
+  --focus: #c4b1ff;
+}
+
 /* Kedvenc eszközeim: műhely / katalógus hangulat – meleg homokszín és narancs */
 .tpl-gadgets {
   --page-bg: #f6f4f1;
@@ -302,7 +336,8 @@
 .tpl-hobbies,
 .tpl-football,
 .tpl-schools,
-.tpl-gadgets {
+.tpl-gadgets,
+.tpl-friends {
   --header-focus: var(--rm-gold);
 }
 .tpl-games {
@@ -336,6 +371,7 @@
 .tpl-football,
 .tpl-schools,
 .tpl-gadgets,
+.tpl-friends,
 :root.dark .tpl-youtube {
   --brand-accent: var(--rm-gold);
   --brand-accent-on: var(--rm-navy);

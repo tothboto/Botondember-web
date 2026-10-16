@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { FootballPage } from "@/components/pages/FootballPage";
+import { FriendPage } from "@/components/pages/FriendPage";
+import { FriendsPage } from "@/components/pages/FriendsPage";
 import { GadgetsPage } from "@/components/pages/GadgetsPage";
 import { GamesPage } from "@/components/pages/GamesPage";
 import { GenericPage } from "@/components/pages/GenericPage";
@@ -9,24 +11,29 @@ import { HobbiesPage } from "@/components/pages/HobbiesPage";
 import { SchoolPage } from "@/components/pages/SchoolPage";
 import { SchoolsPage } from "@/components/pages/SchoolsPage";
 import { YoutubePage } from "@/components/pages/YoutubePage";
-import type { Page, School } from "@/db/schema";
+import type { Friend, Page, School } from "@/db/schema";
 import { getLocalizer } from "@/lib/content-i18n/localize";
-import { getSchoolBySlug } from "@/lib/data/content";
+import { getFriendBySlug, getSchoolBySlug } from "@/lib/data/content";
 import { getImages } from "@/lib/data/media";
 import { getPageBySlug, pageTitleKey } from "@/lib/data/pages";
 import { getI18n } from "@/lib/i18n/server";
 
 /**
- * Egy aloldal (`/hobbijaim`), vagy egy iskola saját aloldala (`/iskolaim/<slug>`).
- * Más kétszintű cím nincs, így minden egyéb 404.
+ * Egy aloldal (`/hobbijaim`), egy iskola (`/iskolaim/<slug>`) vagy egy barát
+ * (`/baratok/<slug>`) saját aloldala. Más kétszintű cím nincs, így minden egyéb 404.
  */
-async function resolvePage(slugParts: string[]): Promise<{ page: Page; school?: School } | null> {
+async function resolvePage(slugParts: string[]): Promise<{ page: Page; school?: School; friend?: Friend } | null> {
   const page = await getPageBySlug(decodeURIComponent(slugParts[0] ?? ""));
   if (!page) return null;
   if (slugParts.length === 1) return { page };
-  if (slugParts.length === 2 && page.template === "schools") {
+  if (slugParts.length !== 2) return null;
+  if (page.template === "schools") {
     const school = await getSchoolBySlug(decodeURIComponent(slugParts[1]));
     return school ? { page, school } : null;
+  }
+  if (page.template === "friends") {
+    const friend = await getFriendBySlug(decodeURIComponent(slugParts[1]));
+    return friend ? { page, friend } : null;
   }
   return null;
 }
@@ -34,8 +41,25 @@ async function resolvePage(slugParts: string[]): Promise<{ page: Page; school?: 
 export async function generateMetadata({ params }: PageProps<"/[...slug]">): Promise<Metadata> {
   const found = await resolvePage((await params).slug);
   if (!found) return {};
-  const { page, school } = found;
+  const { page, school, friend } = found;
   const [{ t }, images, l] = await Promise.all([getI18n(), getImages(), getLocalizer()]);
+
+  if (friend) {
+    const name = l.get("friends", friend.id, "name", friend.name).text;
+    const body = l.get("friends", friend.id, "bodyMd", friend.bodyMd).text;
+    const description = body ? `${body.replace(/[#*_>\-\s]+/g, " ").trim().slice(0, 157)}…` : undefined;
+    const image = images(friend.mediaId);
+    return {
+      title: name,
+      description,
+      alternates: { canonical: `/${page.slug}/${friend.slug}` },
+      openGraph: {
+        title: name,
+        description,
+        images: image ? [{ url: image.src, width: image.width, height: image.height, alt: image.alt }] : undefined,
+      },
+    };
+  }
 
   if (school) {
     const name = l.get("schools", school.id, "name", school.name).text;
@@ -72,7 +96,7 @@ export async function generateMetadata({ params }: PageProps<"/[...slug]">): Pro
 export default async function DynamicPage({ params, searchParams }: PageProps<"/[...slug]">) {
   const found = await resolvePage((await params).slug);
   if (!found) notFound();
-  const { page, school } = found;
+  const { page, school, friend } = found;
 
   // Az Adminban aloldalanként beállítható akcentusszín.
   const style = page.accentColor ? ({ "--page-accent": page.accentColor } as CSSProperties) : undefined;
@@ -80,6 +104,8 @@ export default async function DynamicPage({ params, searchParams }: PageProps<"/
   let content;
   if (school) {
     content = <SchoolPage page={page} school={school} />;
+  } else if (friend) {
+    content = <FriendPage page={page} friend={friend} />;
   } else {
     switch (page.template) {
       case "hobbies":
@@ -101,6 +127,9 @@ export default async function DynamicPage({ params, searchParams }: PageProps<"/
         break;
       case "gadgets":
         content = <GadgetsPage page={page} />;
+        break;
+      case "friends":
+        content = <FriendsPage page={page} />;
         break;
       default:
         content = <GenericPage page={page} />;

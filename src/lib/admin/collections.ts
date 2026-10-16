@@ -5,7 +5,7 @@
  */
 import { and, eq, ne, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
-import { footballFacts, footballMoments, footballPlayers, gadgets, games, genericItems, hobbies, pages, schools, youtubeItems } from "@/db/schema";
+import { footballFacts, footballMoments, footballPlayers, friends, gadgets, games, genericItems, hobbies, pages, schools, youtubeItems } from "@/db/schema";
 import { deleteContentForEntity } from "@/lib/content-i18n/store";
 import { assertMediaExists } from "@/lib/media/library";
 import { COLLECTION_TABLES, itemSchemas, type CollectionKey } from "./schemas";
@@ -43,6 +43,19 @@ export function itemTitle(collection: CollectionKey, values: Record<string, unkn
 async function uniqueSchoolSlug(db: Db, wanted: string, name: string, id: number | null): Promise<string> {
   const base = slugify(wanted) || slugify(name) || "iskola";
   const rows = await db.select({ id: schools.id, slug: schools.slug }).from(schools);
+  const taken = new Set(rows.filter((row) => row.id !== id).map((row) => row.slug));
+  if (!taken.has(base)) return base;
+  for (let i = 2; i < 100; i++) {
+    const candidate = `${base.slice(0, 56)}-${i}`;
+    if (!taken.has(candidate)) return candidate;
+  }
+  throw new UserError("Ez az URL-cím már foglalt – adj meg másikat!");
+}
+
+/** A barát URL-címe (`/baratok/<slug>`) – ugyanúgy, mint az iskoláknál. */
+async function uniqueFriendSlug(db: Db, wanted: string, name: string, id: number | null): Promise<string> {
+  const base = slugify(wanted) || slugify(name) || "barat";
+  const rows = await db.select({ id: friends.id, slug: friends.slug }).from(friends);
   const taken = new Set(rows.filter((row) => row.id !== id).map((row) => row.slug));
   if (!taken.has(base)) return base;
   for (let i = 2; i < 100; i++) {
@@ -153,6 +166,19 @@ export async function saveItem(db: Db, collection: CollectionKey, id: number | n
       await db.update(schools).set({ ...v, slug, isExample: false, updatedAt: now }).where(eq(schools.id, id));
       return id;
     }
+    case "friends": {
+      const v = values as Parsed<"friends">;
+      const slug = await uniqueFriendSlug(db, v.slug, v.name, id);
+      if (id === null) {
+        const [row] = await db
+          .insert(friends)
+          .values({ ...v, slug, sort: await nextSort(db, collection, null), isExample: false, updatedAt: now })
+          .returning({ id: friends.id });
+        return row.id;
+      }
+      await db.update(friends).set({ ...v, slug, isExample: false, updatedAt: now }).where(eq(friends.id, id));
+      return id;
+    }
     case "gadgets": {
       const v = values as Parsed<"gadgets">;
       if (id === null) {
@@ -208,7 +234,7 @@ export async function deleteItem(db: Db, collection: CollectionKey, id: number):
   const meta = COLLECTION_TABLES[collection];
   await requireRow(db, collection, id);
   const titleColumn =
-    collection === "players" || collection === "schools" || collection === "gadgets" ? "name" : collection === "facts" ? "label" : "title";
+    collection === "players" || collection === "schools" || collection === "gadgets" || collection === "friends" ? "name" : collection === "facts" ? "label" : "title";
   const rows = await db.all<{ title: string }>(sql`SELECT ${sql.raw(titleColumn)} AS title FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
   await db.run(sql`DELETE FROM ${sql.raw(meta.table)} WHERE id = ${id}`);
   // A saját szövegek fordításai a tábla nevével azonosítják az elemet (pl. `hobbies:12:title`).

@@ -240,6 +240,28 @@ export const schools = sqliteTable("schools", {
 });
 
 /**
+ * Barátok: mindenkinek saját aloldala van (`/baratok/<slug>`), a listában
+ * kerek profilkép, a név és a közösségi linkjei látszanak.
+ *
+ * Adatvédelem: más gyerek neve és fényképe csak az ő (és a szülei)
+ * engedélyével kerülhet ide – az Adminban is figyelmeztetünk rá.
+ */
+export const friends = sqliteTable("friends", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  mediaId: integer("media_id"),
+  /** A „Bemutatás” szöveg a barát saját aloldalán. */
+  bodyMd: text("body_md").notNull().default(""),
+  /** Közösségi linkek: `[{ kind, url }]` – a `kind` a FRIEND_LINK_KINDS egyike. */
+  links: text("links", { mode: "json" }).$type<{ kind: string; url: string }[]>().notNull(),
+  sort: integer("sort").notNull().default(0),
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
+  isExample: integer("is_example", { mode: "boolean" }).notNull().default(false),
+  updatedAt: integer("updated_at").notNull(),
+});
+
+/**
  * Kedvenc eszközeim: számítógépek, okosórák, tabletek – és minden más tárgy,
  * amit Botond említésre méltónak tart. A lista a `category` szerint csoportosítva
  * jelenik meg (a csoport szabadon beírható, pl. „Okosórák”, „Egyéb kincseim”).
@@ -327,5 +349,6 @@ export type FootballFact = typeof footballFacts.$inferSelect;
 export type GenericItem = typeof genericItems.$inferSelect;
 export type School = typeof schools.$inferSelect;
 export type Gadget = typeof gadgets.$inferSelect;
+export type Friend = typeof friends.$inferSelect;
 export type LegalDoc = typeof legalDocs.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;

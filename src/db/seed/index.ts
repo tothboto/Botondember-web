@@ -16,6 +16,7 @@ import {
   footballMoments,
   footballPlayers,
   footballSections,
+  friends,
   gadgets,
   games,
   hobbies,
@@ -35,6 +36,7 @@ import { parseSetting, settingDefaults, SETTING_KEYS } from "@/lib/settings";
 import {
   CORE_PAGES,
   EXAMPLE_FACTS,
+  EXAMPLE_FRIENDS,
   EXAMPLE_GADGETS,
   EXAMPLE_GAMES,
   EXAMPLE_HOBBIES,
@@ -52,6 +54,9 @@ export const EXAMPLES_FLAG_KEY = "_seed.examples";
 
 /** A „Kedvenc eszközeim” oldal később készült, ezért saját jelölője van. */
 export const GADGETS_FLAG_KEY = "_seed.examples.gadgets";
+
+/** A „Barátok” oldal is később készült, ezért szintén saját jelölője van. */
+export const FRIENDS_FLAG_KEY = "_seed.examples.friends";
 
 export type SeedOptions = {
   adminUsername?: string;
@@ -312,6 +317,25 @@ export async function seed(db: Db, storage: MediaStorage, options: SeedOptions =
       );
       await db.insert(settings).values({ key: GADGETS_FLAG_KEY, value: { loadedAt: now }, updatedAt: now });
       log("Kedvenc eszközeim: példatartalom betöltve.");
+    }
+
+    const friendFlag = await db.select({ key: settings.key }).from(settings).where(eq(settings.key, FRIENDS_FLAG_KEY));
+    if (friendFlag.length === 0) {
+      const ids = await ensurePlaceholders(db, storage);
+      await db.insert(friends).values(
+        EXAMPLE_FRIENDS.map((f, i) => ({
+          slug: f.slug,
+          name: f.name,
+          bodyMd: f.bodyMd,
+          links: f.links.map((link) => ({ kind: link.kind, url: link.url })),
+          mediaId: ids[f.placeholder] ?? null,
+          sort: i + 1,
+          isExample: true,
+          updatedAt: now,
+        })),
+      );
+      await db.insert(settings).values({ key: FRIENDS_FLAG_KEY, value: { loadedAt: now }, updatedAt: now });
+      log("Barátok: példatartalom betöltve.");
     }
   }
 

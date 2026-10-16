@@ -7,6 +7,7 @@ export const TEMPLATE_LABELS: Record<string, string> = {
   football: "Real Madrid sablon",
   schools: "Iskoláim sablon",
   gadgets: "Kedvenc eszközeim sablon",
+  friends: "Barátok sablon",
   generic: "Általános sablon",
 };
 
@@ -24,6 +25,8 @@ export function contentEditorHref(page: { id: number; template: string }): strin
       return "/admin/iskolaim";
     case "gadgets":
       return "/admin/eszkozeim";
+    case "friends":
+      return "/admin/baratok";
     default:
       return `/admin/oldal/${page.id}`;
   }

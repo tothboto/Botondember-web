@@ -457,6 +457,57 @@ function gadget(kind: "laptop" | "watch" | "treasure"): PlaceholderSpec {
   return { name: names[kind], width: size, height: size, alt: alts[kind], svg: svgDoc(size, size, defs, body) };
 }
 
+// ---------------------------------------------------------------------------
+// Barátok (1:1) – rajzolt profilkép: egy kedves avatar és egy sárkányfej.
+// Valódi személyt nem ábrázol.
+// ---------------------------------------------------------------------------
+function friendAvatar(kind: "person" | "dragon"): PlaceholderSpec {
+  const size = 800;
+  const defs = [
+    linear(`fbg-${kind}`, [["0", kind === "person" ? "#E9E6FA" : "#DDF0E6"], ["1", kind === "person" ? "#C9C2F0" : "#BCE0CC"]]),
+    radial(`fglow-${kind}`, 0.5, 0.32, 0.6, "#ffffff", 0.45),
+  ].join("");
+
+  const drawings = {
+    person: `
+      <circle cx="400" cy="330" r="130" fill="#F2C9A8"/>
+      <path d="M270 300 Q400 150 530 300 Q530 212 400 196 Q270 212 270 300 Z" fill="#4A3524"/>
+      <circle cx="356" cy="330" r="15" fill="#2B2520"/>
+      <circle cx="444" cy="330" r="15" fill="#2B2520"/>
+      <path d="M356 388 Q400 424 444 388" fill="none" stroke="#2B2520" stroke-width="13" stroke-linecap="round"/>
+      <path d="M190 720 Q190 520 400 520 Q610 520 610 720 Z" fill="#6D3FC4"/>
+      <path d="M352 520 Q400 580 448 520 L448 496 L352 496 Z" fill="#F2C9A8"/>`,
+    dragon: `
+      <path d="M250 300 L196 180 L324 252 Z" fill="#1F7A52"/>
+      <path d="M550 300 L604 180 L476 252 Z" fill="#1F7A52"/>
+      <ellipse cx="400" cy="396" rx="196" ry="176" fill="#2F9B68"/>
+      <ellipse cx="400" cy="470" rx="112" ry="96" fill="#8FD6B4"/>
+      <circle cx="334" cy="356" r="30" fill="#F6F8F4"/>
+      <circle cx="466" cy="356" r="30" fill="#F6F8F4"/>
+      <circle cx="340" cy="360" r="14" fill="#16331F"/>
+      <circle cx="460" cy="360" r="14" fill="#16331F"/>
+      <circle cx="364" cy="470" r="13" fill="#2F9B68"/>
+      <circle cx="436" cy="470" r="13" fill="#2F9B68"/>
+      <path d="M340 516 Q400 560 460 516" fill="none" stroke="#16331F" stroke-width="14" stroke-linecap="round"/>
+      <path d="M336 556 L348 586 L360 556 Z" fill="#F6F8F4"/>
+      <path d="M440 556 L452 586 L464 556 Z" fill="#F6F8F4"/>`,
+  };
+
+  const alts = {
+    person: "Rajzolt profilkép: mosolygó arc lila pólóban, világoslila háttéren (helykitöltő kép)",
+    dragon: "Rajzolt profilkép: barátságos zöld sárkányfej szarvakkal, világoszöld háttéren (helykitöltő kép)",
+  };
+
+  const names = { person: "friend-1", dragon: "friend-2" };
+
+  const body = `
+    <rect width="${size}" height="${size}" fill="url(#fbg-${kind})"/>
+    <rect width="${size}" height="${size}" fill="url(#fglow-${kind})"/>
+    ${drawings[kind]}`;
+
+  return { name: names[kind], width: size, height: size, alt: alts[kind], svg: svgDoc(size, size, defs, body) };
+}
+
 export function placeholderSpecs(): PlaceholderSpec[] {
   return [
     homeHero(),
@@ -486,6 +537,8 @@ export function placeholderSpecs(): PlaceholderSpec[] {
     gadget("laptop"),
     gadget("watch"),
     gadget("treasure"),
+    friendAvatar("person"),
+    friendAvatar("dragon"),
     trophy(1),
     trophy(2),
   ];

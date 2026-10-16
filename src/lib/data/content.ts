@@ -8,6 +8,7 @@ import {
   footballMoments,
   footballPlayers,
   footballSections,
+  friends,
   gadgets,
   games,
   genericItems,
@@ -48,6 +49,16 @@ export const getGadgets = cached(
   async () => getDb().select().from(gadgets).where(eq(gadgets.visible, true)).orderBy(asc(gadgets.sort), asc(gadgets.id)),
   ["gadgets"],
 );
+
+export const getFriends = cached(
+  async () => getDb().select().from(friends).where(eq(friends.visible, true)).orderBy(asc(friends.sort), asc(friends.id)),
+  ["friends"],
+);
+
+/** Egy barát az URL-címe alapján (csak a látható barátok). */
+export async function getFriendBySlug(slug: string) {
+  return (await getFriends()).find((friend) => friend.slug === slug) ?? null;
+}
 
 /** Egy iskola az URL-címe alapján (csak a látható iskolák). */
 export async function getSchoolBySlug(slug: string) {

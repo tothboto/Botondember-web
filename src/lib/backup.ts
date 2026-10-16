@@ -50,6 +50,7 @@ const TABLES = {
   genericItems: schema.genericItems,
   schools: schema.schools,
   gadgets: schema.gadgets,
+  friends: schema.friends,
   legalDocs: schema.legalDocs,
   auditLog: schema.auditLog,
 } satisfies Record<string, SQLiteTable>;
@@ -57,7 +58,7 @@ const TABLES = {
 type TableName = keyof typeof TABLES;
 const TABLE_NAMES = Object.keys(TABLES) as TableName[];
 /** Később bevezetett táblák: a régebbi mentésekből hiányozhatnak (ilyenkor üresek lesznek). */
-const OPTIONAL_TABLES: ReadonlySet<TableName> = new Set(["translationRequests", "schools", "gadgets"]);
+const OPTIONAL_TABLES: ReadonlySet<TableName> = new Set(["translationRequests", "schools", "gadgets", "friends"]);
 
 type Row = Record<string, unknown>;
 

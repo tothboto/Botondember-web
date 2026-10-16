@@ -14,6 +14,7 @@ import {
   footballMoments,
   footballPlayers,
   footballSections,
+  friends,
   gadgets,
   games,
   genericItems,
@@ -70,7 +71,7 @@ const short = (text: string, max = 40) => {
 
 /** Az összes fordítható mező, az Admin sorrendjében. Az üres magyar szövegek kimaradnak. */
 export async function listContentFields(db: Db): Promise<ContentField[]> {
-  const [settingRows, pageRows, pageLabels, hobbyRows, gameRows, youtubeRows, sectionRows, playerRows, momentRows, factRows, schoolRows, gadgetRows, genericRows, mediaRows, legalRows] =
+  const [settingRows, pageRows, pageLabels, hobbyRows, gameRows, youtubeRows, sectionRows, playerRows, momentRows, factRows, schoolRows, gadgetRows, friendRows, genericRows, mediaRows, legalRows] =
     await Promise.all([
       db.select().from(settingsTable),
       db.select().from(pages).orderBy(asc(pages.sort), asc(pages.id)),
@@ -84,6 +85,7 @@ export async function listContentFields(db: Db): Promise<ContentField[]> {
       db.select().from(footballFacts).orderBy(asc(footballFacts.sort), asc(footballFacts.id)),
       db.select().from(schools).orderBy(asc(schools.sort), asc(schools.id)),
       db.select().from(gadgets).orderBy(asc(gadgets.sort), asc(gadgets.id)),
+      db.select().from(friends).orderBy(asc(friends.sort), asc(friends.id)),
       db.select().from(genericItems).orderBy(asc(genericItems.pageId), asc(genericItems.sort), asc(genericItems.id)),
       db.select().from(media).orderBy(asc(media.id)),
       db.select().from(legalDocs).where(and(eq(legalDocs.locale, SOURCE_LOCALE))),
@@ -213,6 +215,13 @@ export async function listContentFields(db: Db): Promise<ContentField[]> {
         add("schools", row.id, "city", row.city, pageMeta(`${name} – város`, "text", 60));
         add("schools", row.id, "lead", row.lead, pageMeta(`${name} – rövid bemutatás`, "multiline", 400));
         add("schools", row.id, "bodyMd", row.bodyMd, pageMeta(`${name} – az aloldal szövege`, "markdown", 8000));
+      }
+    }
+    if (page.template === "friends") {
+      for (const row of friendRows) {
+        const name = `Barát: ${short(row.name, 30)}`;
+        add("friends", row.id, "name", row.name, pageMeta(`${name} – név`, "text", 80));
+        add("friends", row.id, "bodyMd", row.bodyMd, pageMeta(`${name} – bemutatás`, "markdown", 4000));
       }
     }
     if (page.template === "gadgets") {
