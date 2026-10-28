@@ -82,6 +82,53 @@ test.describe("Fordítás-ellenőrzés minden nyelven", () => {
   }
 });
 
+/**
+ * A fejléc egyik nyelven sem törhet szét: az oldal neve („Botondember”, más nyelven
+ * hosszabb) egy sorban marad, és a menüpontok feliratai sem csúszhatnak két sorba.
+ * A legszűkebb hely az 1280 px – ettől jelenik meg a felső menü, és a fejléc
+ * tartalmi sávja ennél szélesebb képernyőn sem nő tovább.
+ */
+test("a fejléc egyik nyelven sem törik szét (1280 px)", async ({ page, context, baseURL }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const host = new URL(baseURL ?? "http://localhost").hostname;
+  const problems: string[] = [];
+
+  for (const code of ["hu", ...LANGUAGES.map((language) => language.code)]) {
+    await context.clearCookies();
+    await context.addCookies([{ name: "locale", value: code, domain: host, path: "/" }]);
+    await page.goto("/hobbijaim");
+
+    const header = await page.evaluate(() => {
+      const lines = (selector: string) => {
+        const el = document.querySelector(selector);
+        if (!el) return 0;
+        const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+        return lineHeight > 0 ? Math.round(el.getBoundingClientRect().height / lineHeight) : 0;
+      };
+      // Csak a látható (felső) menü linkjei: a mobil menü is a fejlécben van, de rejtve.
+      const linkHeights = Array.from(document.querySelectorAll("header nav a"))
+        .map((el) => Math.round(el.getBoundingClientRect().height))
+        .filter((height) => height > 0);
+      return {
+        name: (document.querySelector(".brand-lead")?.textContent ?? "").trim(),
+        nameLines: lines(".brand-lead"),
+        taglineLines: lines(".brand-tagline"),
+        navLinks: linkHeights.length,
+        navWrapped: linkHeights.length > 0 && Math.max(...linkHeights) > Math.min(...linkHeights),
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+      };
+    });
+
+    if (header.nameLines !== 1) problems.push(`${code}: az oldal neve („${header.name}”) ${header.nameLines} sorba tört`);
+    if (header.taglineLines > 1) problems.push(`${code}: a kis sor ${header.taglineLines} sorba tört`);
+    if (header.navWrapped) problems.push(`${code}: a menü egyik felirata két sorba csúszott`);
+    if (header.navLinks === 0) problems.push(`${code}: nem látszik a felső menü 1280 px-en`);
+    if (header.overflow > 1) problems.push(`${code}: ${header.overflow} px-szel kilóg az oldal`);
+  }
+
+  expect(problems, problems.join("\n")).toEqual([]);
+});
+
 test.describe("Horvát fordítás", () => {
   test.beforeEach(async ({ context, baseURL }) => {
     await context.addCookies([{ name: "locale", value: "hr", domain: new URL(baseURL ?? "http://localhost").hostname, path: "/" }]);

@@ -84,13 +84,17 @@ export function HeaderClient({
           href="/"
           data-brand-link
           aria-label={t("header.homeLinkLabel", { title })}
-          className="flex min-w-0 rounded-md py-1"
+          className="flex shrink-0 rounded-md py-1"
         >
           <BrandMark title={title} lang={titleLang} style={logoStyle} />
         </Link>
 
-        <nav aria-label={t("nav.mainLabel")} className="hidden xl:block">
-          <ul className="flex items-center gap-1">
+        {/* A fejléc tartalmi sávja legfeljebb 1280 px széles (nagyobb képernyőn sem nő),
+            ezért az embléma mellé a menüpontok ikonostul már nem férnek el: a felső
+            menüben csak a feliratok vannak, az ikonok a mobil menüben maradnak meg.
+            Így az oldal neve soha nem szorul ketté. */}
+        <nav aria-label={t("nav.mainLabel")} className="hidden min-w-0 xl:block">
+          <ul className="flex items-center gap-0.5">
             {navItems.map((item) => {
               const current = item === active;
               return (
@@ -98,17 +102,14 @@ export function HeaderClient({
                   <Link
                     href={item.href}
                     aria-current={current ? "page" : undefined}
-                    className={`group relative flex items-center gap-2 rounded-md px-3 py-2.5 font-display text-[0.9rem] font-extrabold tracking-[0.08em] uppercase ${
+                    className={`group relative flex items-center rounded-md px-2 py-2.5 font-display text-[0.9rem] font-extrabold tracking-[0.045em] whitespace-nowrap uppercase ${
                       current ? "" : "text-header-fg/90 hover:text-header-fg"
                     }`}
                   >
-                    <span aria-hidden className="h-[1.15rem] w-[1.15rem] shrink-0">
-                      {item.icon}
-                    </span>
                     {item.label}
                     <span
                       aria-hidden
-                      className={`absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full ${
+                      className={`absolute inset-x-2 -bottom-0.5 h-[3px] rounded-full ${
                         current ? "bg-header-active" : "bg-transparent group-hover:bg-header-line"
                       }`}
                     />

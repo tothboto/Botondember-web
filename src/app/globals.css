@@ -596,15 +596,20 @@
   min-width: 0;
   flex-direction: column;
 }
+/* Az oldal neve soha nem törhet ketté (se szóköznél, se a szó közepén): a
+   „Botondember” egy szó, és csúnyán nézne ki „BOTONDEMBE / R” alakban. Ha szűk a
+   hely, a fejléc inkább máshol spórol (lásd a menü ikonjait a HeaderClient-ben),
+   a betűméret pedig a képernyő szélességéhez igazodik (clamp a stílusoknál). */
 .brand-lead {
   position: relative;
   display: inline-block;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 .brand-tagline {
   display: inline-block;
   max-width: 100%;
+  white-space: nowrap;
 }
 
 /* --- E-sport: vastag, dőlt betű kemény árnyékkal, ferde címke, glitch-rétegek --- */
